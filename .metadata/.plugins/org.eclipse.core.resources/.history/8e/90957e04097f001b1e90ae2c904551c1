@@ -1,0 +1,26 @@
+package protocol3.tasks;
+
+import java.util.TimerTask;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import protocol3.backend.PlayerMeta;
+import protocol3.backend.Scheduler;
+
+// Playtime processor
+public class ProcessPlaytime extends TimerTask
+{
+	@Override
+	public void run()
+	{
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			PlayerMeta.tickPlaytime(p);
+		}
+
+		PlayerMeta.tickTempMutes();
+
+		Scheduler.setLastTaskId("analyticsRegistry");
+	}
+}

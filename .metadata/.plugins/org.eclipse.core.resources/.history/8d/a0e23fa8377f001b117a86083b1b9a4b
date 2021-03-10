@@ -1,0 +1,46 @@
+package protocol3.tasks;
+
+import java.util.TimerTask;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import protocol3.backend.PlayerMeta;
+import protocol3.backend.Scheduler;
+import protocol3.backend.ServerMeta;
+import protocol3.events.LagPrevention;
+
+// Playtime processor
+public class ProcessPlaytime extends TimerTask
+{
+	private static long lastTime = 0;
+
+	@Override
+	public void run()
+	{
+		if (lastTime == 0)
+		{
+			lastTime = System.currentTimeMillis();
+			return;
+		}
+
+		long sinceLast = System.currentTimeMillis() - lastTime;
+
+		// Tick playtime
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			PlayerMeta.tickPlaytime(p);
+		}
+
+		// Check current withers
+		LagPrevention.currentWithers = LagPrevention.getWithers();
+
+		// Tick temporary mutes
+		PlayerMeta.tickTempMutes();
+
+		// Tick server uptime
+		ServerMeta.tickUptime();
+
+		Scheduler.setLastTaskId("analyticsRegistry");
+	}
+}

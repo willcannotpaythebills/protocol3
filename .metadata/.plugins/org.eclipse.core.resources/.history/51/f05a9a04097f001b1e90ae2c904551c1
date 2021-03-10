@@ -1,0 +1,25 @@
+package protocol3.backend;
+
+import java.util.UUID;
+
+public class ServerMeta
+{
+	// -- SERVER STATISTICS -- //
+	private static double _uptimeInSeconds = 0;
+	
+	public static void tickUptime() 
+	{
+		double tps = LagProcessor.getTPS();
+		if (tps > 20)
+			tps = 20;
+		double off = 20 / tps;
+
+		_uptimeInSeconds += 1 * off;
+	}
+	
+	public static double getUptime() {
+		return _uptimeInSeconds;
+	}
+	
+	
+}

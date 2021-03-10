@@ -1,0 +1,25 @@
+package protocol3.commands;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+
+import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.backend.PlayerMeta;
+
+public class Server
+{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+	{
+		sender.spigot().sendMessage(new TextComponent("§cServer Uptime: "));
+		sender.spigot().sendMessage(new TextComponent("§cCurrent Population: "+Bukkit.getOnlinePlayers().size()));
+		sender.spigot().sendMessage(new TextComponent("§cUnique Joins (§eSince Map Creation§c):§7 " + Bukkit.getOfflinePlayers().length));
+		sender.spigot().sendMessage(new TextComponent("§cUnique Joins (§eSince Stats Update§c):§7 " + PlayerMeta.Playtimes.keySet().size()));
+		sender.spigot().sendMessage(new TextComponent("§cDonators:§7 " + PlayerMeta._donatorList.size()));
+		sender.spigot().sendMessage(new TextComponent("§cLagfags:§7 " + PlayerMeta._lagfagList.size()));
+		sender.spigot().sendMessage(new TextComponent("§cPermanent Mutes:§7 " + PlayerMeta._permanentMutes.size()));
+		sender.spigot().sendMessage(new TextComponent("§cOP Accounts:§7 " + Bukkit.getOperators().size()));
+		return true;
+		
+	}
+}

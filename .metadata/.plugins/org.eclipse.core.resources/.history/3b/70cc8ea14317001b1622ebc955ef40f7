@@ -1,0 +1,156 @@
+package protocol3.commands;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.backend.Config;
+import protocol3.backend.PlayerMeta;
+import protocol3.backend.PlayerMeta.MuteType;
+
+// Vote mute
+
+public class VoteMute implements CommandExecutor
+{
+	static HashMap<UUID, Integer> _votes = new HashMap<UUID, Integer>();
+	static HashMap<UUID, List<UUID>> _voters = new HashMap<UUID, List<UUID>>();
+
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+	{
+		if (args.length != 1)
+		{
+			sender.spigot().sendMessage(new TextComponent("§cInvalid syntax. Syntax: /vm [player]"));
+			return true;
+		}
+
+		if (Bukkit.getPlayer(args[0]) == null)
+		{
+			sender.spigot().sendMessage(new TextComponent("§c" + args[0] + " is not online."));
+			return true;
+		}
+
+		Player voter = (Player) sender;
+		Player toMute = Bukkit.getPlayer(args[0]);
+		int popNeeded = (int) (Bukkit.getOnlinePlayers().size()
+				* (Float.parseFloat(Config.getValue("mute.pop")) / 100.0f));
+
+		// [1:01 AM] d2k11: if((20% of pop) < 1) message("no votey not enough")
+		// [1:02 AM] suicide is badass: make sure it announces that message too
+		// [1:02 AM] suicide is badass: verbatim
+		if (popNeeded <= 1)
+		{
+			int rnd = (int) ((Math.random() * (5 - 0)) + 0);
+			if (rnd == 3)
+			{
+				voter.spigot().sendMessage(new TextComponent("§cno votey not enough"));
+			} else
+			{
+				voter.spigot()
+						.sendMessage(new TextComponent("§cThere are not enough players online to conduct a vote."));
+			}
+			return true;
+		}
+
+		// Can't vote on an already-muted person.
+		if (PlayerMeta.isMuted(toMute))
+		{
+			voter.spigot().sendMessage(new TextComponent("§c" + args[0] + " is already muted."));
+			return true;
+		}
+
+		// Relay bots aren't mutable.
+		if (toMute.getUniqueId().equals(UUID.fromString(Config.getValue("discord.uuid"))))
+		{
+			voter.spigot().sendMessage(new TextComponent("§cThis is a Discord Relay bot and cannot be muted."));
+			return true;
+		}
+
+		// Muted people can't vote.
+		if (PlayerMeta.isMuted(voter) && Config.getValue("mute.hypocrisy").equals("1"))
+		{
+			voter.spigot().sendMessage(new TextComponent("§cDon't be a hypocrite. You can't vote."));
+			return true;
+		}
+
+		// List of previous votes to be filled.
+		List<UUID> previousVotes;
+
+		// Load previous votes
+		if (_voters.containsKey(voter.getUniqueId()))
+		{
+			previousVotes = _voters.get(voter.getUniqueId());
+			if (previousVotes.contains(toMute.getUniqueId()))
+			{
+				int votes = _votes.get(toMute.getUniqueId());
+				int need = popNeeded - votes;
+				if (need <= 0)
+				{
+					Bukkit.spigot().broadcast(new TextComponent(
+							"§6The vote to mute " + args[0] + " passed after " + popNeeded + " votes."));
+					PlayerMeta.setMuteType(toMute, MuteType.TEMPORARY);
+					return true;
+				} else
+				{
+					voter.spigot().sendMessage(new TextComponent(
+							"§cYou've already voted for " + args[0] + ". You need " + need + " more votes."));
+				}
+				return true;
+			}
+		}
+		// Create new list of votes
+		else
+		{
+			previousVotes = new ArrayList<UUID>();
+		}
+
+		// If our candidate has been voted on before
+		if (_votes.containsKey(toMute.getUniqueId()))
+		{
+			// New votes value
+			int votes = _votes.get(toMute.getUniqueId()) + 1;
+			// Put our vote into repository
+			_votes.put(toMute.getUniqueId(), votes);
+			// Flag that we've voted for this person and can't vote again.
+			previousVotes.add(toMute.getUniqueId());
+			_voters.put(voter.getUniqueId(), previousVotes);
+			if (popNeeded - votes <= 0)
+			{
+				PlayerMeta.setMuteType(toMute, MuteType.TEMPORARY);
+				Bukkit.spigot().broadcast(
+						new TextComponent("§6The vote to mute " + args[0] + " passed after " + popNeeded + " votes."));
+				return true;
+
+			} else
+			{
+				voter.spigot().sendMessage(new TextComponent("§aSuccessfully submitted vote for " + args[0] + ". "
+						+ (popNeeded - votes) + " more needed for mute."));
+				return true;
+			}
+		}
+		// If our candidate has not been voted on before
+		else
+		{
+			_votes.put(toMute.getUniqueId(), 1);
+			previousVotes.add(toMute.getUniqueId());
+			_voters.put(voter.getUniqueId(), previousVotes);
+			Bukkit.spigot().broadcast(new TextComponent("§6"+voter.getName()+ " has started a vote to mute " + args[0] + ". "
+					+ (popNeeded - 1) + " more votes are needed to mute. §lUse /vm " + args[0] + " to vote."));
+			return true;
+		}
+	}
+
+	public static void clear()
+	{
+		_votes.clear();
+		_voters.clear();
+	}
+
+}

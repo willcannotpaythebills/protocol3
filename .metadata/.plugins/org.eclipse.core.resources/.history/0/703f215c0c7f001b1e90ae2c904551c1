@@ -1,0 +1,104 @@
+// ########################################### //
+// ### PROTOCOL3 MASTER CONFIGURATION FILE ### //
+// ########################################### //
+
+// ############################################## //
+// ### MADE FOR AVAS.CC. DO NOT REDISTRIBUTE! ### //
+// ############################################## //
+
+// Internal use only. Do not change or you'll break the entire thing.
+config.version = 11
+
+// ------------------------ //
+// --- MOVEMENT PATCHES --- //
+// ------------------------ //
+
+// Enable or disable roof protection. 0 = disabled 1 = enabled [default]
+movement.block.roof = 1
+
+// Enable or disable floor protection. 0 = disabled 1 = enabled [default]
+movement.block.floor = 1
+
+// Enable or disable illegal placement protection. 0 = disabled 1 = enabled [default]
+movement.block.chunkcheck = 1
+
+// --------------------- //
+// --- BLOCK PATCHES --- //
+// --------------------- //
+
+// Disallow illegal block placement. 0 = disabled 1 = enabled [default]
+place.illegal = 1
+
+// Disallow illegal block placement by OPs. 0 = disabled 1 = enabled [default]
+place.illegal.ops = 1
+
+// ---------------------------- //
+// --- ILLEGAL ITEM PATCHES --- //
+// ---------------------------- //
+
+// Enable or disable the entire patch. 0 = disabled 1 = enabled [default]
+item.illegal = 1
+
+// Enable or disable overstacked items. 0 = disabled [default] 1 = enabled
+item.illegal.stacked = 1
+
+// Enable or disable playerheads. 0 = disabled [default] 1 = enabled
+item.illegal.heads = 0
+
+// Enable or disable scanning on join. 0 = disabled 1 = enabled [default]
+item.illegal.onjoin = 1
+
+// Enable or disable unbreakable items. 0 = disabed [default] 1 = enabled
+item.illegal.unbreakable = 0
+
+// Enable or disable exclusive enchants. 0 = disabled [default] 1 = enabled
+item.illegal.exclusive = 0
+
+// Enable or disable invalid enchants. 0 = disabled [default] 1 = enabled
+item.illegal.invalid = 0
+
+// Enable or disable aggressive checks. 0 = disabled 1 = enabled [default]
+// Can cause some lag on lower-end servers
+item.illegal.agro = 1
+
+// -------------- //
+// --- VOTING --- //
+// -------------- //
+
+// Enable or disable vote reward. 0 = disabled 1 = enabled [default]
+vote.enable = 1
+
+// Enable or disable manual execution of vote reward. Use for debug only. 0 = disabled [default] 1 = enabled
+vote.debug = 0
+
+// Vote reward multiplier. Default: 1
+vote.multiplier = 1
+
+// Vote reward also heals player to max health. 0 = disabled 1 = enabled [default]
+vote.heal = 1
+
+// -------------- //
+// --- MUTING --- //
+// -------------- //
+
+// Enable vote muting. 0 = disabled 1 = enabled [default]
+mute.enabled = 1
+
+// Percent of population that needs to vote before a mute is ordered. Default: 40
+mute.pop = 40
+
+// Enable voting by already-muted persons. 0 = disabled 1 = enabled [default]
+mute.hypocrisy = 1
+
+// ------------ //
+// --- MISC --- //
+// ------------ //
+
+// Do analytics (local only) 0 = disabled 1 = enabled [default]
+analytics.enabled = 1
+
+// Force survival mode on relog except OPs 0 = disabled 1 = enabled [default]
+misc.survival = 1
+
+// Enable or disable the prank /kit command. 0 = disabled 1 = enabled [default]
+funny.kit = 1

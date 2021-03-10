@@ -1,0 +1,23 @@
+package protocol3.events;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+
+import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.backend.PlayerMeta;
+
+
+public class LagPrevention implements Listener
+{
+	public 
+	public void onEntitySpawn(EntitySpawnEvent e) {
+		if(e.getEntityType().equals(EntityType.WITHER)) {
+			
+		}
+	}
+}
