@@ -21,7 +21,8 @@ public class LagPrevention implements Listener
 	public void onEntitySpawn(EntitySpawnEvent e)
 	{
 		int witherLimit = Integer.parseInt(Config.getValue("wither.limit"));
-		if (e.getEntityType().equals(EntityType.WITHER))
+
+		if (e.getEntity() instanceof Wither)
 		{
 			if (e.getEntity().getTicksLived() > 200)
 			{
@@ -34,6 +35,8 @@ public class LagPrevention implements Listener
 			}
 			currentWithers = getWithers();
 		}
+
+		removeOldSkulls();
 	}
 
 	public static int getWithers() {
@@ -51,6 +54,24 @@ public class LagPrevention implements Listener
 						Wither w = (Wither) e;
 						w.setHealth(0);
 					}
+				}
+			}
+		}
+		return toRet;
+	}
+
+	public static int removeOldSkulls() {
+		String[] worldTypes = new String[]{"world", "world_nether", "world_the_end"};
+		int toRet = 0;
+
+		int witherLimit = Integer.parseInt(Config.getValue("wither.skull.max_age"));
+
+		List<Entity> entities;
+		for (String worldType : worldTypes) {
+			entities = Bukkit.getWorld(worldType).getEntities().stream().filter(e -> (e instanceof WitherSkull)).collect(Collectors.toList());
+			for (Entity e : entities) {
+				if (e.getTicksLived() >= witherLimit && e.getCustomName() == null) {
+					Bukkit.getWorld(worldType).getEntities().remove(e);
 				}
 			}
 		}

@@ -14,7 +14,7 @@ public class Config
 
 	public static String getValue(String key)
 	{
-		return _values.get(key);
+		return _values.getOrDefault(key, "0");
 	}
 
 	public static void load() throws IOException

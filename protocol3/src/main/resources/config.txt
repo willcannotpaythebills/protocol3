@@ -96,6 +96,8 @@ mute.hypocrisy = 1
 
 // Global wither limit. default = 1000
 wither.limit = 1000
+// Global wither skull age limit. default = 4800 (4 minutes in ticks if server is running at 20TPS)
+withe.skull.max_age = 4800
 
 // ------------ //
 // --- MISC --- //
