@@ -1,25 +1,23 @@
 package protocol3.events;
 
-import java.util.Random;
-
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDispenseArmorEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
-
-import com.codingforcookies.armorequip.ArmorEquipEvent;
-
-import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
 import protocol3.backend.PlayerMeta;
+
+import java.util.Random;
 
 public class ItemCheckTriggers implements Listener
 {
@@ -87,9 +85,8 @@ public class ItemCheckTriggers implements Listener
 	}
 
 	@EventHandler
-	public void onEquip(ArmorEquipEvent e)
-	{
-		ItemCheck.IllegalCheck(e.getNewArmorPiece());
+	public void onDispense(BlockDispenseArmorEvent e) {
+		ItemCheck.IllegalCheck(e.getItem());
 	}
 
 	@EventHandler
