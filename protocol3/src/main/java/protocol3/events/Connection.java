@@ -83,25 +83,13 @@ public class Connection implements Listener
 		JOIN, LEAVE
 	}
 
-	public void doJoinMessage(MessageType msg, Player player)
-	{
-		if (msg.equals(MessageType.JOIN))
+	public void doJoinMessage(MessageType msg, Player player) {
+		String messageOut = "§7" + player.getName() + ((msg.equals(MessageType.JOIN)) ?" joined the game." : " left the game.");
+		for (Player p : Bukkit.getOnlinePlayers())
 		{
-			for (Player p : Bukkit.getOnlinePlayers())
+			if (!ToggleJoinMessages.disabledJoinMessages.contains(p.getUniqueId()))
 			{
-				if (!ToggleJoinMessages.disabledJoinMessages.contains(p.getUniqueId()))
-				{
-					p.sendMessage("§7" + player.getName() + " joined the game.");
-				}
-			}
-		} else
-		{
-			for (Player p : Bukkit.getOnlinePlayers())
-			{
-				if (!ToggleJoinMessages.disabledJoinMessages.contains(p.getUniqueId()))
-				{
-					p.sendMessage("§7" + player.getName() + " left the game.");
-				}
+				p.sendMessage(messageOut);
 			}
 		}
 	}

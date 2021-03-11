@@ -101,6 +101,7 @@ wither.skull.max_age = 4800
 
 // Do analytics (local only) 0 = disabled 1 = enabled [default]
 analytics.enabled = 1
+analytics.bot_id =
 
 // Force survival mode on relog except OPs 0 = disabled 1 = enabled [default]
 misc.survival = 1

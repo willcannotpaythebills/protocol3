@@ -19,6 +19,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.FileManager;
 import protocol3.backend.LagProcessor;
+import protocol3.backend.Notifications;
 import protocol3.backend.PlayerMeta;
 import protocol3.commands.About;
 import protocol3.commands.Admin;
@@ -140,6 +141,8 @@ public class Main extends JavaPlugin implements Listener
 		this.getCommand("tjm").setExecutor(new ToggleJoinMessages());
 		this.getCommand("server").setExecutor(new Server());
 		this.getCommand("help").setExecutor(new Help());
+
+		new Notifications();
 	}
 
 	@Override
