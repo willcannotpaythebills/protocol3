@@ -18,7 +18,7 @@ public class AutoAnnouncer extends TimerTask
 	@Override
 	public void run()
 	{
-		int rnd = r.nextInt(10);
+		int rnd = r.nextInt(11);
 
 		if (rnd == 0)
 		{
@@ -58,6 +58,10 @@ public class AutoAnnouncer extends TimerTask
 		} else if (rnd == 9)
 		{
 			Bukkit.spigot().broadcast(new TextComponent("§6Do /help to see the commands available to you."));
+		} else if (rnd == 10)
+		{
+			Bukkit.spigot().broadcast(new TextComponent(
+					"§6The source code for AVAS is available at https://github.com/gcurtiss/protocol3."));
 		}
 		Scheduler.setLastTaskId("autoAnnounce");
 	}

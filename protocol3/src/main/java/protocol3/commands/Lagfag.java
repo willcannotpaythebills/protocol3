@@ -133,8 +133,10 @@ public class Lagfag implements CommandExecutor
 		{
 			Bukkit.getServer().spigot().broadcast(new TextComponent("§6" + lagfag.getName() + " is a lagfag!"));
 
+			// this is unclean lmao
 			Bukkit.getServer().spigot().broadcast(
 					new TextComponent("§6IP: " + lagfag.getAddress().toString().split(":")[0].replace("/", "")));
+
 			Bukkit.getServer().spigot()
 					.broadcast(new TextComponent("§6COORDS: " + Math.round(lagfag.getLocation().getX()) + ", "
 							+ Math.round(lagfag.getLocation().getY()) + ", "

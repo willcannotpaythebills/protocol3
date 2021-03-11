@@ -76,12 +76,7 @@ public class VoteMute implements CommandExecutor
 			return true;
 		}
 
-		if (voter.getUniqueId().equals(toMute.getUniqueId()))
-		{
-			voter.spigot().sendMessage(new TextComponent("§cYou can't vote to mute yourself."));
-			return true;
-		}
-
+		// Can't mute ops
 		if (toMute.isOp())
 		{
 			voter.spigot().sendMessage(new TextComponent("§cYou can't vote to mute this person."));

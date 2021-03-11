@@ -2,12 +2,8 @@
 // ### PROTOCOL3 MASTER CONFIGURATION FILE ### //
 // ########################################### //
 
-// ############################################## //
-// ### MADE FOR AVAS.CC. DO NOT REDISTRIBUTE! ### //
-// ############################################## //
-
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 11
+config.version = 12
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -97,7 +93,7 @@ mute.hypocrisy = 1
 // Global wither limit. default = 1000
 wither.limit = 1000
 // Global wither skull age limit. default = 4800 (4 minutes in ticks if server is running at 20TPS)
-withe.skull.max_age = 4800
+wither.skull.max_age = 4800
 
 // ------------ //
 // --- MISC --- //

@@ -10,7 +10,7 @@ public class Config
 
 	private static HashMap<String, String> _values = new HashMap<String, String>();
 
-	public static int version = 11;
+	public static int version = 12;
 
 	public static String getValue(String key)
 	{
