@@ -8,12 +8,12 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import protocol3.backend.Config;
+import protocol3.backend.PlayerMeta;
 
 // INTERNAL USE ONLY
 
@@ -23,8 +23,10 @@ public class DupeHand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (!(sender instanceof ConsoleCommandSender))
+		if (!PlayerMeta.isOp(sender))
 		{
+			Player player = (Player) sender;
+			player.kickPlayer("§6get fucked newfag [pog]");
 			return true;
 		} else
 		{

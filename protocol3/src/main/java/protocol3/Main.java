@@ -1,9 +1,7 @@
 package protocol3;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -16,7 +14,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
-import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.FileManager;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.PlayerMeta;
@@ -87,6 +84,7 @@ public class Main extends JavaPlugin implements Listener
 
 		// Load timers
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new LagProcessor(), 1L, 1L);
+		// TODO: cleaner solution?
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new AutoAnnouncer(), 15000L, 15000L);
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ProcessPlaytime(), 20L, 20L);
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new OnTick(), 1L, 1L);
@@ -98,9 +96,7 @@ public class Main extends JavaPlugin implements Listener
 		getServer().getPluginManager().registerEvents(new ItemCheckTriggers(), this);
 		getServer().getPluginManager().registerEvents(new LagPrevention(), this);
 
-		// Load ProtcolLib Listeners
-
-		// no more wither boom
+		// Disable Wither spawn sound
 		ProtocolLibrary.getProtocolManager()
 				.addPacketListener(new PacketAdapter(this, ListenerPriority.HIGHEST, PacketType.Play.Server.WORLD_EVENT)
 				{
@@ -114,8 +110,6 @@ public class Main extends JavaPlugin implements Listener
 						}
 					}
 				});
-
-		// --- TASKS ---
 
 		// Load commands
 		this.getCommand("kit").setExecutor(new Kit());
@@ -156,164 +150,5 @@ public class Main extends JavaPlugin implements Listener
 		{
 			System.out.println("[protocol3] Failed to save one or more files.");
 		}
-	}
-
-	public static void cleanRestart()
-	{
-		Runnable r = new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l5 §r§6minutes."));
-				try
-				{
-					TimeUnit.MINUTES.sleep(4);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l1 §r§6minute."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(30);
-				} catch (Exception e)
-				{
-				}
-				try
-				{
-					TimeUnit.SECONDS.sleep(15);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l15 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(5);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l10 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(5);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l5 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l4 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l3 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l2 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l1 §r§6second."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server is restarting."));
-				Bukkit.shutdown();
-			}
-		};
-		new Thread(r).start();
-	}
-
-	public static void quickRestart()
-	{
-		Runnable r = new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l1 §r§6minute."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(30);
-				} catch (Exception e)
-				{
-				}
-				try
-				{
-					TimeUnit.SECONDS.sleep(15);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l15 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(5);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l10 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(5);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l5 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l4 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l3 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l2 §r§6seconds."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server restarting in §6§l1 §r§6second."));
-				try
-				{
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e)
-				{
-				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server is restarting."));
-				Bukkit.shutdown();
-			}
-		};
-		new Thread(r).start();
 	}
 }

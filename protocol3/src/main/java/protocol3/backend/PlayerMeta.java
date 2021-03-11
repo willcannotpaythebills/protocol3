@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.TextComponent;
@@ -95,7 +97,7 @@ public class PlayerMeta
 		String muteType = "";
 		if (type.equals(MuteType.NONE))
 		{
-			muteType = "not";
+			muteType = "un";
 			if (_temporaryMutes.keySet().contains(uuid))
 				_temporaryMutes.remove(uuid);
 			if (_permanentMutes.contains(uuid))
@@ -111,14 +113,14 @@ public class PlayerMeta
 			}
 		} else if (type.equals(MuteType.TEMPORARY))
 		{
-			muteType = "temporarily";
+			muteType = "temporarily ";
 			if (_permanentMutes.contains(uuid))
 				_permanentMutes.remove(uuid);
 			if (!_temporaryMutes.keySet().contains(uuid))
 				_temporaryMutes.put(uuid, 0.0);
 		} else if (type.equals(MuteType.PERMANENT))
 		{
-			muteType = "permanently";
+			muteType = "permanently ";
 			if (!_permanentMutes.contains(uuid))
 				_permanentMutes.add(uuid);
 			if (_temporaryMutes.keySet().contains(uuid))
@@ -131,15 +133,16 @@ public class PlayerMeta
 				System.out.println("[protocol3] Failed to save mutes.");
 			}
 		}
-		p.spigot().sendMessage(new TextComponent("§cYou are now " + muteType + " muted"));
+		p.spigot().sendMessage(new TextComponent("§cYou are now " + muteType + "muted"));
 	}
 
 	public static void tickTempMutes(double msToAdd)
 	{
 		for (UUID u : _temporaryMutes.keySet())
 		{
-			_temporaryMutes.put(u, msToAdd / 1000);
-			if (msToAdd / 1000 >= 3600)
+			double oldValue = _temporaryMutes.get(u);
+			_temporaryMutes.put(u, oldValue + (msToAdd / 1000));
+			if (oldValue + (msToAdd / 1000) >= 3600)
 			{
 				_temporaryMutes.remove(u);
 			}
@@ -334,10 +337,22 @@ public class PlayerMeta
 		Files.write(Paths.get("plugins/protocol3/playtime.db"), String.join("\n", list).getBytes());
 	}
 
-	// --- MUTE TYPE ENUM -- //
+	// --- OTHER -- //
 
 	public enum MuteType
 	{
 		TEMPORARY, PERMANENT, NONE
+	}
+
+	public static boolean isOp(CommandSender sender)
+	{
+		if (sender instanceof Player)
+		{
+			return sender.isOp();
+		} else if (sender instanceof ConsoleCommandSender)
+		{
+			return true;
+		}
+		return false;
 	}
 }

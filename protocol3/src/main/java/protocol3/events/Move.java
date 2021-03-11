@@ -51,6 +51,7 @@ public class Move implements Listener
 			event.getPlayer().setInvulnerable(false);
 		}
 
+		// lagfag torture
 		if (PlayerMeta.isLagfag(event.getPlayer()))
 		{
 			int randomNumber = r.nextInt(9);

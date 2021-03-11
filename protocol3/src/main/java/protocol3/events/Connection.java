@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +24,7 @@ import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.PlayerMeta;
+import protocol3.backend.ServerMeta;
 import protocol3.commands.Kit;
 import protocol3.commands.ToggleJoinMessages;
 
@@ -31,6 +33,14 @@ import protocol3.commands.ToggleJoinMessages;
 
 public class Connection implements Listener
 {
+	@EventHandler
+	public void onConnect(PlayerLoginEvent e)
+	{
+		if (!ServerMeta.canReconnect(e.getPlayer()))
+		{
+			e.setKickMessage("§6You have lost connection to the server.");
+		}
+	}
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e)

@@ -5,11 +5,11 @@ import java.util.TimerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import protocol3.Main;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.PlayerMeta;
 import protocol3.backend.Scheduler;
 import protocol3.backend.ServerMeta;
+import protocol3.backend.Utilities;
 
 // Playtime processor
 public class ProcessPlaytime extends TimerTask
@@ -52,13 +52,12 @@ public class ProcessPlaytime extends TimerTask
 		ServerMeta.tickUptime(sinceLast);
 
 		// Check if we need a restart
-		if (LagProcessor.getTPS() < 9 && !Main.alreadyRestarting)
+		if (LagProcessor.getTPS() < 9)
 		{
 			lowTpsCounter += sinceLast;
 			if (lowTpsCounter >= 600000)
 			{
-				Main.alreadyRestarting = true;
-				Main.cleanRestart();
+				Utilities.restart(true);
 			}
 		}
 
