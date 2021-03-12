@@ -5,6 +5,7 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.rest.util.Color;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -27,20 +28,32 @@ public class Notifications {
 			});
 
 			client.getEventDispatcher().on(MessageCreateEvent.class).map(MessageCreateEvent::getMessage)
-					.filter(message -> message.getAuthor().map(user -> !user.isBot()).orElse(false))
-					.filter(message -> message.getContent().equalsIgnoreCase("!tps")).flatMap(Message::getChannel)
-					.flatMap(channel -> channel
-							.createMessage("TPS is currently " + new DecimalFormat("#.##").format(LagProcessor.getTPS())))
-					.subscribe();
+				.filter(message -> message.getAuthor().map(user -> !user.isBot()).orElse(false))
+				.filter(message -> message.getContent().equalsIgnoreCase("!tps")).flatMap(Message::getChannel)
+				.flatMap(channel -> channel
+					.createMessage(//"TPS is currently " + new DecimalFormat("#.##").format(LagProcessor.getTPS()))
+						messageSpec -> messageSpec.setEmbed(embedSpec ->
+							embedSpec.setTitle("AVAS Server | Server TPS")
+									 .setAuthor("AVAS Bot", "https://avas.cc/","https://avas.cc/favicon.png")
+									 .setColor(Color.RUBY)
+									 .addField("Regular title field",
+											 "TPS is currently " + new DecimalFormat("#.##").format(LagProcessor.getTPS()),
+											 false)
+					))).subscribe();
 
 			client.getEventDispatcher().on(MessageCreateEvent.class).map(MessageCreateEvent::getMessage)
-					.filter(message -> message.getAuthor().map(user -> !user.isBot()).orElse(false))
-					.filter(message -> message.getContent().equalsIgnoreCase("!facts"))
-					.filter(message -> Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
-					.flatMap(Message::getChannel)
-					.flatMap(channel -> channel
-							.createMessage(facts[r.nextInt(facts.length)]))
-					.subscribe();
+				.filter(message -> message.getAuthor().map(user -> !user.isBot()).orElse(false))
+				.filter(message -> message.getContent().equalsIgnoreCase("!facts"))
+				.filter(message -> Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
+				.flatMap(Message::getChannel)
+				.flatMap(channel -> channel
+					.createMessage(//facts[r.nextInt(facts.length)])
+						messageSpec -> messageSpec.setEmbed(embedSpec ->
+							embedSpec.setTitle("AVAS Server | Fun Fact Friday")
+									 .setAuthor("AVAS Bot", "https://avas.cc/","https://avas.cc/favicon.png")
+									 .setColor(Color.RUBY)
+									 .addField("Regular title field", facts[r.nextInt(facts.length-1)], false)
+				))).subscribe();
 		});
 	}
 

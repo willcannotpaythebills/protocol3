@@ -1,10 +1,6 @@
 package protocol3.events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -12,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,31 +30,24 @@ public class Move implements Listener
 	static Random r = new Random();
 
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event)
-	{
+	public void onPlayerMove(PlayerMoveEvent event) {
 		// This method is actually fired upon head rotate to; if the player's coords did
 		// not change,
 		// don't fire this event
 
 		if (event.getFrom().getBlockX() == event.getTo().getBlockX()
 				&& event.getFrom().getBlockY() == event.getTo().getBlockY()
-				&& event.getFrom().getBlockZ() == event.getTo().getBlockZ())
-		{
-			return;
-		}
+				&& event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
 
-		if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL))
-		{
+		if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
 			event.getPlayer().setInvulnerable(false);
 		}
 
 		// lagfag torture
-		if (PlayerMeta.isLagfag(event.getPlayer()))
-		{
+		if (PlayerMeta.isLagfag(event.getPlayer())) {
 			int randomNumber = r.nextInt(9);
 
-			if (randomNumber == 5 || randomNumber == 6)
-			{
+			if (randomNumber == 5 || randomNumber == 6) {
 				event.getPlayer().spigot().sendMessage(new TextComponent("§cThis is what you get for being a lagfag!"));
 				event.setCancelled(true);
 				return;
@@ -65,8 +55,7 @@ public class Move implements Listener
 
 			randomNumber = r.nextInt(250);
 
-			if (randomNumber == 21)
-			{
+			if (randomNumber == 21) {
 				event.getPlayer().kickPlayer("§6fuck you lol");
 				return;
 			}
@@ -79,24 +68,19 @@ public class Move implements Listener
 
 		// Check every chunk the player enters
 
-		if (!lastChunks.containsKey(event.getPlayer().getUniqueId()))
-		{
+		if (!lastChunks.containsKey(event.getPlayer().getUniqueId())) {
 			lastChunks.put(p.getUniqueId(), p.getLocation().getChunk());
 			needsCheck = true;
-		} else
-		{
-			if (lastChunks.get(p.getUniqueId()) != p.getLocation().getChunk())
-			{
+		} else {
+			if (lastChunks.get(p.getUniqueId()) != p.getLocation().getChunk()) {
 				lastChunks.put(p.getUniqueId(), p.getLocation().getChunk());
 				needsCheck = true;
 			}
 		}
 
-		if (Config.getValue("movement.block.chunkcheck").equals("0"))
-			needsCheck = false;
+		if (Config.getValue("movement.block.chunkcheck").equals("0")) needsCheck = false;
 
-		if (needsCheck)
-		{
+		if (needsCheck) {
 			boolean containsSpawner = false;
 			boolean noPortals = false;
 			Chunk c = p.getLocation().getChunk();
@@ -105,8 +89,7 @@ public class Move implements Listener
 
 			int X = c.getX() * 16;
 			int Z = c.getZ() * 16;
-			if ((c.getX() >= 25000 || c.getX() <= -25000) || (c.getZ() >= 25000 || c.getZ() <= -25000))
-			{
+			if ((c.getX() >= 25000 || c.getX() <= -25000) || (c.getZ() >= 25000 || c.getZ() <= -25000)) {
 				noPortals = true;
 			}
 
@@ -116,81 +99,65 @@ public class Move implements Listener
 			// Also consider silverfish spawners, they don't occur naturally anywhere except
 			// for strongholds
 
-			List<Block> frames = new ArrayList<Block>();
-			for (int x = 0; x < 16; x++)
-			{
-				for (int z = 0; z < 16; z++)
-				{
-					for (int y = 0; y < 256; y++)
-					{
+			List<Block> frames = new ArrayList();
+
+			// Todo : Read Docs on what the server considers tile entities. From there we can check even quicker at containers and other blocks.
+			//Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
+
+			for (int x = 0; x < 16; x++) {
+				for (int z = 0; z < 16; z++) {
+					for (int y = 0; y < 256; y++) {
 						Block block = p.getWorld().getBlockAt(X + x, y, Z + z);
 
-						if (Config.getValue("item.illegal.agro").equals("1"))
-						{
+						if (Config.getValue("item.illegal.agro").equals("1")) {
 							// Containers.
-							if (block instanceof Container)
-							{
+							if (block instanceof Container) {
 								Container cont = (Container) block;
-								for (ItemStack i : cont.getInventory())
-								{
+								for (ItemStack i : cont.getInventory()) {
 									ItemCheck.IllegalCheck(i);
 								}
 							}
 
 							// Container minecarts.
-							if (block instanceof InventoryHolder)
-							{
+							if (block instanceof InventoryHolder) {
 								InventoryHolder cont = (InventoryHolder) block;
-								for (ItemStack i : cont.getInventory())
-								{
+								for (ItemStack i : cont.getInventory()) {
 									ItemCheck.IllegalCheck(i);
 								}
 							}
 						}
 
 						// Too difficult to anti-illegal the end
-						if (block.getWorld().getName().equals("world_the_end"))
-							continue;
+						if (block.getWorld().getName().equals("world_the_end")) continue;
 
-						if (block.getType().getHardness() == -1)
-						{
+						if (block.getType().getHardness() == -1) {
 
 							if (block.getType().equals(Material.PISTON_HEAD)
-									|| block.getType().equals(Material.MOVING_PISTON))
-							{
-								continue;
-							}
+									|| block.getType().equals(Material.MOVING_PISTON)) continue;
 
-							if (block.getType().equals(Material.NETHER_PORTAL))
-								continue;
+							if (block.getType().equals(Material.NETHER_PORTAL)) continue;
 
 							if (noPortals && (block.getType().equals(Material.END_PORTAL_FRAME)
 									|| block.getType().equals(Material.END_GATEWAY)
-									|| block.getType().equals(Material.END_PORTAL)))
-							{
+									|| block.getType().equals(Material.END_PORTAL))) {
 								block.setType(Material.AIR);
 								continue;
 							}
 
-							if (block.getType().equals(Material.BEDROCK) && y <= 4)
-								continue;
+							if (block.getType().equals(Material.BEDROCK) && y <= 4) continue;
 
 							if (block.getType().equals(Material.BEDROCK)
-									&& block.getWorld().getName().equals("world_nether") && y >= 123)
-								continue;
+									&& block.getWorld().getName().equals("world_nether") && y >= 123) continue;
 
-							if (block.getType().equals(Material.SPAWNER))
-							{
+							if (block.getType().equals(Material.SPAWNER)) {
 								CreatureSpawner cs = ((CreatureSpawner) block.getState());
-								if (cs.getSpawnedType().equals(EntityType.SILVERFISH))
-								{
+								if (cs.getSpawnedType().equals(EntityType.SILVERFISH)) {
 									containsSpawner = true;
 								}
 							}
 
 							if (block.getType().equals(Material.END_PORTAL_FRAME)
-									|| block.getType().equals(Material.END_PORTAL))
-							{
+									|| block.getType().equals(Material.END_PORTAL)) {
 								frames.add(block);
 								continue;
 							}
@@ -198,15 +165,13 @@ public class Move implements Listener
 							block.setType(Material.AIR);
 						}
 
-						if (!(block.getType().equals(Material.BEDROCK)) && y == 1)
-						{
+						if (!(block.getType().equals(Material.BEDROCK)) && y == 1) {
 							block.setType(Material.BEDROCK);
 							continue;
 						}
 
 						if (!(block.getType().equals(Material.BEDROCK)) && y == 127
-								&& block.getWorld().getName().equals("world_nether"))
-						{
+								&& block.getWorld().getName().equals("world_nether")) {
 							block.setType(Material.BEDROCK);
 							continue;
 						}
@@ -217,22 +182,12 @@ public class Move implements Listener
 			// If frames and no spawner, make sure there's exactly 12, then allow it to
 			// exist
 
-			if (!frames.isEmpty() && !containsSpawner)
-			{
-				int frameCount = 0;
-				for (Block b : frames)
-				{
-					if (b.getType().equals(Material.END_PORTAL_FRAME))
-					{
-						frameCount++;
-					}
-				}
-				if (frameCount > 12)
-				{
-					for (Block b : frames)
-					{
-						b.setType(Material.AIR);
-					}
+			if (!frames.isEmpty() && !containsSpawner) {
+				frames.forEach(block -> {
+					if (!block.getType().equals(Material.END_PORTAL_FRAME)) frames.remove(block);
+				});
+				if (frames.size() > 12) {
+					frames.forEach(block -> block.setType(Material.AIR));
 				}
 			}
 		}
@@ -240,16 +195,11 @@ public class Move implements Listener
 		// -- ROOF AND FLOOR PATCH -- //
 
 		if ((p.getLocation().getY() > 127 && p.getLocation().getWorld().getName().equals("world_nether")
-				&& Config.getValue("movement.block.roof").equals("1")))
-		{
-			p.setHealth(0);
-		}
+				&& Config.getValue("movement.block.roof").equals("1"))) p.setHealth(0);
+
 
 		if ((p.getLocation().getY() <= 0 && !p.getLocation().getWorld().getName().equals("world_the_end")
-				&& Config.getValue("movement.block.floor").equals("1")))
-		{
-			p.setHealth(0);
-		}
+				&& Config.getValue("movement.block.floor").equals("1"))) p.setHealth(0);
 	}
 
 }
