@@ -14,8 +14,8 @@ Protocol3 is a Java plugin created by d2k11 (gcurtiss) to manage the shit chaos 
 | /lagfag [player]  | If player is online, displays lagfag message, IP address, and coords. also clears players ender chest, removes bed spawnpoint, and kills the player |
 | /mute [perm\|temp\|none] [player] | mutes a player permanently, temporarily, or removes mute |
 | /mute all         | Mutes all players |
-| /restart          | Performs full server restart |
-| /restart quick    | Performs quick restart |
+| /restart slow     | Performs full server restart |
+| /restart          | Performs quick restart |
 | /say [message]    | Mimics vanilla server 'say' command |
 | /setdonator [player] | Sets a player's donator status |
 
@@ -24,8 +24,8 @@ Protocol3 is a Java plugin created by d2k11 (gcurtiss) to manage the shit chaos 
 | /about | protocol3 description | 
 | /admin | Displays current admins |  
 | /discord | Displays discord link |
-| /help | Vanilla MC help with additional info about these commands |
-| /kill, /kys, /suicide | Literally die |  
+| /help | Help with additional info about these commands |
+| /kill, /kys, /suicide | End it all. |  
 | /kit | Troll, kicks player |
 | /msg [player] [message] | Messages a player, sends copy to admins if spy is enabled |
 | /redeem [code] | Redeems a code after a donation is made, sets donator status |
@@ -36,7 +36,7 @@ Protocol3 is a Java plugin created by d2k11 (gcurtiss) to manage the shit chaos 
 | /tjm | toggles join messages |
 | /tps | displays the current TPS |
 | /vote | displays URL to vote for the server |
-| /vm [player] | submits a vote to mute a player for a period of time (30 mins) |
+| /vm [player] | submits a vote to mute a player for a period of time (1 hour) |
 
 ### Installation
 1. Install maven
