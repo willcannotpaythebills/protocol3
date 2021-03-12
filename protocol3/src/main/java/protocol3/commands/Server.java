@@ -13,6 +13,7 @@ import protocol3.backend.PlayerMeta;
 import protocol3.backend.ServerMeta;
 import protocol3.backend.Utilities;
 import protocol3.events.LagPrevention;
+import protocol3.events.SpeedLimit;
 import protocol3.tasks.ProcessPlaytime;
 
 public class Server implements CommandExecutor
@@ -27,7 +28,8 @@ public class Server implements CommandExecutor
 		sender.spigot().sendMessage(
 				new TextComponent("§cCurrent TPS:§7 " + new DecimalFormat("#.##").format(LagProcessor.getTPS())));
 		sender.spigot().sendMessage(new TextComponent(
-				"§cCurrent Speed Limit:§7 " + (LagProcessor.getTPS() <= 15 ? "48" : "64") + " blocks per second"));
+				"§cCurrent Speed Limit:§7 " + (LagProcessor.getTPS() <= 15 ? "36" : "48") + " blocks per second"));
+		sender.spigot().sendMessage(new TextComponent("§cSpeed Limit Kicks:§7 " + SpeedLimit.totalKicks));
 		sender.spigot().sendMessage(
 				new TextComponent("§cAnti-Cheat Enabled: §7" + (LagProcessor.getTPS() <= 10 ? "True" : "False")));
 		sender.spigot().sendMessage(new TextComponent("§c========== PLAYER =========="));

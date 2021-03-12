@@ -42,7 +42,7 @@ public class ServerMeta
 	{
 		if (Delays.containsKey(p.getUniqueId()))
 		{
-			Delays.put(p.getUniqueId(), InitialDelays.get(p.getUniqueId()));
+			Delays.put(p.getUniqueId(), 0D);
 			return false;
 		}
 		return true;

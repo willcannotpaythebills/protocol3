@@ -10,8 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
@@ -23,7 +23,10 @@ import protocol3.backend.ServerMeta;
 public class SpeedLimit implements Listener
 {
 	private static HashMap<UUID, Location> locs = new HashMap<UUID, Location>();
+	private static HashMap<UUID, Integer> penalties = new HashMap<UUID, Integer>();
 	private static List<UUID> tped = new ArrayList<UUID>();
+
+	public static int totalKicks = 0;
 
 	// Speedlimit monitor
 	public static void scheduleSlTask()
@@ -60,6 +63,13 @@ public class SpeedLimit implements Listener
 					{
 						Location prevloc = locs.get(p.getUniqueId()).clone();
 						Location newloc = p.getLocation().clone();
+
+						if (prevloc.getWorld() != newloc.getWorld())
+						{
+							locs.remove(p.getUniqueId());
+							continue;
+						}
+
 						Vector v = newloc.subtract(prevloc).toVector();
 						if (v.clone().normalize().getY() < -0.95)
 						{
@@ -70,6 +80,7 @@ public class SpeedLimit implements Listener
 						if (distance > adjallowed)
 						{
 							ServerMeta.kickWithDelay(p, Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+							totalKicks++;
 							continue;
 						}
 					}
@@ -87,9 +98,9 @@ public class SpeedLimit implements Listener
 	}
 
 	@EventHandler
-	public void onDeath(PlayerDeathEvent e)
+	public void onDeath(PlayerRespawnEvent e)
 	{
-		tped.add(e.getEntity().getUniqueId());
+		tped.add(e.getPlayer().getUniqueId());
 	}
 
 	@EventHandler

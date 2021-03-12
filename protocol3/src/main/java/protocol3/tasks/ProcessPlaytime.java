@@ -15,6 +15,7 @@ import protocol3.backend.Utilities;
 public class ProcessPlaytime extends TimerTask
 {
 	private static long lastTime = 0;
+	private static long lastHour = 0;
 
 	public static long lowTpsCounter = 0;
 	private static long timeTillReset = 3600000;
@@ -27,6 +28,7 @@ public class ProcessPlaytime extends TimerTask
 		if (lastTime == 0)
 		{
 			lastTime = System.currentTimeMillis();
+			lastHour = System.currentTimeMillis();
 			return;
 		}
 
@@ -53,6 +55,13 @@ public class ProcessPlaytime extends TimerTask
 		// Tick reconnect delays
 		ServerMeta.tickRcDelays(sinceLast);
 
+		if (System.currentTimeMillis() - lastHour >= 3600000)
+		{
+			lastHour = System.currentTimeMillis();
+
+			// do hourly tasks
+		}
+
 		// Check if we need a restart
 		if (LagProcessor.getTPS() < 9)
 		{
@@ -75,6 +84,6 @@ public class ProcessPlaytime extends TimerTask
 		lastTime = System.currentTimeMillis();
 
 		// Log this
-		Scheduler.setLastTaskId("analyticsRegistry");
+		Scheduler.setLastTaskId("oneSecondTasks");
 	}
 }
