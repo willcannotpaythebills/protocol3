@@ -54,16 +54,18 @@ public class Notifications {
 				.flatMap(Message::getChannel)
 				.flatMap(channel -> channel
 					.createMessage(//facts[r.nextInt(facts.length)])
-						messageSpec -> messageSpec.setEmbed(embedSpec ->
+						messageSpec -> messageSpec.setEmbed(embedSpec -> {
+							int fact_number = r.nextInt(facts.length-1);
 							embedSpec.setTitle("AVAS Server | Fun Fact Friday")
-									 .setAuthor("AVAS Bot", "https://avas.cc/","https://avas.cc/favicon.png")
+									 .setAuthor("AVAS Bot", "https://avas.cc/", "https://avas.cc/favicon.png")
 									 .setColor(Color.RUBY)
-									 .addField("Regular title field", facts[r.nextInt(facts.length-1)], false)
-									 .addField("\u200B",  "\u200B", false)
+									 .addField("Fun Fact " + fact_number + "/" + facts.length, facts[fact_number], false)
+									 .addField("\u200B", "\u200B", false)
 									 .addField("Current Player Count",
-											    new DecimalFormat("##").format(Bukkit.getOnlinePlayers().size()) + "/1",
-											    true)
-									 .addField("Server Up Time",  Utilities.calculateTime(ServerMeta.getUptime()), true)
+											new DecimalFormat("##").format(Bukkit.getOnlinePlayers().size()) + "/1",
+											true)
+									 .addField("Server Up Time", Utilities.calculateTime(ServerMeta.getUptime()), true);
+						}
 				))).subscribe();
 		});
 	}

@@ -10,6 +10,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+protocol3/target/*
 
 # External tool builders
 .externalToolBuilders/
@@ -70,3 +71,5 @@ dependency-reduced-pom.xml
 protocol3/.settings/*
 protocol3/.settings
 protocol3/target
+
+*.class

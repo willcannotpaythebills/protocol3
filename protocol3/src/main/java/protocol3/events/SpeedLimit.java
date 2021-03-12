@@ -20,8 +20,7 @@ import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.ServerMeta;
 
-public class SpeedLimit implements Listener
-{
+public class SpeedLimit implements Listener {
 	private static HashMap<UUID, Location> locs = new HashMap<UUID, Location>();
 	private static HashMap<UUID, Integer> penalties = new HashMap<UUID, Integer>();
 	private static List<UUID> tped = new ArrayList<UUID>();
@@ -29,83 +28,63 @@ public class SpeedLimit implements Listener
 	public static int totalKicks = 0;
 
 	// Speedlimit monitor
-	public static void scheduleSlTask()
-	{
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.instance, new Runnable()
-		{
+	public static void scheduleSlTask() {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.instance, new Runnable() {
 
 			@Override
-			public void run()
-			{
+			public void run() {
 
 				double tps = LagProcessor.getTPS();
 
-				double allowed;
-				if (tps >= 15.0)
-				{
-					allowed = Integer.parseInt(Config.getValue("speedlimit.tier_one"));
-				} else
-				{
-					allowed = Integer.parseInt(Config.getValue("speedlimit.tier_two"));
-				}
+				double allowed = (tps >= 15.0)?  Integer.parseInt(Config.getValue("speedlimit.tier_one")) : Integer.parseInt(Config.getValue("speedlimit.tier_two"));
 
 				// This is the most accurate speed calculation from my testing.
 				double slower = 1.0 - tps / 20.0;
 				double adjallowed = Math.round(allowed + slower * 4.0 * allowed);
 
-				for (Player p : Bukkit.getOnlinePlayers())
-				{
-					// Exempt ops from this check
-					if (p.isOp())
-						continue;
+				Bukkit.getOnlinePlayers().stream()
+						.filter(player -> !player.isOp())
+						.filter(player -> locs.get(player.getUniqueId()) != null)
+						.filter(player -> !tped.contains(player.getUniqueId()))
+						.filter(player -> !locs.get(player.getUniqueId()).equals(player.getLocation())).forEach(player -> {
+							Location previous_location = locs.get(player.getUniqueId()).clone();
+							Location new_location = player.getLocation().clone();
 
-					if (locs.get(p.getUniqueId()) != null && !tped.contains(p.getUniqueId()))
-					{
-						Location prevloc = locs.get(p.getUniqueId()).clone();
-						Location newloc = p.getLocation().clone();
+							if (previous_location.getWorld() != new_location.getWorld()) {
+								locs.remove(player.getUniqueId());
+								return;
+							}
 
-						if (prevloc.getWorld() != newloc.getWorld())
-						{
-							locs.remove(p.getUniqueId());
-							continue;
-						}
+							Vector v = new_location.subtract(previous_location).toVector();
+							if (v.clone().normalize().getY() < -0.95) {
+								locs.remove(player.getUniqueId());
+								return;
+							}
 
-						Vector v = newloc.subtract(prevloc).toVector();
-						if (v.clone().normalize().getY() < -0.95)
-						{
-							locs.remove(p.getUniqueId());
-							continue;
-						}
-						double distance = v.length();
-						if (distance > adjallowed)
-						{
-							ServerMeta.kickWithDelay(p, Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-							totalKicks++;
-							continue;
-						}
-					}
-					locs.put(p.getUniqueId(), p.getLocation().clone());
-					tped.remove(p.getUniqueId());
-				}
+							if (v.length() > adjallowed) {
+								ServerMeta.kickWithDelay(player, Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+								totalKicks++;
+								return;
+							}
+							locs.put(player.getUniqueId(), player.getLocation().clone());
+							tped.remove(player.getUniqueId());
+						});
 			}
 		}, 0L, 20L);
 	}
 
 	@EventHandler
-	public void onTeleport(PlayerTeleportEvent e)
-	{
+	public void onTeleport(PlayerTeleportEvent e) {
 		tped.add(e.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
-	public void onDeath(PlayerRespawnEvent e)
-	{
+	public void onDeath(PlayerRespawnEvent e) {
 		tped.add(e.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
-	public void onLeave(PlayerQuitEvent e)
-	{
+	public void onLeave(PlayerQuitEvent e) {
 		tped.remove(e.getPlayer().getUniqueId());
 		locs.remove(e.getPlayer().getUniqueId());
 	}

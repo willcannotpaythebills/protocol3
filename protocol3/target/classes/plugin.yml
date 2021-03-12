@@ -2,8 +2,7 @@ main: protocol3.Main
 name: protocol3
 version: 1.0.0
 api-version: 1.16
-depend: [ArmorEquipEvent]
-loadbefore: [ArmorEquipEvent]
+loadbefore: [ ProtocolLib ]
 author: d2k11
 commands:
   kit:

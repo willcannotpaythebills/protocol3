@@ -5,13 +5,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -111,110 +112,83 @@ public class PlayerMeta
 					System.out.println("[protocol3] Failed to save mutes.");
 				}
 			}
-		} else if (type.equals(MuteType.TEMPORARY))
-		{
+		} else if (type.equals(MuteType.TEMPORARY)) {
 			muteType = "temporarily ";
 			if (_permanentMutes.contains(uuid))
 				_permanentMutes.remove(uuid);
 			if (!_temporaryMutes.keySet().contains(uuid))
 				_temporaryMutes.put(uuid, 0.0);
-		} else if (type.equals(MuteType.PERMANENT))
-		{
+		} else if (type.equals(MuteType.PERMANENT)) {
 			muteType = "permanently ";
-			if (!_permanentMutes.contains(uuid))
-				_permanentMutes.add(uuid);
-			if (_temporaryMutes.keySet().contains(uuid))
-				_temporaryMutes.remove(uuid);
-			try
-			{
+			if (!_permanentMutes.contains(uuid)) _permanentMutes.add(uuid);
+			if (_temporaryMutes.keySet().contains(uuid)) _temporaryMutes.remove(uuid);
+			try {
 				saveMuted();
-			} catch (IOException e)
-			{
+			} catch (IOException e) {
 				System.out.println("[protocol3] Failed to save mutes.");
 			}
 		}
 		p.spigot().sendMessage(new TextComponent("§cYou are now " + muteType + "muted"));
 	}
 
-	public static void tickTempMutes(double msToAdd)
-	{
-		for (UUID u : _temporaryMutes.keySet())
-		{
+	public static void tickTempMutes(double msToAdd) {
+		for (UUID u : _temporaryMutes.keySet()) {
 			double oldValue = _temporaryMutes.get(u);
 			_temporaryMutes.put(u, oldValue + (msToAdd / 1000));
-			if (oldValue + (msToAdd / 1000) >= 3600)
-			{
-				_temporaryMutes.remove(u);
-			}
+			if (oldValue + (msToAdd / 1000) >= 3600) _temporaryMutes.remove(u);
 		}
 	}
 
 	// -- LAGFAGS -- //
-	public static void setLagfag(Player p, boolean status)
-	{
-		if (status)
-		{
-			if (!_lagfagList.containsKey(p.getUniqueId()))
-			{
+	public static void setLagfag(Player p, boolean status) {
+		if (status) {
+			if (!_lagfagList.containsKey(p.getUniqueId())) {
 				_lagfagList.put(p.getUniqueId(), p.getAddress().toString().split(":")[0]);
 			}
-		} else
-		{
-			if (_lagfagList.containsKey(p.getUniqueId()))
-			{
+		} else {
+			if (_lagfagList.containsKey(p.getUniqueId())) {
 				_lagfagList.remove(p.getUniqueId());
 			}
 		}
-		try
-		{
+		try {
 			saveLagfags();
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
 			System.out.println("[protocol3] Failed to save lagfags.");
 		}
 	}
 
-	public static boolean isLagfag(Player p)
-	{
+	public static boolean isLagfag(Player p) {
 		return _lagfagList.containsKey(p.getUniqueId())
 				|| _lagfagList.containsValue(p.getAddress().toString().split(":")[0]);
 	}
 
-	public static void saveLagfags() throws IOException
-	{
+	public static void saveLagfags() throws IOException {
 		List<String> list = new ArrayList<String>();
-		for (UUID u : _lagfagList.keySet())
-		{
+		for (UUID u : _lagfagList.keySet()) {
 			list.add(u.toString() + ":" + _lagfagList.get(u));
 		}
 		Files.write(Paths.get("plugins/protocol3/lagfag.db"), String.join("\n", list).getBytes());
 	}
 
-	public static void loadLagfags() throws IOException
-	{
+	public static void loadLagfags() throws IOException {
 		List<String> lines = Files.readAllLines(Paths.get("plugins/protocol3/lagfag.db"));
-		for (String val : lines)
-		{
+		for (String val : lines) {
 			_lagfagList.put(UUID.fromString(val.split(":")[0]), val.split(":")[1]);
 		}
 	}
 
 	// --- SAVE/LOAD DONATORS --- //
 
-	public static void loadDonators() throws IOException
-	{
+	public static void loadDonators() throws IOException {
 		List<String> lines = Files.readAllLines(Paths.get("plugins/protocol3/donator.db"));
-		for (String val : lines)
-		{
+		for (String val : lines) {
 			_donatorList.add(UUID.fromString(val));
 		}
 	}
 
-	public static void saveDonators() throws IOException
-	{
+	public static void saveDonators() throws IOException {
 		List<String> list = new ArrayList<String>();
-		for (UUID u : _donatorList)
-		{
+		for (UUID u : _donatorList) {
 			list.add(u.toString());
 		}
 		Files.write(Paths.get("plugins/protocol3/donator.db"), String.join("\n", list).getBytes());
@@ -223,136 +197,81 @@ public class PlayerMeta
 
 	// --- SAVE/LOAD MUTED --- //
 
-	public static void loadMuted() throws IOException
-	{
+	public static void loadMuted() throws IOException {
 		List<String> lines = Files.readAllLines(Paths.get("plugins/protocol3/muted.db"));
-		for (String val : lines)
-		{
+		for (String val : lines) {
 			_permanentMutes.add(UUID.fromString(val));
 		}
 	}
 
-	public static void saveMuted() throws IOException
-	{
+	public static void saveMuted() throws IOException {
 		List<String> list = new ArrayList<String>();
-		for (UUID u : _permanentMutes)
-		{
+		for (UUID u : _permanentMutes) {
 			list.add(u.toString());
 		}
 		Files.write(Paths.get("plugins/protocol3/muted.db"), String.join("\n", list).getBytes());
 	}
 
 	// --- PLAYTIME --- //
-	public static void tickPlaytime(Player p, double msToAdd)
-	{
-		if (Playtimes.containsKey(p.getUniqueId()))
-		{
+	public static void tickPlaytime(Player p, double msToAdd) {
+		if (Playtimes.containsKey(p.getUniqueId())) {
 			double value = Playtimes.get(p.getUniqueId());
 			value += msToAdd / 1000;
 			Playtimes.put(p.getUniqueId(), value);
-		} else
-		{
+		} else {
 			Playtimes.put(p.getUniqueId(), msToAdd / 1000);
 		}
 	}
 
-	public static double getPlaytime(OfflinePlayer p)
-	{
-		if (Playtimes.containsKey(p.getUniqueId()))
-		{
-			return Playtimes.get(p.getUniqueId());
-		} else
-		{
-			return 0;
-		}
+	public static double getPlaytime(OfflinePlayer p) {
+		return (Playtimes.containsKey(p.getUniqueId())) ? Playtimes.get(p.getUniqueId()) : 0;
 	}
 
-	public static int getRank(OfflinePlayer p)
-	{
-		if (!Playtimes.keySet().contains(p.getUniqueId()))
-		{
-			return 0;
-		}
+	public static int getRank(OfflinePlayer p) {
+		if (!Playtimes.keySet().contains(p.getUniqueId())) return 0;
 		Playtimes = sortByValue(Playtimes);
 		int x = 0;
-		for (UUID u : Playtimes.keySet())
-		{
+		for (UUID u : Playtimes.keySet()) {
 			x++;
-			if (p.getUniqueId().equals(u))
-			{
-				break;
-			}
+			if (p.getUniqueId().equals(u)) break;
 		}
 		return x;
 	}
 
-	public static HashMap<UUID, Double> getTopFivePlayers()
-	{
-		Playtimes = sortByValue(Playtimes);
-		HashMap<UUID, Double> toRet = new HashMap<UUID, Double>();
-		int x = 0;
-		for (UUID u : Playtimes.keySet())
-		{
-			if (x <= 4)
-			{
-				toRet.put(u, Playtimes.get(u));
-			}
-			x++;
-		}
-		toRet = sortByValue(toRet);
-		return toRet;
+	public static HashMap<UUID, Double> getTopFivePlayers() {
+		return Playtimes.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).limit(5).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
+				LinkedHashMap::new));
 	}
 
-	private static HashMap<UUID, Double> sortByValue(HashMap<UUID, Double> hm)
-	{
+	private static HashMap<UUID, Double> sortByValue(HashMap<UUID, Double> hm) {
 		// Create a list from elements of HashMap
-		List<Map.Entry<UUID, Double>> list = new LinkedList<Map.Entry<UUID, Double>>(hm.entrySet());
+		List<Map.Entry<UUID, Double>> list = new LinkedList(hm.entrySet());
 
 		// Sort the list
-		Collections.sort(list, new Comparator<Map.Entry<UUID, Double>>()
-		{
-			@Override
-			public int compare(Map.Entry<UUID, Double> o1, Map.Entry<UUID, Double> o2)
-			{
-				return -(o1.getValue()).compareTo(o2.getValue());
-			}
-		});
+		Collections.sort(list, (o1, o2) -> -(o1.getValue()).compareTo(o2.getValue()));
 
 		// put data from sorted list to hashmap
-		HashMap<UUID, Double> temp = new LinkedHashMap<UUID, Double>();
-		for (Map.Entry<UUID, Double> aa : list)
-		{
-			temp.put(aa.getKey(), aa.getValue());
-		}
+		HashMap<UUID, Double> temp = new LinkedHashMap();
+		list.forEach(aa -> temp.put(aa.getKey(), aa.getValue()));
+
 		return temp;
 	}
 
-	public static void writePlaytime() throws IOException
-	{
-		List<String> list = new ArrayList<String>();
-		for (UUID u : Playtimes.keySet())
-		{
-			list.add(u.toString() + ":" + Math.rint(Playtimes.get(u)));
-		}
+	public static void writePlaytime() throws IOException {
+		List<String> list = new ArrayList();
+
+		Playtimes.keySet().forEach(user -> list.add(user.toString() + ":" + Math.rint(Playtimes.get(user))));
+
 		Files.write(Paths.get("plugins/protocol3/playtime.db"), String.join("\n", list).getBytes());
 	}
 
 	// --- OTHER -- //
 
-	public enum MuteType
-	{
+	public enum MuteType {
 		TEMPORARY, PERMANENT, NONE
 	}
 
-	public static boolean isOp(CommandSender sender)
-	{
-		if (sender instanceof Player)
-		{
-			return sender.isOp();
-		} else if (sender instanceof ConsoleCommandSender)
-		{
-			return true;
-		}
-		return false;
+	public static boolean isOp(CommandSender sender) {
+		return (sender instanceof Player) ? sender.isOp() : (sender instanceof ConsoleCommandSender) ? true: false;
 	}
 }
