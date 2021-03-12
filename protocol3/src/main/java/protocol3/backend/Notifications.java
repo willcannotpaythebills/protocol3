@@ -6,6 +6,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.rest.util.Color;
+import org.bukkit.Bukkit;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -36,9 +37,14 @@ public class Notifications {
 							embedSpec.setTitle("AVAS Server | Server TPS")
 									 .setAuthor("AVAS Bot", "https://avas.cc/","https://avas.cc/favicon.png")
 									 .setColor(Color.RUBY)
-									 .addField("Regular title field",
+									 .addField("Server Info",
 											 "TPS is currently " + new DecimalFormat("#.##").format(LagProcessor.getTPS()),
 											 false)
+									 .addField("\u200B",  "\u200B", false)
+									 .addField("Current Player Count",
+											 		 new DecimalFormat("##").format(Bukkit.getOnlinePlayers().size()) + "/1",
+											   true)
+									 .addField("Server Up Time",  Utilities.calculateTime(ServerMeta.getUptime()), true)
 					))).subscribe();
 
 			client.getEventDispatcher().on(MessageCreateEvent.class).map(MessageCreateEvent::getMessage)
@@ -53,6 +59,11 @@ public class Notifications {
 									 .setAuthor("AVAS Bot", "https://avas.cc/","https://avas.cc/favicon.png")
 									 .setColor(Color.RUBY)
 									 .addField("Regular title field", facts[r.nextInt(facts.length-1)], false)
+									 .addField("\u200B",  "\u200B", false)
+									 .addField("Current Player Count",
+											    new DecimalFormat("##").format(Bukkit.getOnlinePlayers().size()) + "/1",
+											    true)
+									 .addField("Server Up Time",  Utilities.calculateTime(ServerMeta.getUptime()), true)
 				))).subscribe();
 		});
 	}
