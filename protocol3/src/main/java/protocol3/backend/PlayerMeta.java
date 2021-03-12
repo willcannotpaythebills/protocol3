@@ -228,9 +228,14 @@ public class PlayerMeta
 	}
 
 	public static int getRank(OfflinePlayer p) {
+
 		if (!Playtimes.keySet().contains(p.getUniqueId())) return 0;
-		Playtimes = sortByValue(Playtimes);
+
+
 		int x = 0;
+
+		//Playtimes.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).collect(Collectors.toList()).indexOf()
+
 		for (UUID u : Playtimes.keySet()) {
 			x++;
 			if (p.getUniqueId().equals(u)) break;

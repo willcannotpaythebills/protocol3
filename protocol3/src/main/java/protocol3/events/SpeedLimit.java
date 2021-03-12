@@ -29,48 +29,44 @@ public class SpeedLimit implements Listener {
 
 	// Speedlimit monitor
 	public static void scheduleSlTask() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.instance, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.instance, () -> {
 
-			@Override
-			public void run() {
+			double tps = LagProcessor.getTPS();
 
-				double tps = LagProcessor.getTPS();
+			double allowed = (tps >= 15.0)?  Integer.parseInt(Config.getValue("speedlimit.tier_one")) : Integer.parseInt(Config.getValue("speedlimit.tier_two"));
 
-				double allowed = (tps >= 15.0)?  Integer.parseInt(Config.getValue("speedlimit.tier_one")) : Integer.parseInt(Config.getValue("speedlimit.tier_two"));
+			// This is the most accurate speed calculation from my testing.
+			double slower = 1.0 - tps / 20.0;
+			double adjallowed = Math.round(allowed + slower * 4.0 * allowed);
 
-				// This is the most accurate speed calculation from my testing.
-				double slower = 1.0 - tps / 20.0;
-				double adjallowed = Math.round(allowed + slower * 4.0 * allowed);
+			Bukkit.getOnlinePlayers().stream()
+					.filter(player -> !player.isOp())
+					.filter(player -> locs.get(player.getUniqueId()) != null)
+					.filter(player -> !tped.contains(player.getUniqueId()))
+					.filter(player -> !locs.get(player.getUniqueId()).equals(player.getLocation())).forEach(player -> {
+						Location previous_location = locs.get(player.getUniqueId()).clone();
+						Location new_location = player.getLocation().clone();
 
-				Bukkit.getOnlinePlayers().stream()
-						.filter(player -> !player.isOp())
-						.filter(player -> locs.get(player.getUniqueId()) != null)
-						.filter(player -> !tped.contains(player.getUniqueId()))
-						.filter(player -> !locs.get(player.getUniqueId()).equals(player.getLocation())).forEach(player -> {
-							Location previous_location = locs.get(player.getUniqueId()).clone();
-							Location new_location = player.getLocation().clone();
+						if (previous_location.getWorld() != new_location.getWorld()) {
+							locs.remove(player.getUniqueId());
+							return;
+						}
 
-							if (previous_location.getWorld() != new_location.getWorld()) {
-								locs.remove(player.getUniqueId());
-								return;
-							}
+						Vector v = new_location.subtract(previous_location).toVector();
+						if (v.clone().normalize().getY() < -0.95) {
+							locs.remove(player.getUniqueId());
+							return;
+						}
 
-							Vector v = new_location.subtract(previous_location).toVector();
-							if (v.clone().normalize().getY() < -0.95) {
-								locs.remove(player.getUniqueId());
-								return;
-							}
-
-							if (v.length() > adjallowed) {
-								ServerMeta.kickWithDelay(player, Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-								totalKicks++;
-								return;
-							}
-							locs.put(player.getUniqueId(), player.getLocation().clone());
-							tped.remove(player.getUniqueId());
-						});
-			}
-		}, 0L, 20L);
+						if (v.length() > adjallowed) {
+							ServerMeta.kickWithDelay(player, Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+							totalKicks++;
+							return;
+						}
+						locs.put(player.getUniqueId(), player.getLocation().clone());
+						tped.remove(player.getUniqueId());
+					});
+		}, 20L, 20L);
 	}
 
 	@EventHandler
