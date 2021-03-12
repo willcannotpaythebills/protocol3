@@ -45,6 +45,7 @@ import protocol3.events.Connection;
 import protocol3.events.ItemCheckTriggers;
 import protocol3.events.LagPrevention;
 import protocol3.events.Move;
+import protocol3.events.SpeedLimit;
 import protocol3.tasks.AutoAnnouncer;
 import protocol3.tasks.OnTick;
 import protocol3.tasks.ProcessPlaytime;
@@ -53,7 +54,8 @@ public class Main extends JavaPlugin implements Listener
 {
 	public static Plugin instance;
 	public static OfflinePlayer Top = null;
-	public static boolean alreadyRestarting = false;
+
+	public Notifications NotificationHandler;
 
 	@Override
 	public void onEnable()
@@ -96,6 +98,7 @@ public class Main extends JavaPlugin implements Listener
 		getServer().getPluginManager().registerEvents(new Move(), this);
 		getServer().getPluginManager().registerEvents(new ItemCheckTriggers(), this);
 		getServer().getPluginManager().registerEvents(new LagPrevention(), this);
+		getServer().getPluginManager().registerEvents(new SpeedLimit(), this);
 
 		// Disable Wither spawn sound
 		ProtocolLibrary.getProtocolManager()
@@ -111,6 +114,9 @@ public class Main extends JavaPlugin implements Listener
 						}
 					}
 				});
+
+		// Enable speed limit
+		SpeedLimit.scheduleSlTask();
 
 		// Load commands
 		this.getCommand("kit").setExecutor(new Kit());
@@ -136,7 +142,8 @@ public class Main extends JavaPlugin implements Listener
 		this.getCommand("server").setExecutor(new Server());
 		this.getCommand("help").setExecutor(new Help());
 
-		new Notifications();
+		// Enable discord notifications for this instance
+		NotificationHandler = new Notifications();
 	}
 
 	@Override

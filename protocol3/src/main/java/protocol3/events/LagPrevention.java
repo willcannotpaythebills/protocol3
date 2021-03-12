@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.WitherSkull;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
 
@@ -17,6 +18,7 @@ public class LagPrevention implements Listener
 {
 	public static int currentWithers = 0;
 
+	@EventHandler
 	public void onEntitySpawn(EntitySpawnEvent e)
 	{
 		int witherLimit = Integer.parseInt(Config.getValue("wither.limit"));

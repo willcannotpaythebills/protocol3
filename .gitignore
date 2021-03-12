@@ -65,3 +65,8 @@ dependency-reduced-pom.xml
 #intellij stuff
 .idea
 *.iml
+
+#p3 specific
+protocol3/.settings/*
+protocol3/.settings
+protocol3/target

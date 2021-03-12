@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 12
+config.version = 13
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -95,13 +95,22 @@ wither.limit = 1000
 // Global wither skull age limit. default = 4800 (4 minutes in ticks if server is running at 20TPS)
 wither.skull.max_age = 4800
 
+// Global speed limit when TPS is 20. default = 48
+speedlimit.tier_one = 48
+// Global speed limit when TPS is 15 or less. default = 36
+speedlimit.tier_two = 36
+// Reconnect delay when kicked by exceeding the speed limit, in ms. default = 10000 (10s)
+speedlimit.rc_delay = 10000
+
 // ------------ //
 // --- MISC --- //
 // ------------ //
 
-// Do analytics (local only) 0 = disabled 1 = enabled [default]
-analytics.enabled = 1
-analytics.bot_id =
+// Enable Discord analytics notifications. 0/1. Default: 0
+analytics.enabled = 0
+
+// Discord Bot ID for analytics notifications. Default: empty. 
+analytics.bot_id = 
 
 // Force survival mode on relog except OPs 0 = disabled 1 = enabled [default]
 misc.survival = 1

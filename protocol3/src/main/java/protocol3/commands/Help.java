@@ -32,7 +32,7 @@ public class Help implements CommandExecutor
 			page = 1;
 		}
 
-		sender.spigot().sendMessage(new TextComponent("§6--- HELP: " + page + " ---"));
+		sender.spigot().sendMessage(new TextComponent("§6--- Help Page " + page + "/" + maxPage + " ---"));
 		if (page == 1)
 		{
 			sender.spigot().sendMessage(new TextComponent("§6/help: §7This list of commands"));
@@ -54,12 +54,6 @@ public class Help implements CommandExecutor
 			sender.spigot().sendMessage(new TextComponent("§6/tdm: §7Toggle death messages."));
 			sender.spigot().sendMessage(new TextComponent("§6/tjm: §7Toggle join messages."));
 		}
-		if (page + 1 >= maxPage)
-		{
-			sender.spigot().sendMessage(new TextComponent("§6--- /HELP " + (page + 1) + " FOR NEXT PAGE ---"));
-		} else
-		{
-			sender.spigot().sendMessage(new TextComponent("§6--- END OF HELP ---"));
-		}
+		sender.spigot().sendMessage(new TextComponent("§6--- Help Page " + page + "/" + maxPage + " ---"));
 	}
 }

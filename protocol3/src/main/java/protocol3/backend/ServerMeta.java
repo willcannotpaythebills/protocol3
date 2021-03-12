@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 public class ServerMeta
 {
 	// -- SERVER STATISTICS -- //
+
 	private static double _uptimeInSeconds = 0;
 
 	public static void tickUptime(double msToAdd)
@@ -20,13 +21,20 @@ public class ServerMeta
 		return _uptimeInSeconds;
 	}
 
+	public static boolean doAnalytics()
+	{
+		return Config.getValue("analytics.enabled") == "1";
+	}
+
 	// -- RC BLOCKING -- //
 
 	private static HashMap<UUID, Double> Delays = new HashMap<UUID, Double>();
+	private static HashMap<UUID, Double> InitialDelays = new HashMap<UUID, Double>();
 
-	public static void kickWithDelay(Player p)
+	public static void kickWithDelay(Player p, double delay)
 	{
 		Delays.put(p.getUniqueId(), 0D);
+		InitialDelays.put(p.getUniqueId(), delay);
 		p.kickPlayer("§6You have lost connection to the server.");
 	}
 
@@ -34,7 +42,7 @@ public class ServerMeta
 	{
 		if (Delays.containsKey(p.getUniqueId()))
 		{
-			Delays.put(p.getUniqueId(), 0D);
+			Delays.put(p.getUniqueId(), InitialDelays.get(p.getUniqueId()));
 			return false;
 		}
 		return true;
@@ -46,9 +54,10 @@ public class ServerMeta
 		{
 			double oldValue = Delays.get(u);
 			Delays.put(u, oldValue + elapsed);
-			if (oldValue + elapsed >= 10000)
+			if (oldValue + elapsed >= InitialDelays.get(u))
 			{
 				Delays.remove(u);
+				InitialDelays.remove(u);
 			}
 		}
 	}

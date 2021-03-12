@@ -8,7 +8,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import net.md_5.bungee.api.chat.TextComponent;
-import protocol3.Main;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.PlayerMeta;
 import protocol3.backend.ServerMeta;
@@ -41,8 +40,8 @@ public class Server implements CommandExecutor
 		sender.spigot().sendMessage(new TextComponent("§cPermanent Mutes:§7 " + PlayerMeta._permanentMutes.size()));
 		sender.spigot().sendMessage(new TextComponent("§cOP Accounts:§7 " + Bukkit.getOperators().size()));
 		sender.spigot().sendMessage(new TextComponent("§c=========== DEBUG ==========="));
-		sender.spigot().sendMessage(
-				new TextComponent("§cServer Restarting: §7" + (Main.alreadyRestarting ? "True" : "False")));
+		sender.spigot()
+				.sendMessage(new TextComponent("§cServer Restarting: §7" + (Utilities.restarting ? "True" : "False")));
 		sender.spigot().sendMessage(new TextComponent("§cTime below acceptable TPS:§7 " + ProcessPlaytime.lowTpsCounter
 				+ "ms (600000ms required to restart)"));
 		sender.spigot().sendMessage(new TextComponent("§cWither Count:§7 " + LagPrevention.currentWithers));

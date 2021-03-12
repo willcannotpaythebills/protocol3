@@ -50,6 +50,8 @@ public class ProcessPlaytime extends TimerTask
 
 		// Tick server uptime
 		ServerMeta.tickUptime(sinceLast);
+		// Tick reconnect delays
+		ServerMeta.tickRcDelays(sinceLast);
 
 		// Check if we need a restart
 		if (LagProcessor.getTPS() < 9)

@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
@@ -38,7 +39,9 @@ public class Connection implements Listener
 	{
 		if (!ServerMeta.canReconnect(e.getPlayer()))
 		{
-			e.setKickMessage("§6You have lost connection to the server.");
+			e.setKickMessage("§6Connection throttled. Please wait some time before reconnecting.");
+			e.setResult(Result.KICK_OTHER);
+			return;
 		}
 	}
 
@@ -93,8 +96,10 @@ public class Connection implements Listener
 		JOIN, LEAVE
 	}
 
-	public void doJoinMessage(MessageType msg, Player player) {
-		String messageOut = "§7" + player.getName() + ((msg.equals(MessageType.JOIN)) ?" joined the game." : " left the game.");
+	public void doJoinMessage(MessageType msg, Player player)
+	{
+		String messageOut = "§7" + player.getName()
+				+ ((msg.equals(MessageType.JOIN)) ? " joined the game." : " left the game.");
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			if (!ToggleJoinMessages.disabledJoinMessages.contains(p.getUniqueId()))

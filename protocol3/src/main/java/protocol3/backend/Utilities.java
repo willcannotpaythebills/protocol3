@@ -52,7 +52,7 @@ public class Utilities
 		}
 	}
 
-	private static boolean restarting = false;
+	public static boolean restarting = false;
 
 	public static void restart()
 	{
