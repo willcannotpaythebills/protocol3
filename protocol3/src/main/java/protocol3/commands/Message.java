@@ -14,29 +14,24 @@ import protocol3.backend.PlayerMeta;
 
 // Message
 
-public class Message implements CommandExecutor
-{
+public class Message implements CommandExecutor {
 
 	public static HashMap<UUID, UUID> Replies = new HashMap<UUID, UUID>();
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-		if (args.length < 2)
-		{
+		if (args.length < 2) {
 			sender.spigot().sendMessage(new TextComponent("§cIncorrect syntax. Syntax: /msg [player] [message]"));
 			return true;
 		}
 
 		String sendName;
 
-		if (sender instanceof Player)
-		{
+		if (sender instanceof Player) {
 			Player p = ((Player) sender);
 			sendName = p.getName();
-		} else
-		{
+		} else {
 			sendName = "Console";
 		}
 
@@ -45,24 +40,20 @@ public class Message implements CommandExecutor
 		// Name to use [for stealth]
 		String recvName = "";
 		// Can't send to offline players
-		if (recv == null)
-		{
+		if (recv == null) {
 			sender.spigot().sendMessage(new TextComponent("§cPlayer is no longer online."));
 			return true;
 		}
 
-		if (recvName.equals(""))
-		{
+		if (recvName.equals("")) {
 			recvName = recv.getName();
 		}
 
 		// Concatenate all messages
 		String msg = "";
 		int x = 0;
-		for (String s : args)
-		{
-			if (x == 0)
-			{
+		for (String s : args) {
+			if (x == 0) {
 				x++;
 				continue;
 			}
@@ -71,16 +62,13 @@ public class Message implements CommandExecutor
 		msg = msg.trim();
 
 		// If either player is muted, refuse message.
-		if (sender instanceof Player)
-		{
+		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (PlayerMeta.isMuted(player))
-			{
+			if (PlayerMeta.isMuted(player)) {
 				sender.spigot().sendMessage(new TextComponent("§cYou can't send messages."));
 				return true;
 			}
-			if (PlayerMeta.isMuted(recv) || (Admin.MsgToggle.contains(recv.getUniqueId()) && !player.isOp()))
-			{
+			if (PlayerMeta.isMuted(recv) || (Admin.MsgToggle.contains(recv.getUniqueId()) && !player.isOp())) {
 				sender.spigot().sendMessage(new TextComponent("§cYou can't send messages to this person."));
 				return true;
 			}
@@ -88,20 +76,16 @@ public class Message implements CommandExecutor
 
 		// Cycle through online players & if they're an admin with spy enabled, send
 		// them a copy of this message
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			if (Admin.Spies.contains(p.getUniqueId()))
-			{
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (Admin.Spies.contains(p.getUniqueId())) {
 				p.spigot().sendMessage(new TextComponent("§5" + sendName + " to " + recvName + ": " + msg));
 			}
 		}
 
-		if (!Admin.Spies.contains(recv.getUniqueId()))
-		{
+		if (!Admin.Spies.contains(recv.getUniqueId())) {
 			recv.spigot().sendMessage(new TextComponent("§dfrom " + sendName + ": " + msg));
 		}
-		if (!Admin.Spies.contains(((Player) sender).getUniqueId()))
-		{
+		if (!Admin.Spies.contains(((Player) sender).getUniqueId())) {
 			sender.spigot().sendMessage(new TextComponent("§dto " + recvName + ": " + msg));
 		}
 		Replies.put(recv.getUniqueId(), ((Player) sender).getUniqueId());

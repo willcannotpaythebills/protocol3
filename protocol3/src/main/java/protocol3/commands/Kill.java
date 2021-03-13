@@ -11,26 +11,18 @@ public class Kill implements CommandExecutor
 {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
-		if (!(sender instanceof ConsoleCommandSender) && args.length == 0)
-		{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (!(sender instanceof ConsoleCommandSender) && args.length == 0) {
 			Player p = (Player) sender;
 			p.setHealth(0);
 			return true;
-		} else
-		{
-			if (args.length == 1)
-			{
-				if (Bukkit.getPlayer(args[0]) != null)
-				{
-					if (sender instanceof ConsoleCommandSender)
-					{
+		} else {
+			if (args.length == 1) {
+				if (Bukkit.getPlayer(args[0]) != null) {
+					if (sender instanceof ConsoleCommandSender) {
 						Bukkit.getPlayer(args[0]).setHealth(0);
-					} else if (sender instanceof Player)
-					{
-						if (((Player) sender).isOp())
-						{
+					} else if (sender instanceof Player) {
+						if ((sender).isOp()) {
 							Bukkit.getPlayer(args[0]).setHealth(0);
 						}
 					}

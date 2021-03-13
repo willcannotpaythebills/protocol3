@@ -33,7 +33,7 @@ public class ItemCheck {
 			Material.WITHER_SKELETON_SKULL, Material.DRAGON_HEAD };
 
 	public static void IllegalCheck(ItemStack item) {
-		if (Config.getValue("item.illegal").equals("0")) return;
+		if (Config.getValue("item.illegal").equals("false")) return;
 
 		// Dont check null items
 		if (item == null) return;
@@ -87,7 +87,7 @@ public class ItemCheck {
 		}
 
 		// Patch stacked items
-		if (item.getAmount() > item.getMaxStackSize() && Config.getValue("item.illegal.stacked").equals("0")
+		if (item.getAmount() > item.getMaxStackSize() && Config.getValue("item.illegal.stacked").equals("false")
 				&& !item.getType().equals(Material.SNOWBALL)) {
 			item.setAmount(item.getMaxStackSize());
 		}
@@ -110,9 +110,9 @@ public class ItemCheck {
 					for (Enchantment e : item.getEnchantments().keySet()) {
 
 						// If this item does not support this enchantment
-						if (!e.canEnchantItem(item) && Config.getValue("item.illegal.invalid").equals("0")) continue;
+						if (!e.canEnchantItem(item) && Config.getValue("item.illegal.invalid").equals("false")) continue;
 
-						if (Config.getValue("item.illegal.invalid").equals("0")) {
+						if (Config.getValue("item.illegal.invalid").equals("false")) {
 							// If this item has a conflict with another enchantment on the same item
 							boolean hasConflict = false;
 
@@ -159,7 +159,7 @@ public class ItemCheck {
 				Damageable oldDmg = (Damageable) item.getItemMeta();
 				dmg.setDamage(oldDmg.getDamage());
 				newMeta = (ItemMeta) dmg;
-				if (Config.getValue("item.illegal.unbreakable").equals("0")) {
+				if (Config.getValue("item.illegal.unbreakable").equals("false")) {
 					newMeta.setUnbreakable(item.getItemMeta().isUnbreakable());
 				} else {
 					newMeta.setUnbreakable(false);
@@ -289,7 +289,7 @@ public class ItemCheck {
 		}
 
 		// Delete player heads (exempt wither heads)
-		if (item.getItemMeta() instanceof SkullMeta && Config.getValue("item.illegal.heads").equals("0")) {
+		if (item.getItemMeta() instanceof SkullMeta && Config.getValue("item.illegal.heads").equals("false")) {
 			for (Material m : LegalHeads) {
 				if (item.getType().equals(m)) {
 					return;
@@ -300,7 +300,7 @@ public class ItemCheck {
 		}
 
 		// Fix player heads
-		else if (item.getItemMeta() instanceof SkullMeta && Config.getValue("item.illegal.heads").equals("1")) {
+		else if (item.getItemMeta() instanceof SkullMeta && Config.getValue("item.illegal.heads").equals("true")) {
 			removeEnchants(item);
 			return;
 		}

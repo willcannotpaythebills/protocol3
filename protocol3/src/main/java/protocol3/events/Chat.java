@@ -1,6 +1,8 @@
 package protocol3.events;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -15,12 +17,10 @@ import protocol3.commands.Admin;
 // Chat Events
 // protocol3. ~~DO NOT REDISTRIBUTE!~~ n/a 3/6/2021
 
-public class Chat implements Listener
-{
+public class Chat implements Listener {
 
 	@EventHandler
-	public void onChat(AsyncPlayerChatEvent e)
-	{
+	public void onChat(AsyncPlayerChatEvent e) {
 		// Cancel this event so we can override vanilla chat
 		e.setCancelled(true);
 
@@ -41,30 +41,25 @@ public class Chat implements Listener
 
 		// -- SET CHAT COLORS -- //
 
-		// Greentext
-		if (e.getMessage().startsWith(">"))
-		{
-			color = "§a";
-		}
-		// Donator text
-		else if (e.getMessage().startsWith("$") && PlayerMeta.isDonator(e.getPlayer()))
-		{
-			color = "§6";
-		}
-		// Normal text
-		else
-		{
-			color = "§f";
+		switch (e.getMessage().charAt(0)) {
+			case '>':
+				color = "§a"; // Greentext
+				break;
+			case '$':
+				if (PlayerMeta.isDonator(e.getPlayer())) {
+					color = "§6"; // Donator text
+					break;
+				}
+			default:
+				color = "§f"; // Normal text
+				break;
 		}
 
-		if (PlayerMeta.isDonator(e.getPlayer()) && !Admin.UseRedName.contains(e.getPlayer().getUniqueId()))
-		{
+		if (PlayerMeta.isDonator(e.getPlayer()) && !Admin.UseRedName.contains(e.getPlayer().getUniqueId())) {
 			usernameColor = "§6";
-		} else if (Admin.UseRedName.contains(e.getPlayer().getUniqueId()))
-		{
+		} else if (Admin.UseRedName.contains(e.getPlayer().getUniqueId())) {
 			usernameColor = "§c";
-		} else
-		{
+		} else {
 			usernameColor = "§f";
 		}
 
@@ -78,15 +73,13 @@ public class Chat implements Listener
 		if (isBlank(finalMessage))
 			doSend = false;
 
-		if (PlayerMeta.isLagfag(e.getPlayer()))
-		{
+		if (PlayerMeta.isLagfag(e.getPlayer())) {
 			finalMessage = finalMessage + "; i am a registered lagfag";
 		}
 
 		// -- SEND FINAL MESSAGE -- //
 
-		if (doSend)
-		{
+		if (doSend) {
 			String username = e.getPlayer().getName();
 
 			TextComponent finalCom = new TextComponent(
@@ -99,41 +92,15 @@ public class Chat implements Listener
 	}
 
 	@EventHandler
-	public boolean onCommand(PlayerCommandPreprocessEvent e)
-	{
-		if (e.getMessage().split(" ")[0].contains(":") && !e.getPlayer().isOp())
-		{
+	public boolean onCommand(PlayerCommandPreprocessEvent e) {
+		if (e.getMessage().split(" ")[0].contains(":") && !e.getPlayer().isOp()) {
 			e.getPlayer().spigot().sendMessage(new TextComponent("§cUnknown command."));
 			e.setCancelled(true);
-			return true;
 		}
 		return true;
 	}
 
-	// String blank check since HeavyNode is on an older version of Java
-	// that doesn't support this
-	private boolean isBlank(String check)
-	{
-		// If string length is 0, it is empty
-		boolean isEmpty = check.length() == 0;
-		if (isEmpty)
-			return true;
-
-		// Return true if there is any character in the array
-		char[] checkArray = new char[check.length()];
-		for (int i = 0; i < check.length(); i++)
-		{
-			checkArray[i] = check.charAt(i);
-		}
-
-		// If it's a space, count it as an empty character
-		for (char c : checkArray)
-		{
-			if (c == ' ')
-				continue;
-			else
-				return false;
-		}
-		return true;
+	private boolean isBlank(String check) {
+		return check == null || check.isEmpty() || check.length() == 0 || check.trim().isEmpty();
 	}
 }

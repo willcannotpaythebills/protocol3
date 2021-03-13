@@ -10,12 +10,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 // Discord command
 
-public class Discord implements CommandExecutor
-{
+public class Discord implements CommandExecutor {
 
 	// This method is called, when somebody uses our command
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		TextComponent message = new TextComponent("Click this message to join the Discord.");
 		message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/YugxaGU"));
 		message.setColor(ChatColor.GOLD);

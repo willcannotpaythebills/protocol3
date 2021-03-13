@@ -16,12 +16,12 @@ import java.util.Scanner;
 
 public class Notifications {
 
-	private static String[] facts;
+	private static ArrayList<String> facts;
 
 	private static final Random r = new Random();
 
 	public Notifications() {
-		if (!Config.getValue("analytics.enabled").equals("1"))
+		if (!Config.getValue("analytics.enabled").equals("true"))
 			return;
 
 		facts = loadFacts();
@@ -60,11 +60,11 @@ public class Notifications {
 				.flatMap(channel -> channel
 					.createMessage(//facts[r.nextInt(facts.length)])
 						messageSpec -> messageSpec.setEmbed(embedSpec -> {
-							int fact_number = r.nextInt(facts.length-1);
+							int fact_number = r.nextInt(facts.size()-1);
 							embedSpec.setTitle("AVAS Server | Fun Fact Friday")
 									 .setAuthor("AVAS Bot", "https://avas.cc/", "https://avas.cc/favicon.png")
 									 .setColor(Color.RUBY)
-									 .addField("Fun Fact " + fact_number + "/" + facts.length, facts[fact_number], false)
+									 .addField("Fun Fact " + fact_number + "/" + facts.size(), facts.get(fact_number), false)
 									 .addField("\u200B", "\u200B", false)
 									 .addField("Current Player Count",
 											new DecimalFormat("##").format(Bukkit.getOnlinePlayers().size()) + "/1",
@@ -75,16 +75,17 @@ public class Notifications {
 		});
 	}
 
-	private String[] loadFacts() {
+	private ArrayList<String> loadFacts() {
 		ArrayList<String> fact = new ArrayList<>();
-		Scanner s = new Scanner(Notifications.class.getClassLoader().getResourceAsStream("facts.txt"));
-		while (s.hasNextLine()) {
-			String line = s.nextLine();
-			if (!line.trim().isEmpty()) {  //no empty or space only line
-				fact.add(s.nextLine());
-			}
-		}
-		return fact.toArray(new String[]{});
+
+		Scanner scanner = new Scanner(Notifications.class.getClassLoader().getResourceAsStream("facts.txt"));
+
+		scanner.forEachRemaining(fact_line -> {
+			if (!fact_line.trim().isEmpty())
+				fact.add(fact_line);
+		});
+
+		return fact;
 	}
 
 }

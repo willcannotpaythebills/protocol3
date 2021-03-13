@@ -18,24 +18,20 @@ import protocol3.backend.PlayerMeta.MuteType;
 
 // Vote mute
 
-public class VoteMute implements CommandExecutor
-{
+public class VoteMute implements CommandExecutor {
 	static HashMap<UUID, Integer> _votes = new HashMap<UUID, Integer>();
 	static HashMap<UUID, List<UUID>> _voters = new HashMap<UUID, List<UUID>>();
 	static HashMap<String, List<UUID>> _voterIps = new HashMap<String, List<UUID>>();
 	public static int cooldown = 0;
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
-		if (args.length != 1)
-		{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (args.length != 1) {
 			sender.spigot().sendMessage(new TextComponent("§cInvalid syntax. Syntax: /vm [player]"));
 			return true;
 		}
 
-		if (Bukkit.getPlayer(args[0]) == null)
-		{
+		if (Bukkit.getPlayer(args[0]) == null) {
 			sender.spigot().sendMessage(new TextComponent("§cPlayer is not online."));
 			return true;
 		}
@@ -48,14 +44,11 @@ public class VoteMute implements CommandExecutor
 		// [1:01 AM] d2k11: if((20% of pop) < 1) message("no votey not enough")
 		// [1:02 AM] suicide is badass: make sure it announces that message too
 		// [1:02 AM] suicide is badass: verbatim
-		if (popNeeded <= 1)
-		{
+		if (popNeeded <= 1) {
 			int rnd = (int) ((Math.random() * (5 - 0)) + 0);
-			if (rnd == 3)
-			{
+			if (rnd == 3) {
 				voter.spigot().sendMessage(new TextComponent("§cno votey not enough"));
-			} else
-			{
+			} else {
 				voter.spigot()
 						.sendMessage(new TextComponent("§cThere are not enough players online to conduct a vote."));
 			}
@@ -63,22 +56,19 @@ public class VoteMute implements CommandExecutor
 		}
 
 		// Can't vote on an already-muted person.
-		if (PlayerMeta.isMuted(toMute))
-		{
+		if (PlayerMeta.isMuted(toMute)) {
 			voter.spigot().sendMessage(new TextComponent("§cPlayer is already muted."));
 			return true;
 		}
 
 		// Muted people can't vote.
-		if ((PlayerMeta.isMuted(voter) && Config.getValue("mute.hypocrisy").equals("1")) || PlayerMeta.isLagfag(voter))
-		{
+		if ((PlayerMeta.isMuted(voter) && Config.getValue("mute.hypocrisy").equals("1")) || PlayerMeta.isLagfag(voter)) {
 			voter.spigot().sendMessage(new TextComponent("§cYou can't vote."));
 			return true;
 		}
 
 		// Can't mute ops
-		if (toMute.isOp())
-		{
+		if (toMute.isOp()) {
 			voter.spigot().sendMessage(new TextComponent("§cYou can't vote to mute this person."));
 			return true;
 		}
@@ -90,23 +80,19 @@ public class VoteMute implements CommandExecutor
 		List<UUID> previousIpVotes;
 
 		// Load previous votes
-		if (_voters.containsKey(voter.getUniqueId()))
-		{
+		if (_voters.containsKey(voter.getUniqueId())) {
 			previousVotes = _voters.get(voter.getUniqueId());
-			if (previousVotes.contains(toMute.getUniqueId()))
-			{
+			if (previousVotes.contains(toMute.getUniqueId())) {
 				int votes = _votes.get(toMute.getUniqueId());
 				int need = popNeeded - votes;
-				if (need <= 0)
-				{
+				if (need <= 0) {
 					Bukkit.spigot().broadcast(new TextComponent(
 							"§6The vote to mute " + toMute.getName() + " passed after " + popNeeded + " votes."));
 					_votes.remove(toMute.getUniqueId());
 					previousVotes.remove(toMute.getUniqueId());
 					PlayerMeta.setMuteType(toMute, MuteType.TEMPORARY);
 					return true;
-				} else
-				{
+				} else {
 					voter.spigot().sendMessage(new TextComponent(
 							"§cYou've already voted for " + toMute.getName() + ". You need " + need + " more votes."));
 				}
@@ -114,29 +100,24 @@ public class VoteMute implements CommandExecutor
 			}
 		}
 		// Create new list of votes
-		else
-		{
+		else {
 			previousVotes = new ArrayList<UUID>();
 		}
 
 		// Load previous IP votes
-		if (_voterIps.containsKey(voter.getAddress().toString()))
-		{
+		if (_voterIps.containsKey(voter.getAddress().toString())) {
 			previousIpVotes = _voterIps.get(voter.getAddress().toString());
-			if (previousIpVotes.contains(toMute.getUniqueId()))
-			{
+			if (previousIpVotes.contains(toMute.getUniqueId())) {
 				int votes = _votes.get(toMute.getUniqueId());
 				int need = popNeeded - votes;
-				if (need <= 0)
-				{
+				if (need <= 0) {
 					Bukkit.spigot().broadcast(new TextComponent(
 							"§6The vote to mute " + toMute.getName() + " passed after " + popNeeded + " votes."));
 					_votes.remove(toMute.getUniqueId());
 					previousVotes.remove(toMute.getUniqueId());
 					PlayerMeta.setMuteType(toMute, MuteType.TEMPORARY);
 					return true;
-				} else
-				{
+				} else {
 					voter.spigot().sendMessage(new TextComponent(
 							"§cYou've already voted for " + toMute.getName() + ". You need " + need + " more votes."));
 				}
@@ -145,14 +126,12 @@ public class VoteMute implements CommandExecutor
 		}
 
 		// Create new list of IP votes
-		else
-		{
+		else {
 			previousIpVotes = new ArrayList<UUID>();
 		}
 
 		// If our candidate has been voted on before
-		if (_votes.containsKey(toMute.getUniqueId()))
-		{
+		if (_votes.containsKey(toMute.getUniqueId())) {
 			// New votes value
 			int votes = _votes.get(toMute.getUniqueId()) + 1;
 			// Put our vote into repository
@@ -163,8 +142,7 @@ public class VoteMute implements CommandExecutor
 			// Flag that this IP has voted for this person and can't vote again.
 			previousIpVotes.add(toMute.getUniqueId());
 			_voterIps.put(voter.getAddress().toString(), previousIpVotes);
-			if (popNeeded - votes <= 0)
-			{
+			if (popNeeded - votes <= 0) {
 				PlayerMeta.setMuteType(toMute, MuteType.TEMPORARY);
 				Bukkit.spigot().broadcast(
 						new TextComponent("§6The vote to mute " + args[0] + " passed after " + popNeeded + " votes."));
@@ -172,18 +150,15 @@ public class VoteMute implements CommandExecutor
 				previousVotes.remove(toMute.getUniqueId());
 				return true;
 
-			} else
-			{
+			} else {
 				voter.spigot().sendMessage(new TextComponent("§aSuccessfully submitted vote for " + toMute.getName()
 						+ ". " + (popNeeded - votes) + " more needed for mute."));
 				return true;
 			}
 		}
 		// If our candidate has not been voted on before
-		else
-		{
-			if (cooldown != 0)
-			{
+		else {
+			if (cooldown != 0) {
 				sender.spigot().sendMessage(new TextComponent(
 						"§cServer must wait " + (cooldown / 20) + " more seconds to vote mute again."));
 				return true;
@@ -202,17 +177,14 @@ public class VoteMute implements CommandExecutor
 		}
 	}
 
-	public static void clear()
-	{
+	public static void clear() {
 		_votes.clear();
 		_voters.clear();
 		_voterIps.clear();
 	}
 
-	public static void processVoteCooldowns()
-	{
-		if (cooldown != 0)
-		{
+	public static void processVoteCooldowns() {
+		if (cooldown != 0) {
 			cooldown = cooldown - 1;
 		}
 	}

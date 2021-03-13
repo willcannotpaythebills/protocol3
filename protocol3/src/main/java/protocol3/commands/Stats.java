@@ -19,31 +19,24 @@ import protocol3.backend.Utilities;
 
 // funny command haha
 
-public class Stats implements CommandExecutor
-{
+public class Stats implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		Player player = (Player) sender;
 
-		if (Main.Top == null)
-		{
+		if (Main.Top == null) {
 			double largest = 0;
-			for (UUID u : PlayerMeta.Playtimes.keySet())
-			{
-				if (PlayerMeta.Playtimes.get(u) > largest)
-				{
+			for (UUID u : PlayerMeta.Playtimes.keySet()) {
+				if (PlayerMeta.Playtimes.get(u) > largest) {
 					largest = PlayerMeta.Playtimes.get(u);
 					Main.Top = Bukkit.getOfflinePlayer(u);
 				}
 			}
 		}
 
-		if (args.length != 0)
-		{
-			if (args[0].equals("top"))
-			{
+		if (args.length != 0) {
+			if (args[0].equals("top")) {
 				OfflinePlayer largestPlayer = Main.Top;
 				Date date = new Date(largestPlayer.getFirstPlayed());
 				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
@@ -57,27 +50,20 @@ public class Stats implements CommandExecutor
 				player.spigot().sendMessage(new TextComponent(
 						"§6Time played: " + Utilities.calculateTime(PlayerMeta.getPlaytime(largestPlayer))));
 				return true;
-			}
-
-			else if (args[0].equals("leaderboard"))
-			{
+			} else if (args[0].equals("leaderboard")) {
 				player.spigot().sendMessage(new TextComponent("§6--- §6§lTop Five Players ---"));
 				HashMap<UUID, Double> leaders = PlayerMeta.getTopFivePlayers();
 				int x = 0;
 				HashMap<UUID, Double> realLeaders = PlayerMeta.getTopFivePlayers();
-				for (UUID u : leaders.keySet())
-				{
+				for (UUID u : leaders.keySet()) {
 					realLeaders.put(u, leaders.get(u));
 				}
-				for (UUID p : realLeaders.keySet())
-				{
+				for (UUID p : realLeaders.keySet()) {
 					x++;
-					if (Bukkit.getOfflinePlayer(p).getName() == null)
-					{
+					if (Bukkit.getOfflinePlayer(p).getName() == null) {
 						player.spigot().sendMessage(new TextComponent(
 								"§6§l#" + x + "§r§6: [unknown], " + Utilities.calculateTime(realLeaders.get(p))));
-					} else
-					{
+					} else {
 						player.spigot().sendMessage(
 								new TextComponent("§6§l#" + x + "§r§6: " + Bukkit.getOfflinePlayer(p).getName() + ", "
 										+ Utilities.calculateTime(realLeaders.get(p))));
@@ -87,12 +73,10 @@ public class Stats implements CommandExecutor
 			}
 
 			OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
-			if (p == null)
-			{
+			if (p == null) {
 				player.spigot().sendMessage(new TextComponent("§cThis player has never joined."));
 				return true;
-			} else if (!p.hasPlayedBefore())
-			{
+			} else if (!p.hasPlayedBefore()) {
 				player.spigot().sendMessage(new TextComponent("§cThis player has never joined."));
 				return true;
 			}
@@ -103,20 +87,15 @@ public class Stats implements CommandExecutor
 			player.spigot().sendMessage(new TextComponent("§6--- §6§l " + p.getName() + "§r§6's Statistics ---"));
 			player.spigot().sendMessage(new TextComponent("§6Joined: §6§l" + firstPlayed));
 			player.spigot().sendMessage(new TextComponent("§6Last seen: §6§l" + lastPlayed));
-			if (!PlayerMeta.Playtimes.containsKey(p.getUniqueId()))
-			{
+			if (!PlayerMeta.Playtimes.containsKey(p.getUniqueId())) {
 				player.spigot().sendMessage(new TextComponent("§6§oSome statistics cannot be shown (untracked)."));
-			} else
-			{
+			} else {
 				player.spigot().sendMessage(new TextComponent("§6Ranking: §6§l#" + PlayerMeta.getRank(p)));
 				player.spigot().sendMessage(
 						new TextComponent("§6Time played: " + Utilities.calculateTime(PlayerMeta.getPlaytime(p))));
 			}
 			return true;
-		}
-
-		else
-		{
+		} else {
 			Date date = new Date(player.getFirstPlayed());
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 			String firstPlayed = sdf.format(date);

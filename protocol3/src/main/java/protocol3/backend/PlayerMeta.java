@@ -1,25 +1,16 @@
 package protocol3.backend;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import net.md_5.bungee.api.chat.TextComponent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PlayerMeta
 {
@@ -54,10 +45,7 @@ public class PlayerMeta
 			}
 		} else
 		{
-			if (_donatorList.contains(p.getUniqueId()))
-			{
-				_donatorList.remove(p.getUniqueId());
-			}
+			_donatorList.remove(p.getUniqueId());
 		}
 		try
 		{
@@ -72,14 +60,14 @@ public class PlayerMeta
 
 	public static boolean isMuted(Player p)
 	{
-		return (_temporaryMutes.keySet().contains(p.getUniqueId()) || _permanentMutes.contains(p.getUniqueId()));
+		return (_temporaryMutes.containsKey(p.getUniqueId()) || _permanentMutes.contains(p.getUniqueId()));
 	}
 
 	public static MuteType getMuteType(Player p)
 	{
 		if (isMuted(p))
 		{
-			if (_temporaryMutes.keySet().contains(p.getUniqueId()) && !_permanentMutes.contains(p.getUniqueId()))
+			if (_temporaryMutes.containsKey(p.getUniqueId()) && !_permanentMutes.contains(p.getUniqueId()))
 			{
 				return MuteType.TEMPORARY;
 			} else
@@ -99,7 +87,7 @@ public class PlayerMeta
 		if (type.equals(MuteType.NONE))
 		{
 			muteType = "un";
-			if (_temporaryMutes.keySet().contains(uuid))
+			if (_temporaryMutes.containsKey(uuid))
 				_temporaryMutes.remove(uuid);
 			if (_permanentMutes.contains(uuid))
 			{
@@ -114,14 +102,13 @@ public class PlayerMeta
 			}
 		} else if (type.equals(MuteType.TEMPORARY)) {
 			muteType = "temporarily ";
-			if (_permanentMutes.contains(uuid))
-				_permanentMutes.remove(uuid);
-			if (!_temporaryMutes.keySet().contains(uuid))
+			_permanentMutes.remove(uuid);
+			if (!_temporaryMutes.containsKey(uuid))
 				_temporaryMutes.put(uuid, 0.0);
 		} else if (type.equals(MuteType.PERMANENT)) {
 			muteType = "permanently ";
 			if (!_permanentMutes.contains(uuid)) _permanentMutes.add(uuid);
-			if (_temporaryMutes.keySet().contains(uuid)) _temporaryMutes.remove(uuid);
+			if (_temporaryMutes.containsKey(uuid)) _temporaryMutes.remove(uuid);
 			try {
 				saveMuted();
 			} catch (IOException e) {
@@ -146,9 +133,7 @@ public class PlayerMeta
 				_lagfagList.put(p.getUniqueId(), p.getAddress().toString().split(":")[0]);
 			}
 		} else {
-			if (_lagfagList.containsKey(p.getUniqueId())) {
-				_lagfagList.remove(p.getUniqueId());
-			}
+			_lagfagList.remove(p.getUniqueId());
 		}
 		try {
 			saveLagfags();
@@ -229,7 +214,7 @@ public class PlayerMeta
 
 	public static int getRank(OfflinePlayer p) {
 
-		if (!Playtimes.keySet().contains(p.getUniqueId())) return 0;
+		if (!Playtimes.containsKey(p.getUniqueId())) return 0;
 
 
 		int x = 0;
@@ -277,6 +262,6 @@ public class PlayerMeta
 	}
 
 	public static boolean isOp(CommandSender sender) {
-		return (sender instanceof Player) ? sender.isOp() : (sender instanceof ConsoleCommandSender) ? true: false;
+		return (sender instanceof Player) ? sender.isOp() : sender instanceof ConsoleCommandSender;
 	}
 }

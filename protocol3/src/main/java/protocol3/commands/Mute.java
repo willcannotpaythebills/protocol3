@@ -12,23 +12,19 @@ import protocol3.backend.PlayerMeta.MuteType;
 
 // Mute somebody. OPs only.
 
-public class Mute implements CommandExecutor
-{
+public class Mute implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		String mode = args[0];
 		Player player = (Player) sender;
 
-		if (!player.isOp())
-		{
+		if (!player.isOp()) {
 			player.sendMessage("§cYou can't use this.");
 			return true;
 		}
 
-		if (mode.equals("all"))
-		{
+		if (mode.equals("all")) {
 			PlayerMeta.MuteAll = !PlayerMeta.MuteAll;
 			if (PlayerMeta.MuteAll)
 			{
@@ -42,40 +38,33 @@ public class Mute implements CommandExecutor
 			return true;
 		}
 
-		if (args.length != 2)
-		{
+		if (args.length != 2) {
 			player.sendMessage("§cIncorrect syntax. Syntax: /mute [perm/temp/none] [player]");
 			return true;
 		}
 		Player toMute = Bukkit.getPlayer(args[1]);
-		if (toMute == null)
-		{
+		if (toMute == null) {
 			player.sendMessage("§cPlayer is not online.");
 			return true;
 		}
-		if (toMute.isOp())
-		{
+		if (toMute.isOp()) {
 			player.sendMessage("§cYou can't mute this person.");
 			return true;
 		}
 
-		if (mode.toUpperCase().equals("PERM"))
-		{
+		if (mode.toUpperCase().equals("PERM")) {
 			Bukkit.getServer().spigot().broadcast(new TextComponent(
 					"§4§l" + player.getName() + " §r§4has permanently muted §4§l" + toMute.getName() + " §r§4."));
 			PlayerMeta.setMuteType(toMute, MuteType.PERMANENT);
-		} else if (mode.toUpperCase().equals("TEMP"))
-		{
+		} else if (mode.toUpperCase().equals("TEMP")) {
 			Bukkit.getServer().spigot().broadcast(new TextComponent(
 					"§c§l" + player.getName() + " §r§chas temporarily muted §c§l" + toMute.getName() + " §r§c."));
 			PlayerMeta.setMuteType(toMute, MuteType.TEMPORARY);
-		} else if (mode.toUpperCase().equals("NONE"))
-		{
+		} else if (mode.toUpperCase().equals("NONE")) {
 			Bukkit.getServer().spigot().broadcast(new TextComponent(
 					"§a§l" + player.getName() + " §r§ahas unmuted §a§l" + toMute.getName() + "§r§a."));
 			PlayerMeta.setMuteType(toMute, MuteType.NONE);
-		} else
-		{
+		} else {
 			player.sendMessage("§cIncorrect syntax. Syntax: /mute [perm/temp/none] [player]");
 			return true;
 		}

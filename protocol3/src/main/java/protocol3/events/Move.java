@@ -78,7 +78,7 @@ public class Move implements Listener
 			}
 		}
 
-		if (Config.getValue("movement.block.chunkcheck").equals("0")) needsCheck = false;
+		if (Config.getValue("movement.block.chunkcheck").equals("false")) needsCheck = false;
 
 		if (needsCheck) {
 			boolean containsSpawner = false;
@@ -109,7 +109,7 @@ public class Move implements Listener
 					for (int y = 0; y < 256; y++) {
 						Block block = p.getWorld().getBlockAt(X + x, y, Z + z);
 
-						if (Config.getValue("item.illegal.agro").equals("1")) {
+						if (Config.getValue("item.illegal.agro").equals("true")) {
 							// Containers.
 							if (block instanceof Container) {
 								Container cont = (Container) block;
@@ -195,11 +195,11 @@ public class Move implements Listener
 		// -- ROOF AND FLOOR PATCH -- //
 
 		if ((p.getLocation().getY() > 127 && p.getLocation().getWorld().getName().equals("world_nether")
-				&& Config.getValue("movement.block.roof").equals("1"))) p.setHealth(0);
+				&& Config.getValue("movement.block.roof").equals("true"))) p.setHealth(0);
 
 
 		if ((p.getLocation().getY() <= 0 && !p.getLocation().getWorld().getName().equals("world_the_end")
-				&& Config.getValue("movement.block.floor").equals("1"))) p.setHealth(0);
+				&& Config.getValue("movement.block.floor").equals("true"))) p.setHealth(0);
 	}
 
 }

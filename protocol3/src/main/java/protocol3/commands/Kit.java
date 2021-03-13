@@ -16,26 +16,21 @@ import protocol3.backend.PlayerMeta;
 
 // funny command haha
 
-public class Kit implements CommandExecutor
-{
+public class Kit implements CommandExecutor {
 	public static List<UUID> kickedFromKit = new ArrayList<UUID>();
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		Player player = (Player) sender;
-		if (Config.getValue("funny.kit").equals("1"))
-		{
+		if (Config.getValue("funny.kit").equals("true")) {
 			kickedFromKit.add(player.getUniqueId());
 			player.kickPlayer("§6get fucked newfag [pog]");
-			if (!PlayerMeta.isMuted(player))
-			{
+			if (!PlayerMeta.isMuted(player)) {
 				Bukkit.getServer().spigot().broadcast(new TextComponent(
 						"§a" + player.getName() + " got their complimentary starter kit! Get yours by typing /kit."));
 			}
 			return true;
-		} else
-		{
+		} else {
 			player.spigot().sendMessage(new TextComponent("§cThis command has been disabled by your administrator."));
 			return true;
 		}

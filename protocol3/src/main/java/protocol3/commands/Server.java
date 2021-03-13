@@ -16,11 +16,9 @@ import protocol3.events.LagPrevention;
 import protocol3.events.SpeedLimit;
 import protocol3.tasks.ProcessPlaytime;
 
-public class Server implements CommandExecutor
-{
+public class Server implements CommandExecutor {
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		sender.spigot().sendMessage(new TextComponent("§c========== GENERAL =========="));
 		sender.spigot().sendMessage(
 				new TextComponent("§cServer Uptime:§7 " + Utilities.calculateTime(ServerMeta.getUptime())));

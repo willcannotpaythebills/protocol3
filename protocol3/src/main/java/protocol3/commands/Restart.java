@@ -10,22 +10,17 @@ import protocol3.backend.Utilities;
 
 // INTERNAL USE ONLY
 
-public class Restart implements CommandExecutor
-{
+public class Restart implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
-		if (!PlayerMeta.isOp(sender))
-		{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (!PlayerMeta.isOp(sender)) {
 			sender.spigot().sendMessage(new TextComponent("§cYou can't run this."));
 			return true;
 		}
-		if (args.length != 0)
-		{
+		if (args.length != 0) {
 			Utilities.restart(true);
-		} else
-		{
+		} else {
 			Utilities.restart(false);
 		}
 		return true;

@@ -28,20 +28,16 @@ public class Sign implements CommandExecutor
 {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
-		if (!(sender instanceof Player))
-		{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (!(sender instanceof Player)) {
 			return true;
 		}
 
 		Player p = (Player) sender;
 		if (p.getInventory().getItemInMainHand() != null
-				&& !p.getInventory().getItemInMainHand().getType().equals(Material.AIR))
-		{
+				&& !p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
 			ItemStack item = p.getInventory().getItemInMainHand();
-			if (sign(item, p))
-			{
+			if (sign(item, p)) {
 				p.spigot()
 						.sendMessage(new TextComponent(
 								"§a§i" + WordUtils.capitalizeFully(item.getType().toString().replaceAll("_", " "))
@@ -53,13 +49,11 @@ public class Sign implements CommandExecutor
 		return true;
 	}
 
-	private boolean sign(ItemStack i, Player p)
-	{
+	private boolean sign(ItemStack i, Player p) {
 
 		ItemCheck.IllegalCheck(i);
 
-		if (i == null || i.getType().equals(Material.AIR))
-		{
+		if (i == null || i.getType().equals(Material.AIR)) {
 			return false;
 		}
 
@@ -74,11 +68,9 @@ public class Sign implements CommandExecutor
 		String code = String.valueOf(Calendar.getInstance().getTimeInMillis());
 
 		MessageDigest m;
-		try
-		{
+		try {
 			m = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e)
-		{
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -88,8 +80,7 @@ public class Sign implements CommandExecutor
 		BigInteger bigInt = new BigInteger(1, digest);
 		String hashtext = bigInt.toString(16);
 		// Now we need to zero pad it if you actually want the full 32 chars.
-		while (hashtext.length() < 32)
-		{
+		while (hashtext.length() < 32) {
 			hashtext = "0" + hashtext;
 		}
 
@@ -102,16 +93,13 @@ public class Sign implements CommandExecutor
 
 		ItemMeta im;
 
-		if (i.getItemMeta() == null)
-		{
+		if (i.getItemMeta() == null) {
 			im = Bukkit.getItemFactory().getItemMeta(i.getType());
-		} else
-		{
+		} else {
 			im = i.getItemMeta();
 		}
 
-		if (im.hasLore())
-		{
+		if (im.hasLore()) {
 			return false;
 		}
 

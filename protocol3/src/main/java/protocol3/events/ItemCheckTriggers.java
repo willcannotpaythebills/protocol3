@@ -57,9 +57,9 @@ public class ItemCheckTriggers implements Listener
 			}
 		}
 
-		if (Config.getValue("place.illegal").equals("1"))
+		if (Config.getValue("place.illegal").equals("true"))
 		{
-			if (Config.getValue("place.illegal.ops").equals("0") && e.getPlayer().isOp())
+			if (Config.getValue("place.illegal.ops").equals("false") && e.getPlayer().isOp())
 			{
 				return;
 			}
@@ -69,7 +69,7 @@ public class ItemCheckTriggers implements Listener
 				if (e.getBlock().getType().equals(m))
 				{
 					e.setCancelled(true);
-					if (Config.getValue("item.illegal.agro").equals("1"))
+					if (Config.getValue("item.illegal.agro").equals("true"))
 					{
 						for (ItemStack is : e.getPlayer().getInventory())
 						{
@@ -102,7 +102,7 @@ public class ItemCheckTriggers implements Listener
 	@EventHandler
 	public void onInventoryMovedItem(InventoryMoveItemEvent event)
 	{
-		if (Config.getValue("item.illegal.agro").equals("1"))
+		if (Config.getValue("item.illegal.agro").equals("true"))
 		{
 			// ItemCheck.IllegalCheck(event.getItem());
 			// for (ItemStack i : event.getSource())
@@ -117,7 +117,7 @@ public class ItemCheckTriggers implements Listener
 		{
 			Player player = (Player) e.getEntity();
 		}
-		if (Config.getValue("item.illegal.agro").equals("1"))
+		if (Config.getValue("item.illegal.agro").equals("true"))
 		{
 			ItemCheck.IllegalCheck(e.getItem().getItemStack());
 			if (e.getEntityType().equals(EntityType.PLAYER))
@@ -134,7 +134,7 @@ public class ItemCheckTriggers implements Listener
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e)
 	{
-		if (Config.getValue("item.illegal.agro").equals("1"))
+		if (Config.getValue("item.illegal.agro").equals("true"))
 		{
 			ItemCheck.IllegalCheck(e.getCurrentItem());
 		}

@@ -14,21 +14,17 @@ public class Say implements CommandExecutor
 {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
-		if (!sender.isOp() && !(sender instanceof ConsoleCommandSender))
-		{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (!sender.isOp() && !(sender instanceof ConsoleCommandSender)) {
 			sender.spigot().sendMessage(new TextComponent("§cUnknown command."));
 			return true;
-		} else
-		{
+		} else {
 			String data = "";
 			for (String arg : args)
 				data += arg + " ";
 			data = data.trim();
 			data = data.replace("§", "");
-			if (data.equals("") || data.equals(" "))
-			{
+			if (data.equals("") || data.equals(" ")) {
 				sender.spigot().sendMessage(new TextComponent("§cNo message specified."));
 				return true;
 			}

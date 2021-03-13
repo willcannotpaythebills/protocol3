@@ -11,34 +11,28 @@ import protocol3.backend.PlayerMeta;
 
 // funny command haha
 
-public class Redeem implements CommandExecutor
-{
+public class Redeem implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		Player player = (Player) sender;
-		if (args.length != 1)
-		{
+		if (args.length != 1) {
 			player.spigot().sendMessage(new TextComponent("§cSyntax: /redeem [code]"));
 			return true;
 		}
 
-		if (PlayerMeta.isDonator(player))
-		{
+		if (PlayerMeta.isDonator(player)) {
 			player.spigot().sendMessage(new TextComponent("§cYou are already a donator. You keep it for life."));
 			return true;
 		}
 
-		if (PlayerMeta.DonorCodes.contains(args[0]) && !PlayerMeta.UsedDonorCodes.contains(args[0]))
-		{
+		if (PlayerMeta.DonorCodes.contains(args[0]) && !PlayerMeta.UsedDonorCodes.contains(args[0])) {
 			PlayerMeta.UsedDonorCodes.add(args[0]);
 			PlayerMeta.setDonator(player, true);
 			Bukkit.getServer().spigot()
 					.broadcast(new TextComponent("§6" + player.getName() + " just donated to the server!"));
 			return true;
-		} else
-		{
+		} else {
 			player.spigot().sendMessage(new TextComponent("§cThis code is not valid."));
 			return true;
 		}

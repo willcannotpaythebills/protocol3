@@ -32,13 +32,10 @@ import protocol3.commands.ToggleJoinMessages;
 // Connection Events
 // protocol3. ~~DO NOT REDISTRIBUTE!~~ n/a 3/6/2021
 
-public class Connection implements Listener
-{
+public class Connection implements Listener {
 	@EventHandler
-	public void onConnect(PlayerLoginEvent e)
-	{
-		if (!ServerMeta.canReconnect(e.getPlayer()))
-		{
+	public void onConnect(PlayerLoginEvent e) {
+		if (!ServerMeta.canReconnect(e.getPlayer())) {
 			e.setKickMessage("§6Connection throttled. Please wait some time before reconnecting.");
 			e.setResult(Result.KICK_OTHER);
 			return;
@@ -46,75 +43,48 @@ public class Connection implements Listener
 	}
 
 	@EventHandler
-	public void onJoin(PlayerJoinEvent e)
-	{
+	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
-		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId()))
-		{
+		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
 			doJoinMessage(MessageType.JOIN, e.getPlayer());
 		}
 
-		if (Kit.kickedFromKit.contains(e.getPlayer().getUniqueId()))
-		{
+		if (Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
 			Kit.kickedFromKit.remove(e.getPlayer().getUniqueId());
 		}
 
 		// Full player check on initial join
-		if (Config.getValue("item.illegal.onjoin").equals("1"))
-		{
-			for (ItemStack is : e.getPlayer().getInventory())
-			{
-				ItemCheck.IllegalCheck(is);
-			}
-			for (ItemStack is : e.getPlayer().getInventory().getArmorContents())
-			{
-				ItemCheck.IllegalCheck(is);
-			}
-			for (ItemStack is : e.getPlayer().getEnderChest())
-			{
-				ItemCheck.IllegalCheck(is);
-			}
-			if (e.getPlayer().getInventory().getItemInMainHand() != null)
-			{
-				ItemCheck.IllegalCheck(e.getPlayer().getInventory().getItemInMainHand());
-			}
-			if (e.getPlayer().getInventory().getItemInOffHand() != null)
-			{
-				ItemCheck.IllegalCheck(e.getPlayer().getInventory().getItemInOffHand());
-			}
+		if (Config.getValue("item.illegal.onjoin").equals("true")) {
+			e.getPlayer().getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
+			e.getPlayer().getEnderChest().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
+			Arrays.stream(e.getPlayer().getInventory().getArmorContents()).forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
+
+			ItemCheck.IllegalCheck(e.getPlayer().getInventory().getItemInMainHand());
+
+			ItemCheck.IllegalCheck(e.getPlayer().getInventory().getItemInOffHand());
 		}
 
 		// Set survival if enabled; exempt ops
-		if (Config.getValue("misc.survival").equals("1") && !e.getPlayer().isOp())
-		{
+		if (Config.getValue("misc.survival").equals("true") && !e.getPlayer().isOp()) {
 			e.getPlayer().setGameMode(GameMode.SURVIVAL);
 		}
 	}
 
-	public enum MessageType
-	{
+	public enum MessageType {
 		JOIN, LEAVE
 	}
 
-	public void doJoinMessage(MessageType msg, Player player)
-	{
+	public void doJoinMessage(MessageType msg, Player player) {
 		String messageOut = "§7" + player.getName()
 				+ ((msg.equals(MessageType.JOIN)) ? " joined the game." : " left the game.");
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			if (!ToggleJoinMessages.disabledJoinMessages.contains(p.getUniqueId()))
-			{
-				p.sendMessage(messageOut);
-			}
-		}
+		Bukkit.getOnlinePlayers().forEach(player1 ->{
+				if (!ToggleJoinMessages.disabledJoinMessages.contains(player1.getUniqueId())) player1.sendMessage(messageOut);});
 	}
 
 	@EventHandler
-	public void onLeave(PlayerQuitEvent e)
-	{
+	public void onLeave(PlayerQuitEvent e) {
 		e.setQuitMessage(null);
-		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId()))
-		{
+		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
 			doJoinMessage(MessageType.LEAVE, e.getPlayer());
 		}
 	}
@@ -132,17 +102,13 @@ public class Connection implements Listener
 	private boolean done = false;
 
 	@EventHandler
-	public void onPing(ServerListPingEvent e)
-	{
-		if (!done)
-		{
-			try
-			{
+	public void onPing(ServerListPingEvent e) {
+		if (!done) {
+			try {
 				allMotds = new ArrayList<String>(Arrays.asList(motds));
 				System.out.println("[protocol3] Loading " + motds.length + " custom MOTDs...");
 				allMotds.addAll(Files.readAllLines(Paths.get("plugins/protocol3/motds.txt")));
-			} catch (IOException e1)
-			{
+			} catch (IOException e1) {
 				allMotds = new ArrayList<String>(Arrays.asList(motds));
 			}
 			done = true;

@@ -3,24 +3,20 @@ package protocol3.backend;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Scheduler
-{
+public class Scheduler {
 	private static String lastTaskId = "";
 	private static LocalDateTime lastTaskTime = null;
 
-	public static void setLastTaskId(String task)
-	{
+	public static void setLastTaskId(String task) {
 		lastTaskId = task;
 		lastTaskTime = LocalDateTime.now();
 	}
 
-	public static String getLastTaskId()
-	{
+	public static String getLastTaskId() {
 		return lastTaskId;
 	}
 
-	public static String getLastTaskTime()
-	{
+	public static String getLastTaskTime() {
 		// 2011-12-03 @ 10:15:30
 		return lastTaskTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace("T", " @ ");
 	}

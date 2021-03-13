@@ -12,79 +12,63 @@ import protocol3.Main;
 public class FileManager {
 
 	public static void setup() throws IOException {
-		final String path = "plugins/protocol3/";
+		final String plugin_work_path = "plugins/protocol3/";
 
 		// Create initial directory
-		File file = new File(path);
-		if (!file.exists()) file.mkdir();
+		File plugin_work_directory = new File(plugin_work_path);
+		File donor_code_directory = new File(plugin_work_path + "codes");
+		File donor_list = new File(plugin_work_path + "donator.db");
+		File all_donor_codes = new File(plugin_work_path + "codes/all.db");
+		File used_donor_codes = new File(plugin_work_path + "codes/used.db");
+		File muted_user_database = new File(plugin_work_path + "muted.db");
+		File server_statistics_list = new File(plugin_work_path + "analytics.csv");
+		File protocol3_server_config = new File(plugin_work_path + "config.txt");
+		File lagfag_user_database = new File(plugin_work_path + "lagfag.db");
+		File playtime_user_database = new File(plugin_work_path + "playtime.db");
 
+		//
+		if (!plugin_work_directory.exists()) plugin_work_directory.mkdir();
+		if (!donor_code_directory.exists()) donor_code_directory.mkdir();
+		if (!donor_list.exists()) donor_list.createNewFile();
+		if (!all_donor_codes.exists()) all_donor_codes.createNewFile();
+		if (!used_donor_codes.exists()) used_donor_codes.createNewFile();
+		if (!muted_user_database.exists()) muted_user_database.createNewFile();
 
-		// Create codes directory
-		File codeDir = new File(path + "codes");
-		if (!codeDir.exists()) codeDir.mkdir();
-
-		// Create donator list
-		File dlist = new File(path + "donator.db");
-		if (!dlist.exists()) dlist.createNewFile();
-
-		// Create donator codes
-		File codes = new File(path + "codes/all.db");
-		if (!codes.exists()) codes.createNewFile();
-
-		// Create used donator codes
-		File ucodes = new File(path + "codes/used.db");
-		if (!ucodes.exists()) ucodes.createNewFile();
-
-		// Create permanent mute list
-		File mlist = new File(path + "muted.db");
-		if (!mlist.exists()) mlist.createNewFile();
-
-		// Create analytics csv
-		File csv = new File(path + "analytics.csv");
-		if (!csv.exists()) {
-			csv.createNewFile();
-			Files.write(Paths.get(csv.getAbsolutePath()),
+		if (!server_statistics_list.exists()) {
+			server_statistics_list.createNewFile();
+			Files.write(Paths.get(server_statistics_list.getAbsolutePath()),
 					"\"Average Playtime\",\"New Joins\", \"Unique Joins\"\n".getBytes());
 		}
 
-		// Write config
-		File config = new File(path + "config.txt");
-		if (!config.exists()) {
-			InputStream link = (Main.class.getResourceAsStream("/config.txt"));
-			Files.copy(link, Paths.get(path + "config.txt"));
+		if (!protocol3_server_config.exists()) {
+			InputStream protocol3_server_config_template = (Main.class.getResourceAsStream("/config.txt"));
+			Files.copy(protocol3_server_config_template, Paths.get(plugin_work_path + "config.txt"));
 		}
 
 		Config.load();
 
-		// Update config if necessary
 		if (Integer.parseInt(Config.getValue("config.version")) < Config.version) {
-			config.delete();
-			InputStream link = (Main.class.getResourceAsStream("/config.txt"));
-			Files.copy(link, Paths.get(path + "config.txt"));
+			protocol3_server_config.delete();
+			InputStream protocol3_server_config_template = (Main.class.getResourceAsStream("/config.txt"));
+			Files.copy(protocol3_server_config_template, Paths.get(plugin_work_path + "config.txt"));
 		}
 
-		// Create lagfag list
-		File llist = new File(path + "lagfag.db");
-		if (!llist.exists()) llist.createNewFile();
+		if (!lagfag_user_database.exists()) lagfag_user_database.createNewFile();
 
-		// Create lagfag list
-		File pt = new File(path + "playtime.db");
-		if (!pt.exists()) pt.createNewFile();
+
+		if (!playtime_user_database.exists()) playtime_user_database.createNewFile();
 
 		Config.load();
 
-		// Load donator codes
-		Files.readAllLines(Paths.get("plugins/protocol3/codes/all.db")).forEach( val ->
+		Files.readAllLines(all_donor_codes.toPath()).forEach( val ->
 				PlayerMeta.DonorCodes.add(val.replace("\"", "").trim())
 		);
 
-		// Load used donator codes
-		Files.readAllLines(Paths.get("plugins/protocol3/codes/used.db")).forEach( val ->
+		Files.readAllLines(used_donor_codes.toPath()).forEach( val ->
 				PlayerMeta.UsedDonorCodes.add(val)
 		);
 
-		// Load playtimes
-		Files.readAllLines(Paths.get("plugins/protocol3/playtime.db")).forEach(val ->
+		Files.readAllLines(playtime_user_database.toPath()).forEach(val ->
 				PlayerMeta.Playtimes.put(UUID.fromString(val.split(":")[0]), Double.parseDouble(val.split(":")[1]))
 		);
 
