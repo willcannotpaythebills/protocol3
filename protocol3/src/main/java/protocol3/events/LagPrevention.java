@@ -1,5 +1,6 @@
 package protocol3.events;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,48 +35,56 @@ public class LagPrevention implements Listener {
 	}
 
 	public static int getWithers() {
-		String[] worldTypes = new String[] { "world", "world_nether", "world_the_end" };
-		int toRet = 0;
+		ArrayList<String> worldTypes = new ArrayList<>();
+		worldTypes.add("world");
+		worldTypes.add("world_nether");
+		worldTypes.add("world_the_end");
+		final int[] toRet = {0};
 		int witherLimit = Integer.parseInt(Config.getValue("wither.limit"));
 
-		List<Entity> entities;
-		for (String worldType : worldTypes) {
-
-			// Cycle through withers in the world and load them into memory
-			entities = Bukkit.getWorld(worldType).getEntities().stream().filter(e -> (e instanceof Wither))
-					.collect(Collectors.toList());
-			for (Entity e : entities) {
-				if (e.getType().equals(EntityType.WITHER) && e.getCustomName() == null) {
-					toRet++;
-					if (toRet > witherLimit) {
-						toRet--;
+		final List<Entity> entities = new ArrayList<>();
+		worldTypes.forEach(worldType -> {
+				entities.clear();
+				entities.addAll(Bukkit.getWorld(worldType).getEntities().stream().filter(e -> (e instanceof Wither))
+						.collect(Collectors.toList()));
+				toRet[0]=0;
+				entities.stream().filter(e -> e.getType().equals(EntityType.WITHER) && e.getCustomName() == null).forEach(e -> {
+					toRet[0]++;
+					if (toRet[0] > witherLimit) {
+						toRet[0]--;
 						Wither w = (Wither) e;
 						w.setHealth(0);
 					}
-				}
-			}
-		}
-		return toRet;
+				});
+		});
+
+			// Cycle through withers in the world and load them into memory
+
+
+		return toRet[0];
 	}
 
 	// Remove old skulls
 	public static int removeOldSkulls() {
-		String[] worldTypes = new String[] { "world", "world_nether", "world_the_end" };
-		int toRet = 0;
-
+		ArrayList<String> worldTypes = new ArrayList<>();
+		worldTypes.add("world");
+		worldTypes.add("world_nether");
+		worldTypes.add("world_the_end");
+		final int[] toRet = {0};
 		int witherLimit = Integer.parseInt(Config.getValue("wither.skull.max_age"));
 
-		List<Entity> entities;
-		for (String worldType : worldTypes) {
-			// Cycle through wither skulls in the world and load them into memory
-			entities = Bukkit.getWorld(worldType).getEntities().stream().filter(e -> (e instanceof WitherSkull))
-					.collect(Collectors.toList());
-			for (Entity e : entities) {
-				if (e.getTicksLived() >= witherLimit && e.getCustomName() == null) {
-					Bukkit.getWorld(worldType).getEntities().remove(e);
-				}
-			}
-		}
-		return toRet;
+		final List<Entity> entities = new ArrayList<>();
+		worldTypes.forEach(worldType -> {
+			entities.clear();
+			entities.addAll(Bukkit.getWorld(worldType).getEntities().stream().filter(e -> (e instanceof WitherSkull))
+					.collect(Collectors.toList()));
+			toRet[0]=0;
+			entities.stream().filter(e -> e.getTicksLived() >= witherLimit && e.getCustomName() == null).forEach(e -> {
+				toRet[0]++;
+				Bukkit.getWorld(worldType).getEntities().remove(e);
+			});
+		});
+
+		return toRet[0];
 	}
 }

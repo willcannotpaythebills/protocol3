@@ -111,20 +111,7 @@ public class Move implements Listener
 
 						if (Config.getValue("item.illegal.agro").equals("true")) {
 							// Containers.
-							if (block instanceof Container) {
-								Container cont = (Container) block;
-								for (ItemStack i : cont.getInventory()) {
-									ItemCheck.IllegalCheck(i);
-								}
-							}
-
-							// Container minecarts.
-							if (block instanceof InventoryHolder) {
-								InventoryHolder cont = (InventoryHolder) block;
-								for (ItemStack i : cont.getInventory()) {
-									ItemCheck.IllegalCheck(i);
-								}
-							}
+							Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container).forEach(blockState -> ((Container) blockState).getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack)));
 						}
 
 						// Too difficult to anti-illegal the end

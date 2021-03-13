@@ -12,8 +12,7 @@ import protocol3.backend.ServerMeta;
 import protocol3.backend.Utilities;
 
 // Playtime processor
-public class ProcessPlaytime extends TimerTask
-{
+public class ProcessPlaytime extends TimerTask {
 	private static long lastTime = 0;
 	private static long lastHour = 0;
 
@@ -23,10 +22,8 @@ public class ProcessPlaytime extends TimerTask
 	private static boolean withersLoaded = false;
 
 	@Override
-	public void run()
-	{
-		if (lastTime == 0)
-		{
+	public void run() {
+		if (lastTime == 0) {
 			lastTime = System.currentTimeMillis();
 			lastHour = System.currentTimeMillis();
 			return;
@@ -35,13 +32,9 @@ public class ProcessPlaytime extends TimerTask
 		long sinceLast = System.currentTimeMillis() - lastTime;
 
 		// Tick playtime
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			PlayerMeta.tickPlaytime(p, sinceLast);
-		}
+		Bukkit.getOnlinePlayers().forEach(p -> PlayerMeta.tickPlaytime(p, sinceLast));
 
-		if (!withersLoaded)
-		{
+		if (!withersLoaded) {
 			// Check current withers
 			// LagPrevention.currentWithers = LagPrevention.getWithers();
 			withersLoaded = true;
@@ -55,27 +48,23 @@ public class ProcessPlaytime extends TimerTask
 		// Tick reconnect delays
 		ServerMeta.tickRcDelays(sinceLast);
 
-		if (System.currentTimeMillis() - lastHour >= 3600000)
-		{
+		if (System.currentTimeMillis() - lastHour >= 3600000) {
 			lastHour = System.currentTimeMillis();
 
 			// do hourly tasks
 		}
 
 		// Check if we need a restart
-		if (LagProcessor.getTPS() < 9)
-		{
+		if (LagProcessor.getTPS() < 9) {
 			lowTpsCounter += sinceLast;
-			if (lowTpsCounter >= 600000)
-			{
+			if (lowTpsCounter >= 600000) {
 				Utilities.restart(true);
 			}
 		}
 
 		timeTillReset = timeTillReset - sinceLast;
 
-		if (timeTillReset <= 0)
-		{
+		if (timeTillReset <= 0) {
 			lowTpsCounter = 0;
 			timeTillReset = 3600000;
 			withersLoaded = false;

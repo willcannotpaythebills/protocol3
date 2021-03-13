@@ -18,6 +18,7 @@ import org.bukkit.util.Vector;
 import protocol3.Main;
 import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
+import protocol3.backend.PlayerMeta;
 import protocol3.backend.ServerMeta;
 
 public class SpeedLimit implements Listener {
@@ -53,6 +54,14 @@ public class SpeedLimit implements Listener {
 						}
 
 						Vector v = new_location.subtract(previous_location).toVector();
+
+						if (Math.abs(Math.floor(v.getX()))  <= 8 && Math.abs(Math.floor(v.getZ())) <= 8 && PlayerMeta.isDonator(player)) {
+							locs.put(player.getUniqueId(), player.getLocation().clone());
+							tped.remove(player.getUniqueId());
+							return;
+						}
+
+						v = new_location.subtract(previous_location).toVector();
 						if (v.clone().normalize().getY() < -0.95) {
 							locs.remove(player.getUniqueId());
 							return;
@@ -63,6 +72,7 @@ public class SpeedLimit implements Listener {
 							totalKicks++;
 							return;
 						}
+
 						locs.put(player.getUniqueId(), player.getLocation().clone());
 						tped.remove(player.getUniqueId());
 					});

@@ -17,10 +17,10 @@ import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
 import protocol3.backend.PlayerMeta;
 
+import java.util.Arrays;
 import java.util.Random;
 
-public class ItemCheckTriggers implements Listener
-{
+public class ItemCheckTriggers implements Listener {
 
 	static Material[] lagItems = { Material.REDSTONE, Material.REDSTONE_BLOCK, Material.ARMOR_STAND,
 			Material.STICKY_PISTON, Material.PISTON, Material.REDSTONE_WALL_TORCH, Material.COMPARATOR,
@@ -29,55 +29,39 @@ public class ItemCheckTriggers implements Listener
 	static Random r = new Random();
 
 	@EventHandler
-	public void onPlace(BlockPlaceEvent e)
-	{
+	public void onPlace(BlockPlaceEvent e) {
 		// Exempt ender portal frames; they are illegal but this event
 		// gets
 		// triggered when player adds eye of ender to portal to fire it.
 		if (e.getItemInHand().getType().equals(Material.ENDER_EYE))
 			return;
 
-		if (PlayerMeta.isLagfag(e.getPlayer()))
-		{
-			for (Material m : lagItems)
-			{
-				if (e.getBlock().getType().equals(m))
-				{
-					e.setCancelled(true);
-				}
-			}
+		if (PlayerMeta.isLagfag(e.getPlayer())) {
+			Arrays.stream(lagItems).filter(m -> e.getBlock().getType().equals(m)).forEach(m -> e.setCancelled(true));
 
 			int randomNumber = r.nextInt(9);
 
-			if (randomNumber == 5 || randomNumber == 6)
-			{
+			if (randomNumber == 5 || randomNumber == 6) {
 				e.getPlayer().spigot().sendMessage(new TextComponent("§cThis is what you get for being a lagfag!"));
 				e.setCancelled(true);
 				return;
 			}
 		}
 
-		if (Config.getValue("place.illegal").equals("true"))
-		{
-			if (Config.getValue("place.illegal.ops").equals("false") && e.getPlayer().isOp())
-			{
+		if (Config.getValue("place.illegal").equals("true")) {
+			if (Config.getValue("place.illegal.ops").equals("false") && e.getPlayer().isOp()) {
 				return;
 			}
+
 			// Check if item isn't placeable
-			for (Material m : ItemCheck.Banned)
-			{
-				if (e.getBlock().getType().equals(m))
-				{
-					e.setCancelled(true);
-					if (Config.getValue("item.illegal.agro").equals("true"))
-					{
-						for (ItemStack is : e.getPlayer().getInventory())
-						{
-							ItemCheck.IllegalCheck(is);
-						}
-					}
+
+			ItemCheck.Banned.stream().filter(m -> e.getBlock().getType().equals(m)).forEach(m -> {
+				e.setCancelled(true);
+				if (Config.getValue("item.illegal.agro").equals("true")) {
+					e.getPlayer().getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
 				}
-			}
+			});
+
 		}
 
 		// Check if item is illegal
@@ -90,52 +74,37 @@ public class ItemCheckTriggers implements Listener
 	}
 
 	@EventHandler
-	public void onOpenInventory(InventoryOpenEvent event)
-	{
-		for (ItemStack i : event.getInventory().getStorageContents())
-		{
-			ItemCheck.IllegalCheck(i);
-		}
+	public void onOpenInventory(InventoryOpenEvent event) {
+		event.getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
 	}
 
 	// Prevents hopper exploits.
 	@EventHandler
-	public void onInventoryMovedItem(InventoryMoveItemEvent event)
-	{
-		if (Config.getValue("item.illegal.agro").equals("true"))
-		{
-			// ItemCheck.IllegalCheck(event.getItem());
-			// for (ItemStack i : event.getSource())
-			// ItemCheck.IllegalCheck(i);
+	public void onInventoryMovedItem(InventoryMoveItemEvent event) {
+		if (Config.getValue("item.illegal.agro").equals("true")) {
+			ItemCheck.IllegalCheck(event.getItem());
+			event.getSource().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
 		}
 	}
 
 	@EventHandler
-	public void onPickupItem(EntityPickupItemEvent e)
-	{
-		if (e.getEntityType().equals(EntityType.PLAYER))
-		{
+	public void onPickupItem(EntityPickupItemEvent e) {
+		if (e.getEntityType().equals(EntityType.PLAYER)) {
 			Player player = (Player) e.getEntity();
 		}
 		if (Config.getValue("item.illegal.agro").equals("true"))
 		{
 			ItemCheck.IllegalCheck(e.getItem().getItemStack());
-			if (e.getEntityType().equals(EntityType.PLAYER))
-			{
+			if (e.getEntityType().equals(EntityType.PLAYER)) {
 				Player player = (Player) e.getEntity();
-				for (ItemStack is : player.getInventory())
-				{
-					ItemCheck.IllegalCheck(is);
-				}
+				player.getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
 			}
 		}
 	}
 
 	@EventHandler
-	public void onInventoryClick(InventoryClickEvent e)
-	{
-		if (Config.getValue("item.illegal.agro").equals("true"))
-		{
+	public void onInventoryClick(InventoryClickEvent e) {
+		if (Config.getValue("item.illegal.agro").equals("true")) {
 			ItemCheck.IllegalCheck(e.getCurrentItem());
 		}
 	}

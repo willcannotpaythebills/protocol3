@@ -50,47 +50,41 @@ import protocol3.tasks.AutoAnnouncer;
 import protocol3.tasks.OnTick;
 import protocol3.tasks.ProcessPlaytime;
 
-public class Main extends JavaPlugin implements Listener
-{
+public class Main extends JavaPlugin implements Listener {
 	public static Plugin instance;
 	public static OfflinePlayer Top = null;
 
 	public Notifications NotificationHandler;
 
 	@Override
-	public void onEnable()
-	{
+	public void onEnable() {
 
 		instance = this;
 
 		// Required files load
 		System.out.println("[protocol3] Creating required files if they do not exist...");
-		try
-		{
+		try {
 			FileManager.setup();
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
 			System.out.println("[protocol3] An error occured creating the necessary files.");
 		}
 
 		// Load required files
 		System.out.println("[protocol3] Loading files..");
-		try
-		{
+		try {
 			PlayerMeta.loadDonators();
 			PlayerMeta.loadMuted();
 			PlayerMeta.loadLagfags();
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
 			System.out.println("[protocol3] An error occured loading files.");
 		}
 
 		// Load timers
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new LagProcessor(), 1L, 1L);
 		// TODO: cleaner solution?
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new AutoAnnouncer(), 15000L, 15000L);
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new ProcessPlaytime(), 20L, 20L);
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new OnTick(), 1L, 1L);
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new AutoAnnouncer(), 15000L, 15000L);
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new ProcessPlaytime(), 20L, 20L);
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new OnTick(), 1L, 1L);
 
 		// Load listeners
 		getServer().getPluginManager().registerEvents(new Chat(), this);
