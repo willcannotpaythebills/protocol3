@@ -15,22 +15,26 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class ItemCheck {
 
-	// Banned materials.
-	public static Material[] Banned = { Material.BEDROCK, Material.BARRIER, Material.COMMAND_BLOCK,
-			Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK, Material.COMMAND_BLOCK_MINECART,
-			Material.END_PORTAL_FRAME, Material.SPAWNER, Material.WATER, Material.LAVA, Material.STRUCTURE_BLOCK };
-
-	// Items that need to be specially rebuilt.
-	public static Material[] Special = { Material.ENCHANTED_BOOK, Material.POTION, Material.LINGERING_POTION,
+	public static ArrayList<Material> Banned = new ArrayList<>(), Special = new ArrayList<>(), LegalHeads = new ArrayList<>();
+	{
+		// Banned materials.
+		Banned.addAll(Arrays.asList(Material.BEDROCK, Material.BARRIER, Material.COMMAND_BLOCK,
+				Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK, Material.COMMAND_BLOCK_MINECART,
+				Material.END_PORTAL_FRAME, Material.SPAWNER, Material.WATER, Material.LAVA, Material.STRUCTURE_BLOCK));
+		// Items that need to be specially rebuilt.
+		Special.addAll(Arrays.asList(Material.ENCHANTED_BOOK, Material.POTION, Material.LINGERING_POTION,
 			Material.TIPPED_ARROW, Material.SPLASH_POTION, Material.WRITTEN_BOOK, Material.FILLED_MAP,
 			Material.PLAYER_WALL_HEAD, Material.PLAYER_HEAD, Material.WRITABLE_BOOK, Material.BEEHIVE,
 			Material.BEE_NEST, Material.RESPAWN_ANCHOR, Material.FIREWORK_ROCKET, Material.FIREWORK_STAR,
-			Material.SHIELD };
-
-	public static Material[] LegalHeads = { Material.CREEPER_HEAD, Material.ZOMBIE_HEAD, Material.SKELETON_SKULL,
-			Material.WITHER_SKELETON_SKULL, Material.DRAGON_HEAD };
+			Material.SHIELD));
+		LegalHeads.addAll(Arrays.asList(Material.CREEPER_HEAD, Material.ZOMBIE_HEAD, Material.SKELETON_SKULL,
+				Material.WITHER_SKELETON_SKULL, Material.DRAGON_HEAD));
+	}
 
 	public static void IllegalCheck(ItemStack item) {
 		if (Config.getValue("item.illegal").equals("false")) return;
@@ -44,44 +48,41 @@ public class ItemCheck {
 		// Iterate through shulker boxes
 
 		if (item.getItemMeta() instanceof BlockStateMeta) {
-			BlockStateMeta im = (BlockStateMeta) item.getItemMeta();
-			if (im.getBlockState() instanceof ShulkerBox) {
-				ShulkerBox shulker = (ShulkerBox) im.getBlockState();
-				for (ItemStack i : shulker.getInventory().getStorageContents()) {
-					if (isShulker(i)) {
-						i.setAmount(0);
-						shulker.update();
-						continue;
+			BlockStateMeta itemstack_metadata = (BlockStateMeta) item.getItemMeta();
+			if (itemstack_metadata.getBlockState() instanceof ShulkerBox) {
+				((ShulkerBox) itemstack_metadata.getBlockState()).getInventory().forEach(itemStack -> {
+					if (isShulker(itemStack)){
+						itemStack.setAmount(0);
+						return;
 					}
-					IllegalCheck(i);
-					shulker.update();
-				}
+					IllegalCheck(itemStack);
+				});
+
+				itemstack_metadata.getBlockState().update();
+
 				if (item.getAmount() > 1) item.setAmount(1);
-				shulker.update();
+
+				itemstack_metadata.getBlockState().update();
 				return;
 			}
 		}
 
 		// Delete banned items
-
-		for (Material mat : Banned) {
-			if (item.getType().equals(mat)) {
-				item.setAmount(0);
-				return;
-			}
-		}
+		Banned.forEach(material -> {
+			if (item.getType().equals(material)) item.setAmount(0);
+			return;
+		});
 
 		// Determine if item needs to be specially rebuilt
-		boolean specialRebuild = false;
-		for (Material s : Special) {
-			if (item.getType().equals(s)) {
-				specialRebuild = true;
-			}
-		}
+		final boolean[] specialRebuild = {false};
+		Special.forEach(material -> {
+			if (item.getType().equals(material))
+				specialRebuild[0] = true;
+		});
 
 		// Delete spawn eggs
 
-		if (item.getType().toString().toUpperCase().contains("SPAWN") && !specialRebuild) {
+		if (item.getType().toString().toUpperCase().contains("SPAWN") && !specialRebuild[0]) {
 			item.setAmount(0);
 			return;
 		}
@@ -94,7 +95,7 @@ public class ItemCheck {
 
 		// Reset item meta
 
-		if (item.hasItemMeta() && !specialRebuild && !(item.getItemMeta() instanceof BannerMeta)) {
+		if (item.hasItemMeta() && !specialRebuild[0] && !(item.getItemMeta() instanceof BannerMeta)) {
 
 			ItemMeta newMeta = Bukkit.getItemFactory().getItemMeta(item.getType());
 
@@ -106,6 +107,7 @@ public class ItemCheck {
 			// Rebuild Item Enchants
 
 			if (item.getItemMeta().hasEnchants()) {
+
 				try {
 					for (Enchantment e : item.getEnchantments().keySet()) {
 
