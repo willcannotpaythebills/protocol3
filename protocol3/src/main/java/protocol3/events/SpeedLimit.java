@@ -47,6 +47,7 @@ public class SpeedLimit implements Listener {
 					.filter(player -> !locs.get(player.getUniqueId()).equals(player.getLocation())).forEach(player -> {
 						Location previous_location = locs.get(player.getUniqueId()).clone();
 						Location new_location = player.getLocation().clone();
+						new_location.setY(previous_location.getY()); // only consider movement in X/Z
 
 						if (previous_location.getWorld() != new_location.getWorld()) {
 							locs.remove(player.getUniqueId());
@@ -54,20 +55,7 @@ public class SpeedLimit implements Listener {
 						}
 
 						Vector v = new_location.subtract(previous_location).toVector();
-
-						if (Math.abs(Math.floor(v.getX()))  <= 8 && Math.abs(Math.floor(v.getZ())) <= 8 && PlayerMeta.isDonator(player)) {
-							locs.put(player.getUniqueId(), player.getLocation().clone());
-							tped.remove(player.getUniqueId());
-							return;
-						}
-
-						v = new_location.subtract(previous_location).toVector();
-						if (v.clone().normalize().getY() < -0.95) {
-							locs.remove(player.getUniqueId());
-							return;
-						}
-
-						if (v.length() > adjallowed) {
+                        if (v.length() > adjallowed) {
 							ServerMeta.kickWithDelay(player, Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
 							totalKicks++;
 							return;
