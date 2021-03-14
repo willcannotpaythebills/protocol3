@@ -4,7 +4,7 @@ Protocol3 is a Java plugin created by d2k11 (gcurtiss) to manage the shit chaos 
 ### Commands  
 | Internal Commands | Description |
 | ----------------- | ----------- |
-| /dupehand         | Copies whatever the player is holding in their hand after they have voted for the server.  |
+| /dupehand         | Copies whatever the player is holding in their hand after they have voted for the server. Troll if run by player.  |
 
 | Admin Commands | Description |
 | ----------------- | ----------- |
