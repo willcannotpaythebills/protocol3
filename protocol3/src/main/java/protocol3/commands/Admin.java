@@ -26,33 +26,34 @@ public class Admin implements CommandExecutor {
 			if (!player.isOp()) {
 				return true;
 			}
-			if (args[0].toUpperCase().equals("COLOR")) {
-				if (UseRedName.contains(player.getUniqueId())) {
-					player.spigot().sendMessage(new TextComponent("§6Disabled red name."));
-					UseRedName.remove(player.getUniqueId());
-				} else {
-					player.spigot().sendMessage(new TextComponent("§6Enabled red name."));
-					UseRedName.add(player.getUniqueId());
-				}
-				return true;
-			} else if (args[0].toUpperCase().equals("SPY")) {
-				if (Spies.contains(player.getUniqueId())) {
-					player.spigot().sendMessage(new TextComponent("§6Disabled spying on player messages."));
-					Spies.remove(player.getUniqueId());
-				} else {
-					player.spigot().sendMessage(new TextComponent("§6Enabled spying on player messages."));
-					Spies.add(player.getUniqueId());
-				}
-				return true;
-			} else if (args[0].toUpperCase().equals("MSGTOGGLE")) {
-				if (MsgToggle.contains(player.getUniqueId())) {
-					player.spigot().sendMessage(new TextComponent("§6Enabled recieving player messages."));
-					MsgToggle.remove(player.getUniqueId());
-				} else {
-					player.spigot().sendMessage(new TextComponent("§6Disabled recieving player messages."));
-					MsgToggle.add(player.getUniqueId());
-				}
-				return true;
+			switch (args[0].toUpperCase()) {
+				case "COLOR":
+					if (UseRedName.contains(player.getUniqueId())) {
+						player.spigot().sendMessage(new TextComponent("§6Disabled red name."));
+						UseRedName.remove(player.getUniqueId());
+					} else {
+						player.spigot().sendMessage(new TextComponent("§6Enabled red name."));
+						UseRedName.add(player.getUniqueId());
+					}
+					return true;
+				case "SPY":
+					if (Spies.contains(player.getUniqueId())) {
+						player.spigot().sendMessage(new TextComponent("§6Disabled spying on player messages."));
+						Spies.remove(player.getUniqueId());
+					} else {
+						player.spigot().sendMessage(new TextComponent("§6Enabled spying on player messages."));
+						Spies.add(player.getUniqueId());
+					}
+					return true;
+				case "MSGTOGGLE":
+					if (MsgToggle.contains(player.getUniqueId())) {
+						player.spigot().sendMessage(new TextComponent("§6Enabled recieving player messages."));
+						MsgToggle.remove(player.getUniqueId());
+					} else {
+						player.spigot().sendMessage(new TextComponent("§6Disabled recieving player messages."));
+						MsgToggle.add(player.getUniqueId());
+					}
+					return true;
 			}
 		}
 		player.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer, Founder"));

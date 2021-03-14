@@ -1,5 +1,6 @@
 package protocol3.commands;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
@@ -33,66 +34,67 @@ public class Lagfag implements CommandExecutor {
 			return true;
 		}
 
-		if (args[0].equals("cam") && sender.isOp()) {
-			Bukkit.getScheduler().runTaskAsynchronously(protocol3.Main.instance, () -> {
-				while (true) {
-					Player op = (Player) sender;
-					Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
-					for (Player p : players) {
-						if (p.isOp())
-							continue;
-						Bukkit.getScheduler().runTask(protocol3.Main.instance, () -> {
-							op.setGameMode(GameMode.SPECTATOR);
-							op.teleport(p.getLocation());
-						});
-						op.sendMessage("§6Player: " + p.getName());
+		if (sender.isOp()) {
+			Player op = (Player) sender;
+			switch (args[0]) {
+				case "cam":
+					Bukkit.getScheduler().runTaskAsynchronously(protocol3.Main.instance, () -> {
+						while (true) {
 
-						while (!threadProgression.get(op.getUniqueId()) && !threadIndicators.get(op.getUniqueId())) {
-							try {
-								Thread.sleep(500);
-							} catch (InterruptedException e) {
+							Player finalOp  = (Player) sender;
+							Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+							players.forEach(p -> {
+								if (p.isOp())
+									return;
+								Bukkit.getScheduler().runTask(protocol3.Main.instance, () -> {
+									finalOp.setGameMode(GameMode.SPECTATOR);
+									finalOp.teleport(p.getLocation());
+								});
+								finalOp.sendMessage("§6Player: " + p.getName());
+
+								while (!threadProgression.get(finalOp.getUniqueId()) && !threadIndicators.get(finalOp.getUniqueId())) {
+									try {
+										Thread.sleep(500);
+									} catch (InterruptedException e) {
+									}
+								}
+
+								if (threadIndicators.get(finalOp.getUniqueId())) {
+									threadIndicators.remove(finalOp.getUniqueId());
+									threadProgression.remove(finalOp.getUniqueId());
+									return;
+								}
+
+								if (threadProgression.get(finalOp.getUniqueId())) {
+									threadProgression.put(finalOp.getUniqueId(), false);
+								}
+
+							});
+							if (threadIndicators.get(finalOp.getUniqueId())) {
+								threadIndicators.remove(finalOp.getUniqueId());
+								threadProgression.remove(finalOp.getUniqueId());
+								break;
 							}
 						}
-
-						if (threadIndicators.get(op.getUniqueId())) {
-							threadIndicators.remove(op.getUniqueId());
-							threadProgression.remove(op.getUniqueId());
-							break;
-						}
-
-						if (threadProgression.get(op.getUniqueId())) {
-							threadProgression.put(op.getUniqueId(), false);
-						}
-
+						return;
+					});
+					op = (Player) sender;
+					threadIndicators.put(op.getUniqueId(), false);
+					threadProgression.put(op.getUniqueId(), false);
+					return true;
+				case "cancel":
+					op = (Player) sender;
+					if (threadIndicators.containsKey(op.getUniqueId())) {
+						threadIndicators.put(op.getUniqueId(), true);
 					}
-					if (threadIndicators.get(op.getUniqueId())) {
-						threadIndicators.remove(op.getUniqueId());
-						threadProgression.remove(op.getUniqueId());
-						break;
+					return true;
+				case "next":
+					op = (Player) sender;
+					if (threadProgression.containsKey(op.getUniqueId())) {
+						threadProgression.put(op.getUniqueId(), true);
 					}
-				}
-				return;
-			});
-			Player oper = (Player) sender;
-			threadIndicators.put(oper.getUniqueId(), false);
-			threadProgression.put(oper.getUniqueId(), false);
-			return true;
-		}
-
-		if (args[0].equals("cancel") && sender.isOp()) {
-			Player op = (Player) sender;
-			if (threadIndicators.containsKey(op.getUniqueId())) {
-				threadIndicators.put(op.getUniqueId(), true);
+					return true;
 			}
-			return true;
-		}
-
-		if (args[0].equals("next") && sender.isOp()) {
-			Player op = (Player) sender;
-			if (threadProgression.containsKey(op.getUniqueId())) {
-				threadProgression.put(op.getUniqueId(), true);
-			}
-			return true;
 		}
 
 		Player lagfag = Bukkit.getPlayer(args[0]);
@@ -102,16 +104,11 @@ public class Lagfag implements CommandExecutor {
 		}
 		PlayerMeta.setLagfag(lagfag, !PlayerMeta.isLagfag(lagfag));
 		if (PlayerMeta.isLagfag(lagfag)) {
-			Bukkit.getServer().spigot().broadcast(new TextComponent("§6" + lagfag.getName() + " is a lagfag!"));
+			Arrays.asList("§6" + lagfag.getName() + " is a lagfag!", "§6IP: " + lagfag.getAddress().toString().split(":")[0].replace("/", ""),
+					"§6COORDS: " + Math.round(lagfag.getLocation().getX()) + ", "
+					+ Math.round(lagfag.getLocation().getY()) + ", "
+					+ Math.round(lagfag.getLocation().getZ())).forEach(s -> Bukkit.getServer().spigot().broadcast(new TextComponent(s)));
 
-			// this is unclean lmao
-			Bukkit.getServer().spigot().broadcast(
-					new TextComponent("§6IP: " + lagfag.getAddress().toString().split(":")[0].replace("/", "")));
-
-			Bukkit.getServer().spigot()
-					.broadcast(new TextComponent("§6COORDS: " + Math.round(lagfag.getLocation().getX()) + ", "
-							+ Math.round(lagfag.getLocation().getY()) + ", "
-							+ Math.round(lagfag.getLocation().getZ())));
 			lagfag.getEnderChest().clear();
 			lagfag.setBedSpawnLocation(Bukkit.getWorld("world").getSpawnLocation(), true);
 			lagfag.setHealth(0);

@@ -2,6 +2,7 @@ package protocol3.commands;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.stream.IntStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
@@ -12,6 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import protocol3.backend.Config;
 import protocol3.backend.PlayerMeta;
 
@@ -23,6 +27,7 @@ public class DupeHand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!PlayerMeta.isOp(sender)) {
 			Player player = (Player) sender;
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 100, 255));
 			player.kickPlayer("§6get fucked newfag [pog]");
 			return true;
 		} else {
@@ -32,8 +37,7 @@ public class DupeHand implements CommandExecutor {
 			if (Config.getValue("vote.heal").equals("true")) {
 				player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 			}
-			for (int x = 0; x < rewardMultiplier; x++) {
-				ItemStack modItemInHand = itemInHand;
+			IntStream.range(0, rewardMultiplier).mapToObj(x -> itemInHand).forEach(modItemInHand -> {
 				if (modItemInHand.getItemMeta() != null) {
 					if (modItemInHand.getItemMeta().hasLore()) {
 						ItemMeta im = modItemInHand.getItemMeta();
@@ -41,15 +45,16 @@ public class DupeHand implements CommandExecutor {
 						modItemInHand.setItemMeta(im);
 					}
 				}
+
 				HashMap<Integer, ItemStack> didntFit = player.getInventory().addItem(modItemInHand);
 				if (!didntFit.values().isEmpty()) {
-					for (Entry<Integer, ItemStack> entry : didntFit.entrySet()) {
-						for (int y = 0; y > entry.getKey(); y++) {
-							player.getWorld().dropItem(player.getLocation(), entry.getValue());
+					didntFit.forEach((key, value) -> {
+						for (int y = 0; y > key; y++) {
+							player.getWorld().dropItem(player.getLocation(), value);
 						}
-					}
+					});
 				}
-			}
+			});
 			return true;
 		}
 	}

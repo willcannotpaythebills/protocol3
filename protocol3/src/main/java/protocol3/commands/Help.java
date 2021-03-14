@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
+import java.util.Arrays;
+
 public class Help implements CommandExecutor
 {
 	@Override
@@ -20,31 +22,29 @@ public class Help implements CommandExecutor
 
 	private void displayPage(int page, CommandSender sender) {
 		int maxPage = 2;
-		if (page > maxPage) {
-			page = maxPage;
-		} else if (page < 1) {
-			page = 1;
-		}
+
+		page = (page > maxPage) ? maxPage : (page < 1) ? page = 1 : page;
 
 		sender.spigot().sendMessage(new TextComponent("§6--- Help Page " + page + "/" + maxPage + " ---"));
-		if (page == 1) {
-			sender.spigot().sendMessage(new TextComponent("§6/help: §7This list of commands"));
-			sender.spigot().sendMessage(new TextComponent(
-					"§6/stats [playername/top/leaderboard]: §7Get a list of statistics about a player"));
-			sender.spigot().sendMessage(new TextComponent("§6/discord: §7Join the discord."));
-			sender.spigot()
-					.sendMessage(new TextComponent("§6/kit: §7Get a netherite kit with steak and more useful tools."));
-			sender.spigot()
-					.sendMessage(new TextComponent("§6/vote: §7Dupe the item in your hand. Only occurs after voting."));
-			sender.spigot().sendMessage(
-					new TextComponent("§6/sign: §7Sign the item you are holding. Cannot undo or overwrite."));
-		} else if (page == 2) {
-			sender.spigot().sendMessage(new TextComponent("§6/server: §7Get statistics about the server."));
-			sender.spigot().sendMessage(new TextComponent("§6/vm [player]: §7Vote to mute a player."));
-			sender.spigot().sendMessage(new TextComponent("§6/kill, /suicide, /kys: §7End it all."));
-			sender.spigot().sendMessage(new TextComponent("§6/msg, /w, /r: §7Message or reply to a player."));
-			sender.spigot().sendMessage(new TextComponent("§6/tdm: §7Toggle death messages."));
-			sender.spigot().sendMessage(new TextComponent("§6/tjm: §7Toggle join messages."));
+		switch (page) {
+			case 1:
+				Arrays.asList("§6/help: §7This list of commands",
+						"§6/stats [playername/top/leaderboard]: §7Get a list of statistics about a player",
+						"§6/discord: §7Join the discord.",
+						"§6/kit: §7Get a netherite kit with steak and more useful tools.",
+						"§6/vote: §7Dupe the item in your hand. Only occurs after voting.",
+						"§6/sign: §7Sign the item you are holding. Cannot undo or overwrite."
+				).forEach(message -> sender.spigot().sendMessage(new TextComponent(message)));
+				break;
+			case 2:
+				Arrays.asList("§6/server: §7Get statistics about the server.",
+						"§6/vm [player]: §7Vote to mute a player.",
+						"§6/kill, /suicide, /kys: §7End it all.",
+						"§6/msg, /w, /r: §7Message or reply to a player.",
+						"§6/tdm: §7Toggle death messages.",
+						"§6/tjm: §7Toggle join messages."
+				).forEach(message -> sender.spigot().sendMessage(new TextComponent(message)));
+				break;
 		}
 		sender.spigot().sendMessage(new TextComponent("§6--- Help Page " + page + "/" + maxPage + " ---"));
 	}
