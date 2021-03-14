@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.PlayerMeta;
 
+import java.util.Arrays;
+
 public class Reply implements CommandExecutor {
 
 	@Override
@@ -54,23 +56,22 @@ public class Reply implements CommandExecutor {
 		}
 
 		// Concatenate
-		String msg = "";
-		for (String s : args) {
-			msg += s + " ";
-		}
-		msg = msg.trim();
+		final String msg[] = new String[]{""};
+		Arrays.asList(args).forEach( s -> msg[0] += s + " ");
+		msg[0] = msg[0].trim();
 
-		for (Player pl : Bukkit.getOnlinePlayers()) {
+		String finalRecvName = recvName;
+		Bukkit.getOnlinePlayers().forEach(pl -> {
 			if (Admin.Spies.contains(pl.getUniqueId())) {
-				pl.spigot().sendMessage(new TextComponent("§5" + sendName + " to " + recvName + ": " + msg));
+				pl.spigot().sendMessage(new TextComponent("§5" + sendName + " to " + finalRecvName + ": " + msg[0]));
 			}
-		}
+		});
 
 		if (!Admin.Spies.contains(recv.getUniqueId())) {
-			recv.spigot().sendMessage(new TextComponent("§dfrom " + sendName + ": " + msg));
+			recv.spigot().sendMessage(new TextComponent("§dfrom " + sendName + ": " + msg[0]));
 		}
 		if (!Admin.Spies.contains(((Player) sender).getUniqueId())) {
-			sender.spigot().sendMessage(new TextComponent("§dto " + recvName + ": " + msg));
+			sender.spigot().sendMessage(new TextComponent("§dto " + recvName + ": " + msg[0]));
 		}
 		Message.Replies.put(recv.getUniqueId(), ((Player) sender).getUniqueId());
 		Message.Replies.put(((Player) sender).getUniqueId(), recv.getUniqueId());

@@ -8,6 +8,8 @@ import org.bukkit.command.ConsoleCommandSender;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
+import java.util.Arrays;
+
 // OP-only say command.
 
 public class Say implements CommandExecutor
@@ -18,20 +20,18 @@ public class Say implements CommandExecutor
 		if (!sender.isOp() && !(sender instanceof ConsoleCommandSender)) {
 			sender.spigot().sendMessage(new TextComponent("§cUnknown command."));
 			return true;
-		} else {
-			String data = "";
-			for (String arg : args)
-				data += arg + " ";
-			data = data.trim();
-			data = data.replace("§", "");
-			if (data.equals("") || data.equals(" ")) {
-				sender.spigot().sendMessage(new TextComponent("§cNo message specified."));
-				return true;
-			}
-			Bukkit.spigot().broadcast(new TextComponent("§d[Server] " + data));
-			System.out.println("§d[Server] " + data);
+		}
+		final String[] data = {""};
+		Arrays.stream(args).forEach(arg -> data[0] += arg + " ");
+		data[0] = data[0].trim();
+		data[0] = data[0].replace("§", "");
+		if (data[0].isEmpty()) {
+			sender.spigot().sendMessage(new TextComponent("§cNo message specified."));
 			return true;
 		}
+		Bukkit.spigot().broadcast(new TextComponent("§d[Server] " + data[0]));
+		System.out.println("§d[Server] " + data[0]);
+		return true;
 	}
 
 }

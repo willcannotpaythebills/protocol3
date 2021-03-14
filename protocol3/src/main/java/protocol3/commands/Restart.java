@@ -18,11 +18,7 @@ public class Restart implements CommandExecutor {
 			sender.spigot().sendMessage(new TextComponent("§cYou can't run this."));
 			return true;
 		}
-		if (args.length != 0) {
-			Utilities.restart(true);
-		} else {
-			Utilities.restart(false);
-		}
+		Utilities.restart(args.length != 0);
 		return true;
 	}
 
