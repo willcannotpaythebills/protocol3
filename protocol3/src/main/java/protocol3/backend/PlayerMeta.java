@@ -119,11 +119,11 @@ public class PlayerMeta
 	}
 
 	public static void tickTempMutes(double msToAdd) {
-		for (UUID u : _temporaryMutes.keySet()) {
+		_temporaryMutes.keySet().forEach(u -> {
 			double oldValue = _temporaryMutes.get(u);
 			_temporaryMutes.put(u, oldValue + (msToAdd / 1000));
 			if (oldValue + (msToAdd / 1000) >= 3600) _temporaryMutes.remove(u);
-		}
+		});
 	}
 
 	// -- LAGFAGS -- //
@@ -148,34 +148,24 @@ public class PlayerMeta
 	}
 
 	public static void saveLagfags() throws IOException {
-		List<String> list = new ArrayList<String>();
-		for (UUID u : _lagfagList.keySet()) {
-			list.add(u.toString() + ":" + _lagfagList.get(u));
-		}
+		List<String> list = _lagfagList.keySet().stream().map(u -> u.toString() + ":" + _lagfagList.get(u)).collect(Collectors.toList());
 		Files.write(Paths.get("plugins/protocol3/lagfag.db"), String.join("\n", list).getBytes());
 	}
 
 	public static void loadLagfags() throws IOException {
 		List<String> lines = Files.readAllLines(Paths.get("plugins/protocol3/lagfag.db"));
-		for (String val : lines) {
-			_lagfagList.put(UUID.fromString(val.split(":")[0]), val.split(":")[1]);
-		}
+		lines.forEach(val -> _lagfagList.put(UUID.fromString(val.split(":")[0]), val.split(":")[1]));
 	}
 
 	// --- SAVE/LOAD DONATORS --- //
 
 	public static void loadDonators() throws IOException {
 		List<String> lines = Files.readAllLines(Paths.get("plugins/protocol3/donator.db"));
-		for (String val : lines) {
-			_donatorList.add(UUID.fromString(val));
-		}
+		lines.forEach(val -> _donatorList.add(UUID.fromString(val)));
 	}
 
 	public static void saveDonators() throws IOException {
-		List<String> list = new ArrayList<String>();
-		for (UUID u : _donatorList) {
-			list.add(u.toString());
-		}
+		List<String> list = _donatorList.stream().map(UUID::toString).collect(Collectors.toList());
 		Files.write(Paths.get("plugins/protocol3/donator.db"), String.join("\n", list).getBytes());
 		Files.write(Paths.get("plugins/protocol3/codes/used.db"), String.join("\n", UsedDonorCodes).getBytes());
 	}
@@ -184,16 +174,11 @@ public class PlayerMeta
 
 	public static void loadMuted() throws IOException {
 		List<String> lines = Files.readAllLines(Paths.get("plugins/protocol3/muted.db"));
-		for (String val : lines) {
-			_permanentMutes.add(UUID.fromString(val));
-		}
+		lines.forEach(val -> _permanentMutes.add(UUID.fromString(val)));
 	}
 
 	public static void saveMuted() throws IOException {
-		List<String> list = new ArrayList<String>();
-		for (UUID u : _permanentMutes) {
-			list.add(u.toString());
-		}
+		List<String> list = _permanentMutes.stream().map(UUID::toString).collect(Collectors.toList());
 		Files.write(Paths.get("plugins/protocol3/muted.db"), String.join("\n", list).getBytes());
 	}
 
@@ -213,19 +198,8 @@ public class PlayerMeta
 	}
 
 	public static int getRank(OfflinePlayer p) {
-
-		if (!Playtimes.containsKey(p.getUniqueId())) return 0;
-
-
-		int x = 0;
-
-		//Playtimes.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).collect(Collectors.toList()).indexOf()
-
-		for (UUID u : Playtimes.keySet()) {
-			x++;
-			if (p.getUniqueId().equals(u)) break;
-		}
-		return x;
+		if (getPlaytime(p)==0) return 0;
+		return Playtimes.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).collect(Collectors.toList()).lastIndexOf(p.getUniqueId());
 	}
 
 	public static HashMap<UUID, Double> getTopFivePlayers() {
