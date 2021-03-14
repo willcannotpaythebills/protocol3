@@ -23,7 +23,7 @@ public class Help implements CommandExecutor
 	private void displayPage(int page, CommandSender sender) {
 		int maxPage = 2;
 
-		page = (page > maxPage) ? maxPage : (page < 1) ? page = 1 : page;
+		page = (page > maxPage) ? maxPage : Math.max(page, 1);
 
 		sender.spigot().sendMessage(new TextComponent("§6--- Help Page " + page + "/" + maxPage + " ---"));
 		switch (page) {

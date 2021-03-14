@@ -10,7 +10,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-protocol3/target/*
+/protocol3/target/*
 
 # External tool builders
 .externalToolBuilders/
