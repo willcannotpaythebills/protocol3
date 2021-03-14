@@ -1,6 +1,11 @@
 package protocol3.events;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -8,14 +13,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.block.CreatureSpawner;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.Config;
@@ -30,24 +32,29 @@ public class Move implements Listener
 	static Random r = new Random();
 
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event)
+	{
 		// This method is actually fired upon head rotate to; if the player's coords did
 		// not change,
 		// don't fire this event
 
 		if (event.getFrom().getBlockX() == event.getTo().getBlockX()
 				&& event.getFrom().getBlockY() == event.getTo().getBlockY()
-				&& event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
+				&& event.getFrom().getBlockZ() == event.getTo().getBlockZ())
+			return;
 
-		if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
+		if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL))
+		{
 			event.getPlayer().setInvulnerable(false);
 		}
 
 		// lagfag torture
-		if (PlayerMeta.isLagfag(event.getPlayer())) {
+		if (PlayerMeta.isLagfag(event.getPlayer()))
+		{
 			int randomNumber = r.nextInt(9);
 
-			if (randomNumber == 5 || randomNumber == 6) {
+			if (randomNumber == 5 || randomNumber == 6)
+			{
 				event.getPlayer().spigot().sendMessage(new TextComponent("§cThis is what you get for being a lagfag!"));
 				event.setCancelled(true);
 				return;
@@ -55,7 +62,8 @@ public class Move implements Listener
 
 			randomNumber = r.nextInt(250);
 
-			if (randomNumber == 21) {
+			if (randomNumber == 21)
+			{
 				event.getPlayer().kickPlayer("§6fuck you lol");
 				return;
 			}
@@ -72,19 +80,24 @@ public class Move implements Listener
 
 		// Check every chunk the player enters
 
-		if (!lastChunks.containsKey(playerUuid)) {
+		if (!lastChunks.containsKey(playerUuid))
+		{
 			lastChunks.put(playerUuid, p.getLocation().getChunk());
 			needsCheck = true;
-		} else {
-			if (lastChunks.get(playerUuid) != p.getLocation().getChunk()) {
+		} else
+		{
+			if (lastChunks.get(playerUuid) != p.getLocation().getChunk())
+			{
 				lastChunks.put(playerUuid, p.getLocation().getChunk());
 				needsCheck = true;
 			}
 		}
 
-		if (Config.getValue("movement.block.chunkcheck").equals("false")) needsCheck = false;
+		if (Config.getValue("movement.block.chunkcheck").equals("false"))
+			needsCheck = false;
 
-		if (needsCheck) {
+		if (needsCheck)
+		{
 			boolean containsSpawner = false;
 			boolean portalsIllegal = false;
 			Chunk c = p.getLocation().getChunk();
@@ -93,7 +106,8 @@ public class Move implements Listener
 
 			int X = c.getX() * 16;
 			int Z = c.getZ() * 16;
-			if (X >= -25000 && X <= 25000 && Z >= -25000 && Z <= 25000) {
+			if (X >= -25000 && X <= 25000 && Z >= -25000 && Z <= 25000)
+			{
 				portalsIllegal = true;
 			}
 
@@ -105,58 +119,75 @@ public class Move implements Listener
 
 			List<Block> frames = new ArrayList();
 
-			// Todo : Read Docs on what the server considers tile entities. From there we can check even quicker at containers and other blocks.
-			//Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
+			// Todo : Read Docs on what the server considers tile entities. From there we
+			// can check even quicker at containers and other blocks.
+			// Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities
+			// instanceof Container)
 
-			for (int x = 0; x < 16; x++) {
-				for (int z = 0; z < 16; z++) {
-					for (int y = 0; y < 256; y++) {
+			for (int x = 0; x < 16; x++)
+			{
+				for (int z = 0; z < 16; z++)
+				{
+					for (int y = 0; y < 256; y++)
+					{
 						Block block = p.getWorld().getBlockAt(X + x, y, Z + z);
 
 						// aggressive mode: check all containers for illegal items and destroy them
-						if (illegalItemAgro) {
+						if (illegalItemAgro)
+						{
 							// Containers.
-							Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container).forEach(blockState -> ((Container) blockState).getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack)));
+							Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
+									.forEach(blockState -> ((Container) blockState).getInventory()
+											.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack)));
 						}
 
 						// Too difficult to anti-illegal the end
-						if (inEnd) continue;
+						if (inEnd)
+							continue;
 
 						// handle unbreakable objects
-						if (block.getType().getHardness() == -1) {
+						if (block.getType().getHardness() == -1)
+						{
 
 							// ignore piston heads
 							if (block.getType().equals(Material.PISTON_HEAD)
-									|| block.getType().equals(Material.MOVING_PISTON)) continue;
+									|| block.getType().equals(Material.MOVING_PISTON))
+								continue;
 
 							// ignore nether portals (the purple part)
-							if (block.getType().equals(Material.NETHER_PORTAL)) continue;
+							if (block.getType().equals(Material.NETHER_PORTAL))
+								continue;
 
 							// eliminiate illegal end portals (too close to spawn)
 							if (portalsIllegal && (block.getType().equals(Material.END_PORTAL_FRAME)
 									|| block.getType().equals(Material.END_GATEWAY)
-									|| block.getType().equals(Material.END_PORTAL))) {
+									|| block.getType().equals(Material.END_PORTAL)))
+							{
 								block.setType(Material.AIR);
 								continue;
 							}
 
 							// allow bedrock at y <= 4 in all worlds
-							if (block.getType().equals(Material.BEDROCK) && y <= 4) continue;
+							if (block.getType().equals(Material.BEDROCK) && y <= 4)
+								continue;
 
 							// allow bedrock at y >= 123 in the nether
-							if (block.getType().equals(Material.BEDROCK)
-									&& inNether && y >= 123) continue;
+							if (block.getType().equals(Material.BEDROCK) && inNether && y >= 123)
+								continue;
 
 							// check for silverfish spawners
-							if (block.getType().equals(Material.SPAWNER)) {
+							if (block.getType().equals(Material.SPAWNER))
+							{
 								CreatureSpawner cs = ((CreatureSpawner) block.getState());
-								if (cs.getSpawnedType().equals(EntityType.SILVERFISH)) {
+								if (cs.getSpawnedType().equals(EntityType.SILVERFISH))
+								{
 									containsSpawner = true;
 								}
 							}
 
 							if (block.getType().equals(Material.END_PORTAL_FRAME)
-									|| block.getType().equals(Material.END_PORTAL)) {
+									|| block.getType().equals(Material.END_PORTAL))
+							{
 								frames.add(block);
 								continue;
 							}
@@ -165,14 +196,15 @@ public class Move implements Listener
 						}
 
 						// make sure the floor is solid in both dimensions at y=1
-						if (y == 1 && !(block.getType().equals(Material.BEDROCK))) {
+						if (y == 1 && !(block.getType().equals(Material.BEDROCK)))
+						{
 							block.setType(Material.BEDROCK);
 							continue;
 						}
 
 						// make sure the nether ceiling is solid at y=127
-						if (inNether && y == 127
-								&& !(block.getType().equals(Material.BEDROCK))) {
+						if (inNether && y == 127 && !(block.getType().equals(Material.BEDROCK)))
+						{
 							block.setType(Material.BEDROCK);
 							continue;
 						}
@@ -180,15 +212,19 @@ public class Move implements Listener
 				}
 			}
 
-			// If frames and no spawner, make sure there's exactly 12, then allow it to
-			// exist
+			// If frames and no spawner, make sure there's not more than 12.
+			// Sometimes portal rooms generate half in one chunk and half in another chunk,
+			// but no portal will ever contain
+			// more than 12 frames
 
-			if (!frames.isEmpty() && !containsSpawner) {
+			if (!frames.isEmpty() && !containsSpawner)
+			{
 				frames.forEach(block -> {
-					if (!block.getType().equals(Material.END_PORTAL_FRAME)) frames.remove(block);
+					if (!block.getType().equals(Material.END_PORTAL_FRAME))
+						frames.remove(block);
 				});
-				// FIXME - should this be frames.size() != 12 per comment above?
-				if (frames.size() > 12) {
+				if (frames.size() > 12)
+				{
 					frames.forEach(block -> block.setType(Material.AIR));
 				}
 			}
@@ -197,12 +233,12 @@ public class Move implements Listener
 		// -- ROOF AND FLOOR PATCH -- //
 
 		// kill players on the roof of the nether
-		if (inNether && p.getLocation().getY() > 127
-				&& Config.getValue("movement.block.roof").equals("true")) p.setHealth(0);
+		if (inNether && p.getLocation().getY() > 127 && Config.getValue("movement.block.roof").equals("true"))
+			p.setHealth(0);
 
 		// kill players below ground in overworld and nether
-		if (!inEnd && p.getLocation().getY() <= 0
-				&& Config.getValue("movement.block.floor").equals("true")) p.setHealth(0);
+		if (!inEnd && p.getLocation().getY() <= 0 && Config.getValue("movement.block.floor").equals("true"))
+			p.setHealth(0);
 	}
 
 }
