@@ -41,11 +41,16 @@ public class SpeedLimit implements Listener
 			double adjallowed = Math.round(allowed + slower * 4.0 * allowed);
 
 			Bukkit.getOnlinePlayers().stream().filter(player -> !player.isOp())
-					.filter(player -> locs.get(player.getUniqueId()) != null)
-					.filter(player -> !tped.contains(player.getUniqueId()))
-					.filter(player -> !locs.get(player.getUniqueId()).equals(player.getLocation())).forEach(player -> {
-						Location previous_location = locs.get(player.getUniqueId()).clone();
+					.filter(player -> !tped.contains(player.getUniqueId())).forEach(player -> {
+						Location previous_location = locs.get(player.getUniqueId());
+						if (previous_location == null) {
+							locs.put(player.getUniqueId(), player.getLocation().clone());
+							return;
+						}
 						Location new_location = player.getLocation().clone();
+						if (new_location.equals(previous_location)) {
+							return;
+						}
 						new_location.setY(previous_location.getY()); // only consider movement in X/Z
 
 						if (previous_location.getWorld() != new_location.getWorld())
