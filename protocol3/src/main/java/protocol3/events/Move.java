@@ -62,18 +62,22 @@ public class Move implements Listener
 		}
 
 		Player p = event.getPlayer();
+		UUID playerUuid = p.getUniqueId();
 		boolean needsCheck = false;
+		boolean inNether = p.getLocation().getWorld().getName().equals("world_nether");
+		boolean inEnd = p.getLocation().getWorld().getName().equals("world_the_end");
 
 		// -- ILLEGAL PLACEMENT PATCH -- //
+		boolean illegalItemAgro = Boolean.parseBoolean(Config.getValue("item.illegal.agro"));
 
 		// Check every chunk the player enters
 
-		if (!lastChunks.containsKey(event.getPlayer().getUniqueId())) {
-			lastChunks.put(p.getUniqueId(), p.getLocation().getChunk());
+		if (!lastChunks.containsKey(playerUuid)) {
+			lastChunks.put(playerUuid, p.getLocation().getChunk());
 			needsCheck = true;
 		} else {
-			if (lastChunks.get(p.getUniqueId()) != p.getLocation().getChunk()) {
-				lastChunks.put(p.getUniqueId(), p.getLocation().getChunk());
+			if (lastChunks.get(playerUuid) != p.getLocation().getChunk()) {
+				lastChunks.put(playerUuid, p.getLocation().getChunk());
 				needsCheck = true;
 			}
 		}
@@ -82,15 +86,15 @@ public class Move implements Listener
 
 		if (needsCheck) {
 			boolean containsSpawner = false;
-			boolean noPortals = false;
+			boolean portalsIllegal = false;
 			Chunk c = p.getLocation().getChunk();
 
 			// Portals dont spawn within a 25000 block radius of spawn
 
 			int X = c.getX() * 16;
 			int Z = c.getZ() * 16;
-			if ((c.getX() >= 25000 || c.getX() <= -25000) || (c.getZ() >= 25000 || c.getZ() <= -25000)) {
-				noPortals = true;
+			if (X >= -25000 && X <= 25000 && Z >= -25000 && Z <= 25000) {
+				portalsIllegal = true;
 			}
 
 			// Create an array of frames because a certain amount of frames are necessary
@@ -109,33 +113,41 @@ public class Move implements Listener
 					for (int y = 0; y < 256; y++) {
 						Block block = p.getWorld().getBlockAt(X + x, y, Z + z);
 
-						if (Config.getValue("item.illegal.agro").equals("true")) {
+						// aggressive mode: check all containers for illegal items and destroy them
+						if (illegalItemAgro) {
 							// Containers.
 							Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container).forEach(blockState -> ((Container) blockState).getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack)));
 						}
 
 						// Too difficult to anti-illegal the end
-						if (block.getWorld().getName().equals("world_the_end")) continue;
+						if (inEnd) continue;
 
+						// handle unbreakable objects
 						if (block.getType().getHardness() == -1) {
 
+							// ignore piston heads
 							if (block.getType().equals(Material.PISTON_HEAD)
 									|| block.getType().equals(Material.MOVING_PISTON)) continue;
 
+							// ignore nether portals (the purple part)
 							if (block.getType().equals(Material.NETHER_PORTAL)) continue;
 
-							if (noPortals && (block.getType().equals(Material.END_PORTAL_FRAME)
+							// eliminiate illegal end portals (too close to spawn)
+							if (portalsIllegal && (block.getType().equals(Material.END_PORTAL_FRAME)
 									|| block.getType().equals(Material.END_GATEWAY)
 									|| block.getType().equals(Material.END_PORTAL))) {
 								block.setType(Material.AIR);
 								continue;
 							}
 
+							// allow bedrock at y <= 4 in all worlds
 							if (block.getType().equals(Material.BEDROCK) && y <= 4) continue;
 
+							// allow bedrock at y >= 123 in the nether
 							if (block.getType().equals(Material.BEDROCK)
-									&& block.getWorld().getName().equals("world_nether") && y >= 123) continue;
+									&& inNether && y >= 123) continue;
 
+							// check for silverfish spawners
 							if (block.getType().equals(Material.SPAWNER)) {
 								CreatureSpawner cs = ((CreatureSpawner) block.getState());
 								if (cs.getSpawnedType().equals(EntityType.SILVERFISH)) {
@@ -152,13 +164,15 @@ public class Move implements Listener
 							block.setType(Material.AIR);
 						}
 
-						if (!(block.getType().equals(Material.BEDROCK)) && y == 1) {
+						// make sure the floor is solid in both dimensions at y=1
+						if (y == 1 && !(block.getType().equals(Material.BEDROCK))) {
 							block.setType(Material.BEDROCK);
 							continue;
 						}
 
-						if (!(block.getType().equals(Material.BEDROCK)) && y == 127
-								&& block.getWorld().getName().equals("world_nether")) {
+						// make sure the nether ceiling is solid at y=127
+						if (inNether && y == 127
+								&& !(block.getType().equals(Material.BEDROCK))) {
 							block.setType(Material.BEDROCK);
 							continue;
 						}
@@ -173,6 +187,7 @@ public class Move implements Listener
 				frames.forEach(block -> {
 					if (!block.getType().equals(Material.END_PORTAL_FRAME)) frames.remove(block);
 				});
+				// FIXME - should this be frames.size() != 12 per comment above?
 				if (frames.size() > 12) {
 					frames.forEach(block -> block.setType(Material.AIR));
 				}
@@ -181,12 +196,13 @@ public class Move implements Listener
 
 		// -- ROOF AND FLOOR PATCH -- //
 
-		if ((p.getLocation().getY() > 127 && p.getLocation().getWorld().getName().equals("world_nether")
-				&& Config.getValue("movement.block.roof").equals("true"))) p.setHealth(0);
+		// kill players on the roof of the nether
+		if (inNether && p.getLocation().getY() > 127
+				&& Config.getValue("movement.block.roof").equals("true")) p.setHealth(0);
 
-
-		if ((p.getLocation().getY() <= 0 && !p.getLocation().getWorld().getName().equals("world_the_end")
-				&& Config.getValue("movement.block.floor").equals("true"))) p.setHealth(0);
+		// kill players below ground in overworld and nether
+		if (!inEnd && p.getLocation().getY() <= 0
+				&& Config.getValue("movement.block.floor").equals("true")) p.setHealth(0);
 	}
 
 }
