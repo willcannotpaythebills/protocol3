@@ -19,10 +19,16 @@ import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.ServerMeta;
 
+import net.md_5.bungee.api.chat.TextComponent;
+
 public class SpeedLimit implements Listener
 {
+	// default: 10 second grace period
+	private static final int GRACE_PERIOD = 10;
+
 	private static HashMap<UUID, Location> locs = new HashMap<UUID, Location>();
 	private static List<UUID> tped = new ArrayList<UUID>();
+	private static HashMap<UUID, Integer> gracePeriod = new HashMap<UUID, Integer>();
 	private static long lastCheck = -1;
 
 	public static int totalKicks = 0;
@@ -77,16 +83,40 @@ public class SpeedLimit implements Listener
 							return;
 						}
 
-						Vector v = new_location.subtract(previous_location).toVector();
-						double speed = v.length() / duration;
-						if (speed > allowed)
-						{
-							ServerMeta.kickWithDelay(player,
-									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-							totalKicks++;
-							return;
+						Integer grace = gracePeriod.get(player.getUniqueId());
+						if (grace == null) {
+							grace = GRACE_PERIOD;
 						}
 
+						Vector v = new_location.subtract(previous_location).toVector();
+						double speed = v.length() / duration;
+
+						// player is going too fast, warn or kick
+						if (speed > allowed)
+						{
+							if (grace == 0) {
+								gracePeriod.put(player.getUniqueID(), GRACE_PERIOD);
+								ServerMeta.kickWithDelay(player,
+										Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+								totalKicks++;
+								return;
+							} else {
+								// display speed with one decimal
+								double display_speed = Math.round(speed * 10.0) / 10.0;
+								player.spigot().sendMessage(new TextComponent("§4Your speed is " + display_speed + ", speed limit is " + allowed + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
+							}
+
+							--grace;
+							gracePeriod.put(player.getUniqueId(), grace);
+						}
+
+						// player isn't going too fast, reset grace period
+						else {
+							if (grace < GRACE_PERIOD)
+								++grace;
+						}
+
+						gracePeriod.put(player.getUniqueId(), grace);
 						locs.put(player.getUniqueId(), player.getLocation().clone());
 					});
 		}, 20L, 20L);
