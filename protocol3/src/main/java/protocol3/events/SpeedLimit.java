@@ -23,7 +23,7 @@ public class SpeedLimit implements Listener
 {
 	private static HashMap<UUID, Location> locs = new HashMap<UUID, Location>();
 	private static List<UUID> tped = new ArrayList<UUID>();
-        private static long lastCheck = -1;
+	private static long lastCheck = -1;
 
 	public static int totalKicks = 0;
 
