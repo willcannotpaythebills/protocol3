@@ -95,7 +95,7 @@ public class SpeedLimit implements Listener
 						if (speed > allowed)
 						{
 							if (grace == 0) {
-								gracePeriod.put(player.getUniqueID(), GRACE_PERIOD);
+								gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
 								ServerMeta.kickWithDelay(player,
 										Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
 								totalKicks++;
