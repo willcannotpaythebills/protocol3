@@ -23,6 +23,7 @@ public class SpeedLimit implements Listener
 {
 	private static HashMap<UUID, Location> locs = new HashMap<UUID, Location>();
 	private static List<UUID> tped = new ArrayList<UUID>();
+        private static long lastCheck = -1;
 
 	public static int totalKicks = 0;
 
@@ -31,17 +32,34 @@ public class SpeedLimit implements Listener
 	{
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.instance, () -> {
 
+			if (lastCheck < 0) {
+				lastCheck = System.currentTimeMillis();
+				return;
+			}
+
+			long now = System.currentTimeMillis();
+			double duration = (now - lastCheck) / 1000.0;
+			lastCheck = now;
+
 			double tps = LagProcessor.getTPS();
 
-			double allowed = (tps >= 15.0) ? Integer.parseInt(Config.getValue("speedlimit.tier_one"))
-					: Integer.parseInt(Config.getValue("speedlimit.tier_two"));
+			double allowed;
+			if (tps >= 19) allowed = 48;		// 19-20
+			else if (tps >= 18) allowed = 45;	// 18-19
+			else if (tps >= 17) allowed = 42;	// 17-18
+			else if (tps >= 16) allowed = 39;	// 16-17
+			else if (tps >= 15) allowed = 36;	// 15-16
+			else allowed = 33;					// < 15
 
-			// This is the most accurate speed calculation from my testing.
-			double slower = 1.0 - tps / 20.0;
-			double adjallowed = Math.round(allowed + slower * 4.0 * allowed);
+			Bukkit.getOnlinePlayers().stream().filter(player -> !player.isOp()).forEach(player -> {
+						// updated teleported player position
+						if (tped.contains(player.getUniqueId())) {
+							tped.remove(player.getUniqueId());
+							locs.put(player.getUniqueId(), player.getLocation().clone());
+							return;
+						}
 
-			Bukkit.getOnlinePlayers().stream().filter(player -> !player.isOp())
-					.filter(player -> !tped.contains(player.getUniqueId())).forEach(player -> {
+						// set previous location if it doesn't exist and bail
 						Location previous_location = locs.get(player.getUniqueId());
 						if (previous_location == null) {
 							locs.put(player.getUniqueId(), player.getLocation().clone());
@@ -60,7 +78,8 @@ public class SpeedLimit implements Listener
 						}
 
 						Vector v = new_location.subtract(previous_location).toVector();
-						if (v.length() > adjallowed)
+						double speed = v.length() / duration;
+						if (speed > allowed)
 						{
 							ServerMeta.kickWithDelay(player,
 									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
@@ -69,7 +88,6 @@ public class SpeedLimit implements Listener
 						}
 
 						locs.put(player.getUniqueId(), player.getLocation().clone());
-						tped.remove(player.getUniqueId());
 					});
 		}, 20L, 20L);
 	}
