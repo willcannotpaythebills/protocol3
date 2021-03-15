@@ -49,13 +49,8 @@ public class SpeedLimit implements Listener
 
 			double tps = LagProcessor.getTPS();
 
-			double allowed;
-			if (tps >= 19) allowed = 48;		// 19-20
-			else if (tps >= 18) allowed = 45;	// 18-19
-			else if (tps >= 17) allowed = 42;	// 17-18
-			else if (tps >= 16) allowed = 39;	// 16-17
-			else if (tps >= 15) allowed = 36;	// 15-16
-			else allowed = 33;					// < 15
+			double allowed = (tps >= 15.0) ? Integer.parseInt(Config.getValue("speedlimit.tier_one"))
+					: Integer.parseInt(Config.getValue("speedlimit.tier_two"));
 
 			Bukkit.getOnlinePlayers().stream().filter(player -> !player.isOp()).forEach(player -> {
 						// updated teleported player position
