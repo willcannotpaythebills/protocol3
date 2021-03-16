@@ -27,7 +27,6 @@ public class DupeHand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!PlayerMeta.isOp(sender)) {
 			Player player = (Player) sender;
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 100, 255));
 			player.kickPlayer("§6get fucked newfag [pog]");
 			return true;
 		} else {

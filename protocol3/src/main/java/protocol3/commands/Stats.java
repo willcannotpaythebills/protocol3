@@ -1,9 +1,11 @@
 package protocol3.commands;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -82,15 +84,19 @@ public class Stats implements CommandExecutor {
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 			String firstPlayed = sdf.format(date);
 			String lastPlayed = sdf.format(new Date(p.getLastPlayed()));
-			Arrays.asList("§6--- §6§l " + p.getName() + "§r§6's Statistics ---",
-					"§6Joined: §6§l" + firstPlayed,
-					"§6Last seen: §6§l" + lastPlayed,
-					(!PlayerMeta.Playtimes.containsKey(p.getUniqueId()))?
-							"§6§oSome statistics cannot be shown (untracked)." :
-							new String[]{
-									"§6Ranking: §6§l#" + PlayerMeta.getRank(p),
-									"§6Time played: " + Utilities.calculateTime(PlayerMeta.getPlaytime(p))})
-					.forEach(s -> player.spigot().sendMessage(new TextComponent((String) s)));
+		    List<String> message = new ArrayList<String>();
+			message.add("§6--- §6§l " + p.getName() + "§r§6's Statistics ---");
+			message.add("§6Joined: §6§l" + firstPlayed);
+			message.add("§6Last seen: §6§l" + lastPlayed);
+			
+			if(!PlayerMeta.Playtimes.containsKey(p.getUniqueId())) {
+				message.add("§6§oSome statistics cannot be shown (untracked).");
+			}
+			else {
+				message.add("§6Ranking: §6§l#" + PlayerMeta.getRank(p));
+				message.add("§6Time played: " + Utilities.calculateTime(PlayerMeta.getPlaytime(p)));
+			}
+			message.forEach(s -> player.spigot().sendMessage(new TextComponent(s)));
 			return true;
 		} else {
 			Date date = new Date(player.getFirstPlayed());

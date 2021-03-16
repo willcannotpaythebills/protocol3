@@ -37,7 +37,7 @@ public class ItemCheck {
 				Material.WITHER_SKELETON_SKULL, Material.DRAGON_HEAD));
 	}
 
-	public static void IllegalCheck(ItemStack item) {
+	public static void IllegalCheck(ItemStack item, String trigger) {
 		if (Config.getValue("item.illegal").equals("false")) return;
 
 		// Dont check null items
@@ -45,6 +45,10 @@ public class ItemCheck {
 
 		// Dont check air
 		if (item.getType().equals(Material.AIR)) return;
+		
+		if(Config.getValue("debug").equals("true")) {
+			System.out.println("[protocol3] ILLEGAL CHECK: "+trigger);
+		}
 
 		// Iterate through shulker boxes
 
@@ -56,7 +60,7 @@ public class ItemCheck {
 						itemStack.setAmount(0);
 						return;
 					}
-					IllegalCheck(itemStack);
+					IllegalCheck(itemStack, "RECURSION_SHULKER");
 				});
 
 				itemstack_metadata.getBlockState().update();

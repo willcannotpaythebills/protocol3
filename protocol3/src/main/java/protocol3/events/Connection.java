@@ -55,13 +55,13 @@ public class Connection implements Listener {
 
 		// Full player check on initial join
 		if (Config.getValue("item.illegal.onjoin").equals("true")) {
-			e.getPlayer().getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
-			e.getPlayer().getEnderChest().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
-			Arrays.stream(e.getPlayer().getInventory().getArmorContents()).forEach(itemStack -> ItemCheck.IllegalCheck(itemStack));
+			e.getPlayer().getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, ""));
+			e.getPlayer().getEnderChest().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, ""));
+			Arrays.stream(e.getPlayer().getInventory().getArmorContents()).forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "LOGON_INVENTORY_ITEM"));
 
-			ItemCheck.IllegalCheck(e.getPlayer().getInventory().getItemInMainHand());
+			ItemCheck.IllegalCheck(e.getPlayer().getInventory().getItemInMainHand(), "LOGON_MAIN_HAND");
 
-			ItemCheck.IllegalCheck(e.getPlayer().getInventory().getItemInOffHand());
+			ItemCheck.IllegalCheck(e.getPlayer().getInventory().getItemInOffHand(), "LOGON_OFF_HAND");
 		}
 
 		// Set survival if enabled; exempt ops

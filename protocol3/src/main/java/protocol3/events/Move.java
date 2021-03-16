@@ -138,7 +138,7 @@ public class Move implements Listener
 							// Containers.
 							Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
 									.forEach(blockState -> ((Container) blockState).getInventory()
-											.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack)));
+											.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK")));
 						}
 
 						// Too difficult to anti-illegal the end

@@ -51,7 +51,7 @@ public class Sign implements CommandExecutor
 
 	private boolean sign(ItemStack i, Player p) {
 
-		ItemCheck.IllegalCheck(i);
+		ItemCheck.IllegalCheck(i, "ITEM_SIGNED");
 
 		if (i == null || i.getType().equals(Material.AIR)) {
 			return false;

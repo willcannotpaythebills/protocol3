@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 14
+config.version = 16
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -67,8 +67,8 @@ vote.enable = true
 // Enable or disable manual execution of vote reward. Use for debug only. false = disabled [default] true = enabled
 vote.debug = false
 
-// Vote reward multiplier. false = disabled true = enabled [default]
-vote.multiplier = true
+// Vote reward multiplier. default = 1
+vote.multiplier = 1
 
 // Vote reward also heals player to max health. false = disabled true = enabled [default]
 vote.heal = true
@@ -117,3 +117,6 @@ misc.survival = true
 
 // Enable or disable the prank /kit command. false = disabled true = enabled [default]
 funny.kit = true
+
+// Enable EXTREMELY LOUD debugging. false = disabled true = enabled
+debug = false
