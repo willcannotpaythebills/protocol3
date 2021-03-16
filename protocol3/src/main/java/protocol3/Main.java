@@ -1,29 +1,31 @@
 package protocol3;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import protocol3.backend.*;
 import protocol3.commands.*;
 import protocol3.events.*;
-import protocol3.tasks.*;
+import protocol3.tasks.AutoAnnouncer;
+import protocol3.tasks.OnTick;
+import protocol3.tasks.ProcessPlaytime;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class Main extends JavaPlugin implements Listener {
 	public static Plugin instance;
 	public static OfflinePlayer Top = null;
+
+	public Notifications NotificationHandler;
 
 	@Override
 	public void onEnable() {
@@ -77,7 +79,7 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 				});
-		
+
 		// Define banned & special blocks
 		// Banned materials.
 		ItemCheck.Banned.addAll(Arrays.asList(Material.BEDROCK, Material.BARRIER, Material.COMMAND_BLOCK,
@@ -118,7 +120,11 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("tjm").setExecutor(new ToggleJoinMessages());
 		this.getCommand("server").setExecutor(new Server());
 		this.getCommand("help").setExecutor(new Help());
-		
+
+		// Enable discord notifications for this instance
+		NotificationHandler = new Notifications();
+		getServer().getPluginManager().registerEvents(NotificationHandler, this);
+
 		System.out.println("[protocol3] Finished loading.");
 	}
 
