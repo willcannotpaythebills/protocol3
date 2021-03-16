@@ -1,7 +1,9 @@
 package protocol3;
 
 import java.io.IOException;
+import java.util.Arrays;
 
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -75,6 +77,20 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 				});
+		
+		// Define banned & special blocks
+		// Banned materials.
+		ItemCheck.Banned.addAll(Arrays.asList(Material.BEDROCK, Material.BARRIER, Material.COMMAND_BLOCK,
+				Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK, Material.COMMAND_BLOCK_MINECART,
+				Material.END_PORTAL_FRAME, Material.SPAWNER, Material.WATER, Material.LAVA, Material.STRUCTURE_BLOCK));
+		// Items that need to be specially rebuilt.
+		ItemCheck.Special.addAll(Arrays.asList(Material.ENCHANTED_BOOK, Material.POTION, Material.LINGERING_POTION,
+				Material.TIPPED_ARROW, Material.SPLASH_POTION, Material.WRITTEN_BOOK, Material.FILLED_MAP,
+				Material.PLAYER_WALL_HEAD, Material.PLAYER_HEAD, Material.WRITABLE_BOOK, Material.BEEHIVE,
+				Material.BEE_NEST, Material.RESPAWN_ANCHOR, Material.FIREWORK_ROCKET, Material.FIREWORK_STAR,
+				Material.SHIELD));
+		ItemCheck.LegalHeads.addAll(Arrays.asList(Material.CREEPER_HEAD, Material.ZOMBIE_HEAD, Material.SKELETON_SKULL,
+				Material.WITHER_SKELETON_SKULL, Material.DRAGON_HEAD));
 
 		// Enable speed limit
 		SpeedLimit.scheduleSlTask();

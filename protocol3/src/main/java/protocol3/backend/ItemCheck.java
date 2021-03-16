@@ -103,7 +103,7 @@ public class ItemCheck {
 					skipUnstack = true;
 				}
 			}
-			if(skipUnstack) {
+			if(!skipUnstack) {
 				item.setAmount(item.getMaxStackSize());
 			}
 		}
