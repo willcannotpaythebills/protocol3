@@ -49,7 +49,7 @@ public class ItemCheck {
 		if(Config.getValue("debug").equals("true")) {
 			System.out.println("[protocol3] ILLEGAL CHECK: "+trigger);
 		}
-
+		
 		// Iterate through shulker boxes
 
 		if (item.getItemMeta() instanceof BlockStateMeta) {
@@ -63,11 +63,7 @@ public class ItemCheck {
 					IllegalCheck(itemStack, "RECURSION_SHULKER");
 				});
 
-				itemstack_metadata.getBlockState().update();
-
 				if (item.getAmount() > 1) item.setAmount(1);
-
-				itemstack_metadata.getBlockState().update();
 				return;
 			}
 		}
