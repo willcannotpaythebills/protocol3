@@ -18,6 +18,7 @@ import protocol3.Main;
 import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.ServerMeta;
+import protocol3.backend.Watchdog;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -37,6 +38,8 @@ public class SpeedLimit implements Listener
 	public static void scheduleSlTask()
 	{
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.instance, () -> {
+
+			Watchdog.reset();
 
 			if (lastCheck < 0) {
 				lastCheck = System.currentTimeMillis();
