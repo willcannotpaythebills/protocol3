@@ -124,6 +124,20 @@ public class Move implements Listener
 			// Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities
 			// instanceof Container)
 
+			// aggressive mode: check all containers for illegal items and destroy them
+			// TODO check if this misses any containers
+			if (illegalItemAgro)
+			{
+				// Containers.
+				Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
+						.forEach(blockState -> ((Container) blockState).getInventory()
+								.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK")));
+			}
+
+			// Too difficult to anti-illegal the end
+			if (inEnd)
+				return;
+
 			for (int x = 0; x < 16; x++)
 			{
 				for (int z = 0; z < 16; z++)
@@ -131,19 +145,6 @@ public class Move implements Listener
 					for (int y = 0; y < 256; y++)
 					{
 						Block block = p.getWorld().getBlockAt(X + x, y, Z + z);
-
-						// aggressive mode: check all containers for illegal items and destroy them
-						if (illegalItemAgro)
-						{
-							// Containers.
-							Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
-									.forEach(blockState -> ((Container) blockState).getInventory()
-											.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK")));
-						}
-
-						// Too difficult to anti-illegal the end
-						if (inEnd)
-							continue;
 
 						// handle unbreakable objects
 						if (block.getType().getHardness() == -1)
