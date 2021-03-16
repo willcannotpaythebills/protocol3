@@ -16,7 +16,6 @@ import com.comphenix.protocol.events.PacketEvent;
 
 import protocol3.backend.FileManager;
 import protocol3.backend.LagProcessor;
-import protocol3.backend.Notifications;
 import protocol3.backend.PlayerMeta;
 import protocol3.commands.About;
 import protocol3.commands.Admin;
@@ -53,8 +52,6 @@ import protocol3.tasks.ProcessPlaytime;
 public class Main extends JavaPlugin implements Listener {
 	public static Plugin instance;
 	public static OfflinePlayer Top = null;
-
-	public Notifications NotificationHandler;
 
 	@Override
 	public void onEnable() {
@@ -135,9 +132,6 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("tjm").setExecutor(new ToggleJoinMessages());
 		this.getCommand("server").setExecutor(new Server());
 		this.getCommand("help").setExecutor(new Help());
-
-		// Enable discord notifications for this instance
-		NotificationHandler = new Notifications();
 	}
 
 	@Override

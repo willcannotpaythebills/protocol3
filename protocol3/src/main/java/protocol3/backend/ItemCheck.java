@@ -1,5 +1,9 @@
 package protocol3.backend;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
@@ -14,9 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionType;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ItemCheck {
 
@@ -87,10 +88,20 @@ public class ItemCheck {
 			return;
 		}
 
-		// Patch stacked items
-		if (item.getAmount() > item.getMaxStackSize() && Config.getValue("item.illegal.stacked").equals("false")
-				&& !item.getType().equals(Material.SNOWBALL)) {
-			item.setAmount(item.getMaxStackSize());
+		// Patch illegal stacked items
+		if (item.getAmount() > item.getMaxStackSize() && Config.getValue("item.illegal.stacked").equals("false")) {
+			boolean skipUnstack = false;
+			// https://github.com/gcurtiss/protocol3/issues/6
+			if(item.getType().equals(Material.ENCHANTED_BOOK)) {
+				EnchantmentStorageMeta esm = (EnchantmentStorageMeta)item.getItemMeta();
+				Set<Enchantment> enchantments = esm.getEnchants().keySet();
+				if(enchantments.contains(Enchantment.VANISHING_CURSE) && enchantments.size() == 1) {
+					skipUnstack = true;
+				}
+			}
+			if(skipUnstack) {
+				item.setAmount(item.getMaxStackSize());
+			}
 		}
 
 		// Reset item meta
