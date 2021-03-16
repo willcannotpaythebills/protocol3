@@ -46,11 +46,9 @@ public class DupeHand implements CommandExecutor {
 				}
 
 				HashMap<Integer, ItemStack> didntFit = player.getInventory().addItem(modItemInHand);
-				if (!didntFit.values().isEmpty()) {
+				if (!didntFit.isEmpty()) {
 					didntFit.forEach((key, value) -> {
-						for (int y = 0; y > key; y++) {
-							player.getWorld().dropItem(player.getLocation(), value);
-						}
+						player.getWorld().dropItem(player.getLocation(), value);
 					});
 				}
 			});
