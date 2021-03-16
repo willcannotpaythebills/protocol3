@@ -20,7 +20,16 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 6. Place this .jar in your plugins directory on your server.
 
 ### Testing (IntelliJ)
-TODO i dont use intellij fuck intellij
+1. Clone the repo
+2. Open the project. Select "Maven" when prompted.
+3. Reopen the project. (Close it and reopen)
+4. Build p3 using IDEA's Maven Projects view; View -> Tool Windows -> Maven Projects
+5. Open p3
+6. Double click install.
+7. An .jar file will be produced in /target called `p3-3-shaded.jar`
+8. Place this .jar in your plugins directory on your server.
+9. Kill yourself for using IntelliJ like a brainlet
+
 
 ### Contributing
 Please comment any lines that may be unclear to someone who is less experienced with programming, and follow standard Java convention. If you are on Eclipse, please DISABLE auto-formatting on save. It is disabled by default; if you manually enabled it, disable it.
