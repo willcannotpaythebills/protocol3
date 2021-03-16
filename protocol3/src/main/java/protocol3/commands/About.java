@@ -15,9 +15,9 @@ public class About implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		Player player = (Player) sender;
-		player.spigot().sendMessage(new TextComponent("§7protocol3 by d2k11 & gitfags. written for avas.cc")); // :)
-		TextComponent message = new TextComponent("Click this message to join the Discord.");
-		message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/YugxaGU"));
+		player.spigot().sendMessage(new TextComponent("§7protocol3.2.2 by d2k11 & AVAS Community contributors. Written for avas.cc.")); // :)
+		TextComponent message = new TextComponent("protocol3 is now open source. You can access the GitHub by clicking this message.");
+		message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://avas.cc/github"));
 		return true;
 	}
 
