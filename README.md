@@ -2,7 +2,7 @@
 protocol3 is the plugin that runs avas.cc. It manages things like the speed limit, anti-illegals, and commands like vote mute. It also provides quality of life commands and debug information for server administrators.
 
 ### Dependencies
-At this time, only ProtocolLib is required for the plugin to run correctly.
+At this time, only [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) and [ArmorEquipEvent](https://www.spigotmc.org/resources/lib-armorequipevent.5478/) is required for the plugin to run correctly.
 
 ### Setup
 1. Download ProtocolLib and the latest build of Paper for the latest version of Minecraft.
@@ -20,11 +20,19 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 6. Place this .jar in your plugins directory on your server.
 
 ### Testing (IntelliJ)
-TODO i dont use intellij fuck intellij
+1. Clone the repo
+2. Open the project. Select "Maven" when prompted.
+3. Reopen the project. (Close it and reopen)
+4. Build p3 using IDEA's Maven Projects view; View -> Tool Windows -> Maven Projects
+5. Open p3
+6. Double click install.
+7. An .jar file will be produced in /target called `p3-3-shaded.jar`
+8. Place this .jar in your plugins directory on your server.
+9. Kill yourself for using IntelliJ like a brainlet
+
 
 ### Contributing
 Please comment any lines that may be unclear to someone who is less experienced with programming, and follow standard Java convention. If you are on Eclipse, please DISABLE auto-formatting on save. It is disabled by default; if you manually enabled it, disable it.
 
 ### License
-This software is licensed under GNU GPL v3.
-https://www.gnu.org/licenses/gpl-3.0.en.html
+This software is licensed under [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html).
