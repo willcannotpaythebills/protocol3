@@ -2,7 +2,7 @@
 protocol3 is the plugin that runs avas.cc. It manages things like the speed limit, anti-illegals, and commands like vote mute. It also provides quality of life commands and debug information for server administrators.
 
 ### Dependencies
-[Paper Build 434](https://avas.cc/dev/server.jar)
+[Paper Build 434](https://avas.cc/dev/server.jar)  
 [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)   
 [ArmorEquipEvent](https://www.spigotmc.org/resources/lib-armorequipevent.5478/)  
 
