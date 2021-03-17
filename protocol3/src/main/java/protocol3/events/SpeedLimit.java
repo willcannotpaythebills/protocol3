@@ -52,6 +52,9 @@ public class SpeedLimit implements Listener
 			double allowed = (tps >= 15.0) ? Integer.parseInt(Config.getValue("speedlimit.tier_one"))
 					: Integer.parseInt(Config.getValue("speedlimit.tier_two"));
 
+			double medium_kick = Integer.parseInt(Config.getValue("speedlimit.medium_kick"));
+			double hard_kick = Integer.parseInt(Config.getValue("speedlimit.hard_kick"));
+
 			Bukkit.getOnlinePlayers().stream().filter(player -> !player.isOp()).forEach(player -> {
 						// updated teleported player position
 						if (tped.contains(player.getUniqueId())) {
@@ -85,6 +88,23 @@ public class SpeedLimit implements Listener
 
 						Vector v = new_location.subtract(previous_location).toVector();
 						double speed = v.length() / duration;
+
+						// insta-kick above hard kick speed
+						if (speed > hard_kick)
+						{
+							gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
+							ServerMeta.kickWithDelay(player,
+									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+							totalKicks++;
+							return;
+						}
+
+						// medium-kick: set grace period to 2 sec
+						if (speed > medium_kick)
+						{
+							if (grace > 2)
+								grace = 2;
+						}
 
 						// player is going too fast, warn or kick
 						if (speed > allowed)
