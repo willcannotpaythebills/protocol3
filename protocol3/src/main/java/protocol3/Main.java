@@ -125,8 +125,6 @@ public class Main extends JavaPlugin implements Listener {
 		NotificationHandler = new Notifications();
 		getServer().getPluginManager().registerEvents(NotificationHandler, this);
 
-		Watchdog.start();
-
 		System.out.println("[protocol3] Finished loading.");
 	}
 
