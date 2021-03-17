@@ -1,5 +1,6 @@
 package protocol3.commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -10,6 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.backend.Config;
+import protocol3.backend.Utilities;
 
 // funny command haha
 
@@ -52,6 +55,18 @@ public class Admin implements CommandExecutor {
 					} else {
 						player.spigot().sendMessage(new TextComponent("§6Disabled recieving player messages."));
 						MsgToggle.add(player.getUniqueId());
+					}
+					return true;
+				case "RELOAD":
+					try
+					{
+						Config.load();
+						player.spigot().sendMessage(new TextComponent("§aSuccessfully reloaded."));
+
+					} catch (IOException e)
+					{
+						player.spigot().sendMessage(new TextComponent("§4Failed to reload."));
+						Utilities.restart();
 					}
 					return true;
 			}

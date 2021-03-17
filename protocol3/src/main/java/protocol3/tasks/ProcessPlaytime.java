@@ -5,6 +5,7 @@ import java.util.TimerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.PlayerMeta;
 import protocol3.backend.Scheduler;

@@ -26,6 +26,7 @@ import protocol3.backend.ItemCheck;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.PlayerMeta;
 import protocol3.backend.ServerMeta;
+import protocol3.backend.Utilities;
 import protocol3.commands.Kit;
 import protocol3.commands.ToggleJoinMessages;
 
@@ -33,8 +34,30 @@ import protocol3.commands.ToggleJoinMessages;
 // protocol3. ~~DO NOT REDISTRIBUTE!~~ n/a 3/6/2021
 
 public class Connection implements Listener {
+	
+	public static String serverHostname = "unknown";
+	
 	@EventHandler
 	public void onConnect(PlayerLoginEvent e) {
+		
+		// Set server name if it's forced
+		if(Config.getValue("motd.force").equals("true")) {
+			serverHostname = Config.getValue("motd.force.name");
+		}
+		
+		// Get domain name, NOT ip if player is connecting from IP
+		if(!Utilities.validIP(e.getHostname()) && serverHostname.equals("unknown")) {
+			serverHostname = e.getHostname().split(":")[0];
+		}
+		
+		// Custom whitelist kick
+		if(Bukkit.hasWhitelist() && !Bukkit.getWhitelistedPlayers().contains(e.getPlayer())
+				&& !e.getPlayer().isOp() && serverHostname.equals("test.avas.cc")) {
+			e.setKickMessage("§6The test server is closed right now. Please try again later.");
+			e.setResult(Result.KICK_OTHER);
+			return;
+		}
+		
 		if (!ServerMeta.canReconnect(e.getPlayer())) {
 			e.setKickMessage("§6Connection throttled. Please wait some time before reconnecting.");
 			e.setResult(Result.KICK_OTHER);
@@ -116,7 +139,15 @@ public class Connection implements Listener {
 		}
 		int rnd = r.nextInt(allMotds.size());
 		String tps = new DecimalFormat("#.##").format(LagProcessor.getTPS());
-		e.setMotd("§9avas.cc §7| §5" + allMotds.get(rnd) + " §7| §9TPS: " + tps);
+		e.setMotd("§9"+serverHostname+" §7| §5" + allMotds.get(rnd) + " §7| §9TPS: " + tps);
+		if(serverHostname.equals("test.avas.cc")) {
+			if(Bukkit.hasWhitelist()) {
+				e.setMotd("§9test.avas.cc §7| §4closed §7| §9TPS: " + tps);
+			}
+			else {
+				e.setMotd("§9test.avas.cc §7| §aopen §7| §9TPS: " + tps);
+			}
+		}
 		e.setMaxPlayers(1);
 	}
 

@@ -26,6 +26,7 @@ public class VoteMute implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		
 		if (args.length != 1) {
 			sender.spigot().sendMessage(new TextComponent("§cInvalid syntax. Syntax: /vm [player]"));
 			return true;
@@ -33,6 +34,11 @@ public class VoteMute implements CommandExecutor {
 
 		if (Bukkit.getPlayer(args[0]) == null) {
 			sender.spigot().sendMessage(new TextComponent("§cPlayer is not online."));
+			return true;
+		}
+		
+		if(Config.getValue("mute.enabled").equals("false")) {
+			sender.spigot().sendMessage(new TextComponent("§cThis command has been disabled by your server administrator."));
 			return true;
 		}
 

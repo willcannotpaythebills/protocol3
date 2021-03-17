@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 16
+config.version = 17
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -101,6 +101,16 @@ speedlimit.tier_one = 48
 speedlimit.tier_two = 36
 // Reconnect delay when kicked by exceeding the speed limit, in ms. default = 10000 (10s)
 speedlimit.rc_delay = 10000
+
+// ------------ //
+// --- MOTD --- //
+// ------------ //
+
+// Force the server IP. true/false. default = false
+motd.force = false
+
+// Server IP to force. string value. default = avas.cc
+motd.force.name = avas.cc
 
 // ------------ //
 // --- MISC --- //

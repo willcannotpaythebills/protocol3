@@ -94,7 +94,7 @@ public class ItemCheck {
 			// https://github.com/gcurtiss/protocol3/issues/6
 			if(item.getType().equals(Material.ENCHANTED_BOOK)) {
 				EnchantmentStorageMeta esm = (EnchantmentStorageMeta)item.getItemMeta();
-				Set<Enchantment> enchantments = esm.getEnchants().keySet();
+				Set<Enchantment> enchantments = esm.getStoredEnchants().keySet();
 				if(enchantments.contains(Enchantment.VANISHING_CURSE) && enchantments.size() == 1) {
 					skipUnstack = true;
 				}
@@ -193,7 +193,7 @@ public class ItemCheck {
 
 			EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemMeta();
 
-			if (meta.getStoredEnchants() == null) {
+			if (meta.getStoredEnchants().size() == 0) {
 				item.setAmount(0);
 				return;
 			}
