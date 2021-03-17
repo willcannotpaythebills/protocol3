@@ -7,7 +7,7 @@ At this time, only [ProtocolLib](https://www.spigotmc.org/resources/protocollib.
 ### Setup
 1. Download ProtocolLib and the latest build of Paper for the latest version of Minecraft.
 2. Compile protocol3 as shown in the Testing section.
-3. Place the protocol3 and ProtocolLib jars into your plugins directory.
+3. Place the protocol3, ProtocolLib, and ArmorEquipEvent jars into your plugins directory.
 4. Launch the server.
 Note: For testing illegals and speed limit, you cannot be opped. For testing admin commands, you must be opped.
 
