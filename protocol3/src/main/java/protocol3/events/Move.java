@@ -102,11 +102,11 @@ public class Move implements Listener
 			boolean portalsIllegal = false;
 			Chunk c = p.getLocation().getChunk();
 
-			// Portals dont spawn within a 25000 block radius of spawn
+			// Portals dont spawn PAST! a 25000 block radius of spawn
 
 			int X = c.getX() * 16;
 			int Z = c.getZ() * 16;
-			if (X >= -25000 && X <= 25000 && Z >= -25000 && Z <= 25000)
+			if (X <= -25000 && X >= 25000 && Z <= -25000 && Z >= 25000)
 			{
 				portalsIllegal = true;
 			}
