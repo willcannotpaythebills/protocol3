@@ -2,7 +2,9 @@
 protocol3 is the plugin that runs avas.cc. It manages things like the speed limit, anti-illegals, and commands like vote mute. It also provides quality of life commands and debug information for server administrators.
 
 ### Dependencies
-At this time, only [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) and [ArmorEquipEvent](https://www.spigotmc.org/resources/lib-armorequipevent.5478/) is required for the plugin to run correctly.
+[Paper Build 434](https://avas.cc/dev/server.jar)
+[ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)   
+[ArmorEquipEvent](https://www.spigotmc.org/resources/lib-armorequipevent.5478/)  
 
 ### Setup
 1. Download ProtocolLib and the latest build of Paper for the latest version of Minecraft.
