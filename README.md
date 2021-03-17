@@ -35,12 +35,12 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 Please comment any lines that may be unclear to someone who is less experienced with programming, and follow standard Java convention. If you are on Eclipse, please DISABLE auto-formatting on save. It is disabled by default; if you manually enabled it, disable it.
 
 ### Credits
-The following people significantly contributed to cleaning protocol3 before release.
-[d2k11](https://github.com/gcurtiss)
-[ultradutch](https://github.com/ultra64cmy)
-[timoreo](https://github.com/timoreo22)
-[inferno4you](https://github.com/Infer4Y)
-[RyzenRoll](https://github.com/RyzenRoll)
+The following people significantly contributed to cleaning protocol3 before release.  
+[d2k11](https://github.com/gcurtiss)  
+[ultradutch](https://github.com/ultra64cmy)  
+[timoreo](https://github.com/timoreo22)  
+[inferno4you](https://github.com/Infer4Y)  
+[RyzenRoll](https://github.com/RyzenRoll)  
 
 ### License
 This software is licensed under [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html).
