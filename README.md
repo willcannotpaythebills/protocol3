@@ -7,29 +7,29 @@ protocol3 is the plugin that runs avas.cc. It manages things like the speed limi
 [ArmorEquipEvent](https://www.spigotmc.org/resources/lib-armorequipevent.5478/)  
 
 ### Setup
-1. Download ProtocolLib and the latest build of Paper for the latest version of Minecraft.
-2. Compile protocol3 as shown in the Testing section.
-3. Place the protocol3, ProtocolLib, and ArmorEquipEvent jars into your plugins directory.
-4. Launch the server.
+1. Download ProtocolLib and the latest build of Paper for the latest version of Minecraft
+2. Compile protocol3 as shown in the Testing section
+3. Place the protocol3, ProtocolLib, and ArmorEquipEvent jars into your plugins directory
+4. Launch the server
 Note: For testing illegals and speed limit, you cannot be opped. For testing admin commands, you must be opped.
 
 ### Testing (Eclipse)
-1. Clone this repo.
-2. Use Eclipse to import the repo in a workspace. 
+1. Clone this repo
+2. Use Eclipse to import the repo in a workspace 
 3. Right click pom.xml, and use "Run as -> Maven build.."
-4. Type "package" in the Goals box. This will save the package configuration. You can later run it with "Run as -> Maven build" and select the configuration.
+4. Type "package" in the Goals box. This will save the package configuration. You can later run it with "Run as -> Maven build" and select the configuration
 5. A .jar file will be produced in /target called `p3-3-shaded.jar` 
-6. Place this .jar in your plugins directory on your server.
+6. Place this .jar in your plugins directory on your server
 
 ### Testing (IntelliJ)
 1. Clone the repo
-2. Open the project. Select "Maven" when prompted.
+2. Open the project. Select "Maven" when prompted
 3. Reopen the project. (Close it and reopen)
-4. Build p3 using IDEA's Maven Projects view; View -> Tool Windows -> Maven Projects
-5. Open p3, then Lifestyle
-6. Double click install.
+4. Build p3 using IDEA's Maven Projects view; View -> Tool Windows -> Maven
+5. Open p3, then Lifecycle
+6. Double click install
 7. A .jar file will be produced in /target called `p3-3-shaded.jar`
-8. Place this .jar in your plugins directory on your server.
+8. Place this .jar in your plugins directory on your server
 9. Kill yourself for using IntelliJ like a brainlet
 
 
