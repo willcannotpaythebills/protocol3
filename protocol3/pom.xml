@@ -73,7 +73,7 @@
     </dependencies>
 
     <build>
-        <finalName>p2</finalName>
+        <finalName>p3</finalName>
         <plugins>
             <!-- download source code in Eclipse, best practice-->
             <plugin>
