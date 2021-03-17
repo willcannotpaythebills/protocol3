@@ -199,7 +199,7 @@ public class PlayerMeta
 
 	public static int getRank(OfflinePlayer p) {
 		if (getPlaytime(p) == 0) return 0;
-		return Playtimes.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).map(Map.Entry::getKey).collect(Collectors.toList()).lastIndexOf(p.getUniqueId());
+		return Playtimes.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).map(Map.Entry::getKey).collect(Collectors.toList()).lastIndexOf(p.getUniqueId()) + 1;
 	}
 
 	public static HashMap<UUID, Double> getTopFivePlayers() {

@@ -29,7 +29,7 @@ public class Utilities {
 			minutesString = minutes + " minutes";
 		}
 
-		if (minutesString.isEmpty()|hoursString.isEmpty() == false) return "None";
+		if (minutesString.isEmpty() && hoursString.equals("0 hours")) return "None";
 
 		if (minutes == 0) {
 			return hoursString;
