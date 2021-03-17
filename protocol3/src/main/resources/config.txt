@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 17
+config.version = 18
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -99,6 +99,10 @@ wither.skull.max_age = 4800
 speedlimit.tier_one = 48
 // Global speed limit when TPS is 15 or less. default = 36
 speedlimit.tier_two = 36
+// Medium kick speed limit (grace period is 2 seconds)
+speedlimit.medium_kick = 64
+// Hard kick speed limit (insta-kick if exceeded)
+speedlimit.hard_kick = 80
 // Reconnect delay when kicked by exceeding the speed limit, in ms. default = 10000 (10s)
 speedlimit.rc_delay = 10000
 
