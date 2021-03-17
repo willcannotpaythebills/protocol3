@@ -106,7 +106,7 @@ public class Move implements Listener
 
 			int X = c.getX() * 16;
 			int Z = c.getZ() * 16;
-			if (X <= -25000 && X >= 25000 && Z <= -25000 && Z >= 25000)
+			if (X <= -25000 || X >= 25000 || Z <= -25000 || Z >= 25000)
 			{
 				portalsIllegal = true;
 			}
