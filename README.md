@@ -50,4 +50,4 @@ The following people significantly contributed to cleaning protocol3 before rele
 <img src="https://avatars.githubusercontent.com/u/80420156?s=460&u=ceadf2cc69812f77b92b3b2566cdf397f44e9c7b&v=4" width=12></img>[RyzenRoll](https://github.com/RyzenRoll)  
 
 ### License
-This software is licensed under [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+This software is licensed under [GNU AGPL v3](https://www.gnu.org/licenses/agpl-3.0.txt).
