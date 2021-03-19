@@ -12,7 +12,9 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.Config;
+import protocol3.backend.Pair;
 import protocol3.backend.Utilities;
+import protocol3.events.SpeedLimit;
 
 // funny command haha
 
@@ -68,6 +70,25 @@ public class Admin implements CommandExecutor {
 						player.spigot().sendMessage(new TextComponent("§4Failed to reload."));
 						Utilities.restart();
 					}
+					return true;
+				case "SPEED":
+					player.spigot().sendMessage(new TextComponent("§6Player speeds:"));
+					List< Pair<Double, String> > speeds = SpeedLimit.getSpeeds();
+					for (Pair<Double, String> speedEntry : speeds)
+					{
+						double speed = speedEntry.getLeft();
+						String playerName = speedEntry.getRight();
+						String color = "§";
+						if (speed >= 64.0)
+							color += "c"; // red
+						else if (speed >= 48.0)
+							color += "e"; // yellow
+						else
+							color += "a"; // green
+						player.spigot().sendMessage(new TextComponent(color
+									+ String.format("%4.1f: %s", speed, playerName)));
+					}
+					player.spigot().sendMessage(new TextComponent("§6End of speed list."));
 					return true;
 			}
 		}

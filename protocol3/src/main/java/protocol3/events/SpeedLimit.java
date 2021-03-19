@@ -1,8 +1,11 @@
 package protocol3.events;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -17,6 +20,7 @@ import org.bukkit.util.Vector;
 import protocol3.Main;
 import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
+import protocol3.backend.Pair;
 import protocol3.backend.ServerMeta;
 
 import net.md_5.bungee.api.chat.TextComponent;
@@ -30,6 +34,7 @@ public class SpeedLimit implements Listener
 	private static List<UUID> tped = new ArrayList<UUID>();
 	private static HashMap<UUID, Integer> gracePeriod = new HashMap<UUID, Integer>();
 	private static long lastCheck = -1;
+	private static HashMap<String, Double> speeds = new HashMap<String, Double>();
 
 	public static int totalKicks = 0;
 
@@ -54,6 +59,8 @@ public class SpeedLimit implements Listener
 
 			double medium_kick = Integer.parseInt(Config.getValue("speedlimit.medium_kick"));
 			double hard_kick = Integer.parseInt(Config.getValue("speedlimit.hard_kick"));
+
+			speeds.clear();
 
 			Bukkit.getOnlinePlayers().stream().filter(player -> !player.isOp()).forEach(player -> {
 						// updated teleported player position
@@ -133,6 +140,7 @@ public class SpeedLimit implements Listener
 
 						gracePeriod.put(player.getUniqueId(), grace);
 						locs.put(player.getUniqueId(), player.getLocation().clone());
+						speeds.put(player.getName(), speed);
 					});
 		}, 20L, 20L);
 	}
@@ -154,5 +162,28 @@ public class SpeedLimit implements Listener
 	{
 		tped.remove(e.getPlayer().getUniqueId());
 		locs.remove(e.getPlayer().getUniqueId());
+	}
+
+	/* get speeds sorted from fastest to lowest */
+	public static List< Pair<Double,String> > getSpeeds()
+	{
+		// create a list from the speeds map
+		List<Map.Entry<String, Double> > list =
+			new ArrayList<Map.Entry<String, Double> >(speeds.entrySet());
+
+		Collections.sort(list, new Comparator<Map.Entry<String, Double> >() {
+			public int compare(Map.Entry<String, Double> o1,
+					Map.Entry<String, Double> o2)
+			{
+				return (o2.getValue()).compareTo(o1.getValue());
+			}
+		});
+
+		// format them into speed strings
+		List< Pair<Double, String> > ret = new ArrayList< Pair<Double, String> >();
+		for (Map.Entry<String, Double> aa : list) {
+			ret.add(new Pair<Double, String>(aa.getValue(), aa.getKey()));
+		}
+		return ret;
 	}
 }
