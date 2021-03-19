@@ -57,47 +57,45 @@ public class ItemCheckTriggers implements Listener {
 
 			ItemCheck.Banned.stream().filter(m -> e.getBlock().getType().equals(m)).forEach(m -> {
 				e.setCancelled(true);
+				ItemCheck.IllegalCheck(e.getItemInHand(), "ILLEGAL_BLOCK_PLACED", e.getPlayer());
 				if (Config.getValue("item.illegal.agro").equals("true")) {
-					e.getPlayer().getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "BLOCK_PLACED_AGGRESSIVE"));
+					e.getPlayer().getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "ILLEGAL_BLOCK_PLACED_AGGRESSIVE", e.getPlayer()));
 				}
 			});
 
 		}
-
-		// Check if item is illegal
-		ItemCheck.IllegalCheck(e.getItemInHand(), "BLOCK_PLACED");
 	}
 
 	@EventHandler
 	public void onDispense(BlockDispenseArmorEvent e) {
-		ItemCheck.IllegalCheck(e.getItem(), "DISPENSED_ARMOR");
+		ItemCheck.IllegalCheck(e.getItem(), "DISPENSED_ARMOR", null);
 	}
 
 	@EventHandler
 	public void onOpenInventory(InventoryOpenEvent event) {
-		event.getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "INVENTORY_OPENED"));
+		event.getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "INVENTORY_OPENED", (Player)event.getPlayer()));
 	}
 
 	// Prevents hopper exploits.
 	@EventHandler
 	public void onInventoryMovedItem(InventoryMoveItemEvent event) {
 		if (Config.getValue("item.illegal.agro").equals("true")) {
-			ItemCheck.IllegalCheck(event.getItem(), "INVENTORY_MOVED_ITEM");
-			event.getSource().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "INVENTORY_MOVED_ITEM_INVENTORY"));
+			ItemCheck.IllegalCheck(event.getItem(), "INVENTORY_MOVED_ITEM", null);
+			event.getSource().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "INVENTORY_MOVED_ITEM_INVENTORY", null));
 		}
 	}
 
 	@EventHandler
 	public void onPickupItem(EntityPickupItemEvent e) {
-		if (e.getEntityType().equals(EntityType.PLAYER)) {
-			Player player = (Player) e.getEntity();
-		}
 		if (Config.getValue("item.illegal.agro").equals("true"))
 		{
-			ItemCheck.IllegalCheck(e.getItem().getItemStack(), "ITEM_PICKUP");
 			if (e.getEntityType().equals(EntityType.PLAYER)) {
 				Player player = (Player) e.getEntity();
-				player.getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "ITEM_PICKUP_INVENTORY"));
+				ItemCheck.IllegalCheck(e.getItem().getItemStack(), "ITEM_PICKUP", player);
+				player.getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "ITEM_PICKUP_INVENTORY", null));
+			}
+			else {
+				ItemCheck.IllegalCheck(e.getItem().getItemStack(), "ITEM_PICKUP", null);
 			}
 		}
 	}
@@ -105,7 +103,7 @@ public class ItemCheckTriggers implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
 		if (Config.getValue("item.illegal.agro").equals("true")) {
-			ItemCheck.IllegalCheck(e.getCurrentItem(), "INVENTORY_CLICK");
+			ItemCheck.IllegalCheck(e.getCurrentItem(), "INVENTORY_CLICK", (Player)e.getWhoClicked());
 		}
 	}
 

@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BlockStateMeta;
@@ -37,7 +38,7 @@ public class ItemCheck {
 				Material.WITHER_SKELETON_SKULL, Material.DRAGON_HEAD));
 	}
 
-	public static void IllegalCheck(ItemStack item, String trigger) {
+	public static void IllegalCheck(ItemStack item, String trigger, Player player) {
 		if (Config.getValue("item.illegal").equals("false")) return;
 
 		// Dont check null items
@@ -47,7 +48,12 @@ public class ItemCheck {
 		if (item.getType().equals(Material.AIR)) return;
 		
 		if(Config.getValue("debug").equals("true")) {
-			System.out.println("[protocol3] ILLEGAL CHECK: "+trigger);
+			if(player != null) {
+				System.out.println("[protocol3] CHECK: "+trigger+", "+item.getType().toString()+", "+player.getName()+", ("+player.getLocation().getX()+", "+player.getLocation().getY()+", "+player.getLocation().getZ()+")");
+			}
+			else {
+				System.out.println("[protocol3] CHECK: "+trigger+", "+item.getType().toString()+", NON-PLAYER");
+			}
 		}
 		
 		// Iterate through shulker boxes
@@ -55,15 +61,17 @@ public class ItemCheck {
 		if (item.getItemMeta() instanceof BlockStateMeta) {
 			BlockStateMeta itemstack_metadata = (BlockStateMeta) item.getItemMeta();
 			if (itemstack_metadata.getBlockState() instanceof ShulkerBox) {
+				System.out.println("[protocol3] ITEM WAS SHULKER BOX [1]");
 				((ShulkerBox) itemstack_metadata.getBlockState()).getInventory().forEach(itemStack -> {
 					if (isShulker(itemStack)){
 						itemStack.setAmount(0);
 						return;
 					}
-					IllegalCheck(itemStack, "RECURSION_SHULKER");
+					IllegalCheck(itemStack, "RECURSION_SHULKER", player);
 				});
 
 				if (item.getAmount() > 1) item.setAmount(1);
+				System.out.println("[protocol3] ITEM WAS SHULKER BOX [2]");
 				return;
 			}
 		}
@@ -346,7 +354,6 @@ public class ItemCheck {
 		if (i.getItemMeta() instanceof BlockStateMeta) {
 			BlockStateMeta im = (BlockStateMeta) i.getItemMeta();
 			if (im.getBlockState() instanceof ShulkerBox) {
-				if (i.getAmount() > 1) i.setAmount(1);
 				return true;
 			}
 		}
