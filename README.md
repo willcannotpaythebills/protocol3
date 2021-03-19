@@ -23,7 +23,7 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 2. Use Eclipse to import the repo in a workspace. 
 3. Right click pom.xml, and use "Run as -> Maven build.."
 4. Type "package" in the Goals box. This will save the package configuration. You can later run it with "Run as -> Maven build" and select the configuration.
-5. An .jar file will be produced in /target called `p3-3-shaded.jar` 
+5. An .jar file will be produced in /target called `p3 or p3-3-shaded.jar` 
 6. Place this .jar in your plugins directory on your server.
 
 ### Testing (IntelliJ)
