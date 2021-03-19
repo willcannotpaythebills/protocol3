@@ -32,9 +32,8 @@ public class Move implements Listener
 	public static HashMap<UUID, Chunk> lastChunks = new HashMap<UUID, Chunk>();
 
 	// per-player cache of chunks that have been checked aggressively for illegal items
-	// TODO make the 64 player number tunable, it should always exceed the normal
-	// player count, but not by too much
-	private static LruCache<Player, LruCache<Chunk, Boolean> > playerChunks = new LruCache<>(64);
+	private static LruCache<Player, LruCache<Chunk, Boolean> > playerChunks
+		= new LruCache<>(Integer.parseInt(Config.getValue("item.illegal.agro.player_count")));
 
 	static Random r = new Random();
 
@@ -142,7 +141,7 @@ public class Move implements Listener
 				// new player, make a new cache
 				if (currentPlayerChunks == null)
 				{
-					currentPlayerChunks = new LruCache<>(1024); // TODO make this a tunable
+					currentPlayerChunks = new LruCache<>(Integer.parseInt(Config.getValue("item.illegal.agro.chunk_count")));
 					playerChunks.put(p, currentPlayerChunks);
 				}
 

@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 18
+config.version = 19
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -56,6 +56,13 @@ item.illegal.invalid = false
 // Enable or disable aggressive checks. false = disabled true = enabled [default]
 // Can cause some lag on lower-end servers
 item.illegal.agro = true
+
+// Number of players to cache chunks for in agro check mode
+// Set this to a number a little larger than the typical player pop
+item.illegal.agro.player_count = 40
+
+// Number of chunks per player to cache
+item.illegal.agro.chunk_count = 1024
 
 // -------------- //
 // --- VOTING --- //
