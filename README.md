@@ -37,6 +37,14 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 8. Place this .jar in your plugins directory on your server.
 9. Kill yourself for using IntelliJ like a brainlet
 
+Installing Spigot API For IntellJ Users:
+1. Download the Spigot API here: https://hub.spigotmc.org/jenkins/job/BuildTools/
+2. Import Spigot as a library via Project Structure > Libraries > + Java > select the Spigot API.jar.
+3. Click Apply
+4. Exit
+5. Kill yourself for using Eclipse like a retard
+
+
 
 ### Contributing
 Please comment any lines that may be unclear to someone who is less experienced with programming, and follow standard Java convention. If you are on Eclipse, please DISABLE auto-formatting on save. It is disabled by default; if you manually enabled it, disable it.
