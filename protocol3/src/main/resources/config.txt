@@ -64,6 +64,10 @@ item.illegal.agro.player_count = 40
 // Number of chunks per player to cache
 item.illegal.agro.chunk_count = 1024
 
+// How frequently to flush the cache
+// Set to -1 to disable
+item.illegal.agro.flush_period = 3600
+
 // -------------- //
 // --- VOTING --- //
 // -------------- //

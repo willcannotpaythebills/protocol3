@@ -35,6 +35,8 @@ public class Move implements Listener
 	private static LruCache<Player, LruCache<Chunk, Boolean> > playerChunks
 		= new LruCache<>(Integer.parseInt(Config.getValue("item.illegal.agro.player_count")));
 
+	private static long lastCacheFlush = System.currentTimeMillis() / 1000;
+
 	static Random r = new Random();
 
 	@EventHandler
@@ -83,6 +85,7 @@ public class Move implements Listener
 
 		// -- ILLEGAL PLACEMENT PATCH -- //
 		boolean illegalItemAgro = Boolean.parseBoolean(Config.getValue("item.illegal.agro"));
+		int cacheFlushPeriod = Integer.parseInt(Config.getValue("item.illegal.agro.flush_period"));
 
 		// Check every chunk the player enters
 
@@ -135,6 +138,18 @@ public class Move implements Listener
 			if (illegalItemAgro)
 			{
 				boolean doAgroCheck = true;
+
+				// flush chunks if it's been long enough
+				if (cacheFlushPeriod > 0)
+				{
+					long now = System.currentTimeMillis() / 1000;
+					if (now - lastCacheFlush >= cacheFlushPeriod)
+					{
+						System.out.println("[protocol3] flushing agro chunk caches");
+						playerChunks.clear();
+						lastCacheFlush = now;
+					}
+				}
 
 				LruCache<Chunk, Boolean> currentPlayerChunks = playerChunks.get(p);
 
