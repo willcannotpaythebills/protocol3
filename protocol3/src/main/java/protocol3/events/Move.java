@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -30,9 +31,10 @@ public class Move implements Listener
 
 	public static HashMap<UUID, Chunk> lastChunks = new HashMap<UUID, Chunk>();
 
-	// cache of chunks that have been checked aggressively for illegal items
-	// TODO make the 4096 chunk number tunable / from config
-	private static LruCache<Chunk, Boolean> checkedChunks = new LruCache<>(4096);
+	// per-player cache of chunks that have been checked aggressively for illegal items
+	// TODO make the 64 player number tunable, it should always exceed the normal
+	// player count, but not by too much
+	private static LruCache<Player, LruCache<Chunk, Boolean> > playerChunks = new LruCache<>(64);
 
 	static Random r = new Random();
 
@@ -133,15 +135,38 @@ public class Move implements Listener
 			// TODO check if this misses any containers
 			if (illegalItemAgro)
 			{
-				// only check if it hasn't been checked recently
-				if (checkedChunks.get(c) == null)
+				boolean doAgroCheck = true;
+
+				LruCache<Chunk, Boolean> currentPlayerChunks = playerChunks.get(p);
+
+				// new player, make a new cache
+				if (currentPlayerChunks == null)
+				{
+					currentPlayerChunks = new LruCache<>(1024); // TODO make this a tunable
+					playerChunks.put(p, currentPlayerChunks);
+				}
+
+				// check all player caches
+				for (Map.Entry<Player, LruCache<Chunk, Boolean> > e : playerChunks.entrySet())
+				{
+					if (e.getValue().get(c) != null)
+					{
+						doAgroCheck = false;
+						break;
+					}
+				}
+
+				// if it's not in any player's cache, check it and add it to current player's cache
+				if (doAgroCheck)
 				{
 					// Containers.
 					Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
 							.forEach(blockState -> ((Container) blockState).getInventory()
 									.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK", event.getPlayer())));
-					checkedChunks.put(c, true);
 				}
+
+				// it was either previously checked or we just checked it, so add it to the cache
+				currentPlayerChunks.put(c, true);
 			}
 
 			// Too difficult to anti-illegal the end
