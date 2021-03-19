@@ -22,12 +22,17 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
+import protocol3.backend.LruCache;
 import protocol3.backend.PlayerMeta;
 
 public class Move implements Listener
 {
 
 	public static HashMap<UUID, Chunk> lastChunks = new HashMap<UUID, Chunk>();
+
+	// cache of chunks that have been checked aggressively for illegal items
+	// TODO make the 4096 chunk number tunable / from config
+	private static LruCache<Chunk, Boolean> checkedChunks = new LruCache<>(4096);
 
 	static Random r = new Random();
 
@@ -128,10 +133,15 @@ public class Move implements Listener
 			// TODO check if this misses any containers
 			if (illegalItemAgro)
 			{
-				// Containers.
-				Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
-						.forEach(blockState -> ((Container) blockState).getInventory()
-								.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK", event.getPlayer())));
+				// only check if it hasn't been checked recently
+				if (checkedChunks.get(c) == null)
+				{
+					// Containers.
+					Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
+							.forEach(blockState -> ((Container) blockState).getInventory()
+									.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK", event.getPlayer())));
+					checkedChunks.put(c, true);
+				}
 			}
 
 			// Too difficult to anti-illegal the end
