@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 import protocol3.Main;
 import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
+import protocol3.backend.Pair;
 import protocol3.backend.ServerMeta;
 
 import net.md_5.bungee.api.chat.TextComponent;
@@ -164,7 +165,7 @@ public class SpeedLimit implements Listener
 	}
 
 	/* get speeds sorted from fastest to lowest */
-	public static List<String> getSpeeds()
+	public static List< Pair<Double,String> > getSpeeds()
 	{
 		// create a list from the speeds map
 		List<Map.Entry<String, Double> > list =
@@ -179,9 +180,9 @@ public class SpeedLimit implements Listener
 		});
 
 		// format them into speed strings
-		List<String> ret = new ArrayList<String>();
+		List< Pair<Double, String> > ret = new ArrayList< Pair<Double, String> >();
 		for (Map.Entry<String, Double> aa : list) {
-			ret.add(String.format("%4.1f: %s", aa.getValue(), aa.getKey()));
+			ret.add(new Pair<Double, String>(aa.getValue(), aa.getKey()));
 		}
 		return ret;
 	}
