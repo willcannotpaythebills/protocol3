@@ -61,7 +61,6 @@ public class ItemCheck {
 		if (item.getItemMeta() instanceof BlockStateMeta) {
 			BlockStateMeta itemstack_metadata = (BlockStateMeta) item.getItemMeta();
 			if (itemstack_metadata.getBlockState() instanceof ShulkerBox) {
-				System.out.println("[protocol3] ITEM WAS SHULKER BOX [1]");
 				((ShulkerBox) itemstack_metadata.getBlockState()).getInventory().forEach(itemStack -> {
 					if (isShulker(itemStack)){
 						itemStack.setAmount(0);
@@ -71,7 +70,6 @@ public class ItemCheck {
 				});
 
 				if (item.getAmount() > 1) item.setAmount(1);
-				System.out.println("[protocol3] ITEM WAS SHULKER BOX [2]");
 				return;
 			}
 		}
