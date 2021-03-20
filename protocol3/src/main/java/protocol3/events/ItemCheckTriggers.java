@@ -6,6 +6,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseArmorEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -30,6 +31,13 @@ public class ItemCheckTriggers implements Listener {
 
 	@EventHandler
 	public void onPlace(BlockPlaceEvent e) {
+		
+		// No roof placement
+		if(e.getBlock().getLocation().getY() > 127 && e.getBlock().getLocation().getWorld().getName().equals("world_nether")) {
+			e.setCancelled(true);
+			return;
+		}
+		
 		// Exempt ender portal frames; they are illegal but this event
 		// gets
 		// triggered when player adds eye of ender to portal to fire it.
@@ -104,6 +112,15 @@ public class ItemCheckTriggers implements Listener {
 	public void onInventoryClick(InventoryClickEvent e) {
 		if (Config.getValue("item.illegal.agro").equals("true")) {
 			ItemCheck.IllegalCheck(e.getCurrentItem(), "INVENTORY_CLICK", (Player)e.getWhoClicked());
+		}
+	}
+	
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent e) {
+		// No roof breaking
+		if(e.getBlock().getLocation().getY() > 127 && e.getBlock().getLocation().getWorld().getName().equals("world_nether")) {
+				e.setCancelled(true);
+				return;
 		}
 	}
 

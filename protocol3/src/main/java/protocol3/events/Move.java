@@ -20,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
@@ -289,6 +290,20 @@ public class Move implements Listener
 		// kill players below ground in overworld and nether
 		if (!inEnd && p.getLocation().getY() <= 0 && Config.getValue("movement.block.floor").equals("true"))
 			p.setHealth(0);
+	}
+	
+	@EventHandler
+	public void onEntityMove(EntityMoveEvent e) {
+		boolean inNether = e.getEntity().getLocation().getWorld().getName().equals("world_nether");
+		boolean inEnd = e.getEntity().getLocation().getWorld().getName().equals("world_the_end");
+		if (inNether && e.getEntity().getLocation().getY() > 127 && Config.getValue("movement.block.roof").equals("true")) {
+			e.getEntity().setHealth(0);
+			return;
+		}
+		if (!inEnd && e.getEntity().getLocation().getY() <= 0 && Config.getValue("movement.block.floor").equals("true")) {
+			e.getEntity().setHealth(0);
+			return;
+		}
 	}
 
 }
