@@ -16,14 +16,19 @@ public class Mute implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		String mode = args[0];
 		Player player = (Player) sender;
-
 		if (!player.isOp()) {
 			player.sendMessage("§cYou can't use this.");
 			return true;
 		}
 
+		if (args.length < 1) {
+			player.sendMessage("§cInvalid syntax. Syntax: /mute <perm/temp/none> <player>");
+			player.sendMessage("§cAlternate syntax: /mute all");
+			return true;
+		}
+
+		String mode = args[0];
 		if (mode.equals("all")) {
 			PlayerMeta.MuteAll = !PlayerMeta.MuteAll;
 			Bukkit.getServer().spigot()
@@ -33,10 +38,6 @@ public class Mute implements CommandExecutor {
 			return true;
 		}
 
-		if (args.length != 2) {
-			player.sendMessage("§cIncorrect syntax. Syntax: /mute [perm/temp/none] [player]");
-			return true;
-		}
 		Player toMute = Bukkit.getPlayer(args[1]);
 		if (toMute == null) {
 			player.sendMessage("§cPlayer is not online.");
@@ -64,7 +65,7 @@ public class Mute implements CommandExecutor {
 				PlayerMeta.setMuteType(toMute, MuteType.NONE);
 				break;
 			default:
-				player.sendMessage("§cIncorrect syntax. Syntax: /mute [perm/temp/none] [player]");
+				player.sendMessage("§cInvalid syntax. Syntax: /mute <perm/temp/none> <player>");
 				return true;
 		}
 		return true;
