@@ -23,8 +23,7 @@ public class Mute implements CommandExecutor {
 		}
 
 		if (args.length < 1) {
-			player.sendMessage("§cInvalid syntax. Syntax: /mute <perm/temp/none> <player>");
-			player.sendMessage("§cAlternate syntax: /mute all");
+			player.sendMessage("§cInvalid syntax. Syntax: /mute <perm/temp/none/all> [player]");
 			return true;
 		}
 
@@ -65,7 +64,7 @@ public class Mute implements CommandExecutor {
 				PlayerMeta.setMuteType(toMute, MuteType.NONE);
 				break;
 			default:
-				player.sendMessage("§cInvalid syntax. Syntax: /mute <perm/temp/none> <player>");
+				player.sendMessage("§cInvalid syntax. Syntax: /mute <perm/temp/none/all> [player]");
 				return true;
 		}
 		return true;
