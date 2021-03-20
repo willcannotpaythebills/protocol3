@@ -9,7 +9,7 @@ protocol3 is the plugin that runs avas.cc. It manages things like the speed limi
 You can download the current stable version [here](https://github.com/gcurtiss/protocol3/releases/tag/v3.2.2-stable)
 
 ### Dependencies
-At this time, only [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) and [ArmorEquipEvent](https://www.spigotmc.org/resources/lib-armorequipevent.5478/) is required for the plugin to run correctly.
+At this time, only [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) and [ArmorEquipEvent](https://www.spigotmc.org/resources/lib-armorequipevent.5478/) is required for the plugin to run correctly. Use [Paper 1.16.5 Build #446](https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/446/downloads/paper-1.16.5-446.jar) or newer.
 
 ### Setup
 1. Download ProtocolLib and the latest build of Paper for the latest version of Minecraft.
