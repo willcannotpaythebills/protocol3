@@ -1,6 +1,9 @@
 package protocol3.events;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -9,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerCommandSendEvent;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.PlayerMeta;
@@ -18,6 +22,9 @@ import protocol3.commands.Admin;
 // protocol3. ~~DO NOT REDISTRIBUTE!~~ n/a 3/6/2021
 
 public class Chat implements Listener {
+	private static Set<String> adminCommands = new HashSet<>(Arrays.asList(
+		"mute", "dupehand", "lagfag", "setdonator", "restart"
+	));
 
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent e) {
@@ -98,6 +105,12 @@ public class Chat implements Listener {
 			e.setCancelled(true);
 		}
 		return true;
+	}
+
+	@EventHandler
+	public void onPlayerTab(PlayerCommandSendEvent e) {
+		if (!e.getPlayer().isOp())
+			e.getCommands().removeAll(adminCommands);
 	}
 
 	private boolean isBlank(String check) {
