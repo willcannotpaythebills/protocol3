@@ -68,8 +68,13 @@ public class Connection implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
+		
 		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
 			doJoinMessage(MessageType.JOIN, e.getPlayer());
+		}
+		
+		if(!PlayerMeta.Playtimes.containsKey(e.getPlayer().getUniqueId())) {
+			PlayerMeta.Playtimes.put(e.getPlayer().getUniqueId(), 0.0D);
 		}
 
 		if (Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
