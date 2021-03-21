@@ -22,9 +22,6 @@ import protocol3.commands.Admin;
 // protocol3. ~~DO NOT REDISTRIBUTE!~~ n/a 3/6/2021
 
 public class Chat implements Listener {
-	private static Set<String> adminCommands = new HashSet<>(Arrays.asList(
-		"mute", "lagfag", "setdonator", "restart", "op", "deop"
-	));
 	// yes dupehand belongs below, it sends a rude message to non-admins if they try to use it
 	private static Set<String> allUserCommands = new HashSet<>(Arrays.asList(
 		"about", "admin", "discord", "dupehand", "help", "kill", "kit", "kys", "msg", "r",
@@ -114,10 +111,10 @@ public class Chat implements Listener {
 
 	@EventHandler
 	public void onPlayerTab(PlayerCommandSendEvent e) {
-		e.getCommands().clear();
-		e.getCommands().addAll(allUserCommands);
-		if (e.getPlayer().isOp())
-			e.getCommands().addAll(adminCommands);
+		if (!e.getPlayer().isOp()) {
+			e.getCommands().clear();
+			e.getCommands().addAll(allUserCommands);
+		}
 	}
 
 	private boolean isBlank(String check) {
