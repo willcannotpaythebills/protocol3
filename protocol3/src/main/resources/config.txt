@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 19
+config.version = 20
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -17,6 +17,10 @@ movement.block.floor = true
 
 // Enable or disable illegal placement protection. false = disabled true = enabled [default]
 movement.block.chunkcheck = true
+
+// Solidify the floor of the overworld and nether and the roof of the nether. false = disabled true = enabled [default]
+// WARNING: has a major impact on performance when multiple players are traveling
+movement.block.solidify_bedrock = true
 
 // --------------------- //
 // --- BLOCK PATCHES --- //
