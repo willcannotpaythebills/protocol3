@@ -9,7 +9,7 @@ public class Config {
 
 	private static HashMap<String, String> _values = new HashMap<String, String>();
 
-	public static int version = 19;
+	public static int version = 20;
 
 	public static String getValue(String key)
 	{

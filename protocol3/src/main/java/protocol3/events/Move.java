@@ -110,6 +110,7 @@ public class Move implements Listener
 		{
 			boolean containsSpawner = false;
 			boolean portalsIllegal = false;
+			boolean solidifyBedrock = Boolean.parseBoolean(Config.getValue("movement.block.chunkcheck.solidify_bedrock"));
 			Chunk c = p.getLocation().getChunk();
 
 			// Portals dont spawn PAST! a 25000 block radius of spawn
@@ -247,14 +248,14 @@ public class Move implements Listener
 						}
 
 						// make sure the floor is solid in both dimensions at y=1
-						if (y == 1 && !(block.getType().equals(Material.BEDROCK)))
+						if (solidifyBedrock && y == 1 && !(block.getType().equals(Material.BEDROCK)))
 						{
 							block.setType(Material.BEDROCK);
 							continue;
 						}
 
 						// make sure the nether ceiling is solid at y=127
-						if (inNether && y == 127 && !(block.getType().equals(Material.BEDROCK)))
+						if (solidifyBedrock && inNether && y == 127 && !(block.getType().equals(Material.BEDROCK)))
 						{
 							block.setType(Material.BEDROCK);
 							continue;
