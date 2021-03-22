@@ -18,6 +18,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import io.papermc.paper.event.entity.EntityMoveEvent;
@@ -303,6 +304,14 @@ public class Move implements Listener
 		}
 		if (!inEnd && e.getEntity().getLocation().getY() <= 0 && Config.getValue("movement.block.floor").equals("true")) {
 			e.getEntity().setHealth(0);
+			return;
+		}
+	}
+	
+	@EventHandler
+	public void onEntityPortal(EntityPortalEvent e) {
+		if(e.getEntityType().equals(EntityType.ENDER_CRYSTAL)) {
+			e.setCancelled(true);
 			return;
 		}
 	}

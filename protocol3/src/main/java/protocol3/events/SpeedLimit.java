@@ -94,7 +94,7 @@ public class SpeedLimit implements Listener
 						}
 
 						Vector v = new_location.subtract(previous_location).toVector();
-						double speed = v.length() / duration;
+						double speed = Math.round(v.length() / duration * 10.0) / 10.0;
 
 						// insta-kick above hard kick speed
 						if (speed > hard_kick)
@@ -124,8 +124,7 @@ public class SpeedLimit implements Listener
 								return;
 							} else {
 								// display speed with one decimal
-								double display_speed = Math.round(speed * 10.0) / 10.0;
-								player.spigot().sendMessage(new TextComponent("§4Your speed is " + display_speed + ", speed limit is " + allowed + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
+								player.spigot().sendMessage(new TextComponent("§4Your speed is " + speed + ", speed limit is " + allowed + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
 							}
 
 							--grace;
@@ -172,6 +171,7 @@ public class SpeedLimit implements Listener
 			new ArrayList<Map.Entry<String, Double> >(speeds.entrySet());
 
 		Collections.sort(list, new Comparator<Map.Entry<String, Double> >() {
+			@Override
 			public int compare(Map.Entry<String, Double> o1,
 					Map.Entry<String, Double> o2)
 			{
