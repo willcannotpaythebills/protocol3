@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -311,8 +312,12 @@ public class Move implements Listener
 	@EventHandler
 	public void onEntityPortal(EntityPortalEvent e) {
 		if(e.getEntityType().equals(EntityType.ENDER_CRYSTAL)) {
-			e.setCancelled(true);
-			return;
+			EnderCrystal entity = (EnderCrystal)e.getEntity();
+			if(entity.isShowingBottom())
+			{
+				e.setCancelled(true);
+				return;
+			}
 		}
 	}
 
