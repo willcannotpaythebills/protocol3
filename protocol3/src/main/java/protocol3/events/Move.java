@@ -107,6 +107,10 @@ public class Move implements Listener
 
 		if (Config.getValue("movement.block.chunkcheck").equals("false"))
 			needsCheck = false;
+		
+		if (inEnd) {
+			needsCheck = false;
+		}
 
 		if (needsCheck)
 		{
@@ -186,10 +190,6 @@ public class Move implements Listener
 				// it was either previously checked or we just checked it, so add it to the cache
 				currentPlayerChunks.put(c, true);
 			}
-
-			// Too difficult to anti-illegal the end
-			if (inEnd)
-				return;
 
 			for (int x = 0; x < 16; x++)
 			{
