@@ -1,13 +1,6 @@
 package protocol3.events;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -16,14 +9,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
-
 import protocol3.Main;
 import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.Pair;
 import protocol3.backend.ServerMeta;
 
-import net.md_5.bungee.api.chat.TextComponent;
+import java.util.*;
 
 public class SpeedLimit implements Listener
 {
@@ -88,23 +80,22 @@ public class SpeedLimit implements Listener
 							return;
 						}
 
-						Integer grace = gracePeriod.get(player.getUniqueId());
-						if (grace == null) {
-							grace = GRACE_PERIOD;
-						}
+				Integer grace = gracePeriod.get(player.getUniqueId());
+				if (grace == null) {
+					grace = GRACE_PERIOD;
+				}
 
-						Vector v = new_location.subtract(previous_location).toVector();
-						double speed = v.length() / duration;
+				Vector v = new_location.subtract(previous_location).toVector();
+				double speed = Math.round(v.length() / duration * 10.0) / 10.0;
 
-						// insta-kick above hard kick speed
-						if (speed > hard_kick)
-						{
-							gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
-							ServerMeta.kickWithDelay(player,
-									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-							totalKicks++;
-							return;
-						}
+				// insta-kick above hard kick speed
+				if (speed > hard_kick) {
+					gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
+					ServerMeta.kickWithDelay(player,
+							Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+					totalKicks++;
+					return;
+				}
 
 						// medium-kick: set grace period to 2 sec
 						if (speed > medium_kick)
@@ -124,8 +115,7 @@ public class SpeedLimit implements Listener
 								return;
 							} else {
 								// display speed with one decimal
-								double display_speed = Math.round(speed * 10.0) / 10.0;
-								player.spigot().sendMessage(new TextComponent("§4Your speed is " + display_speed + ", speed limit is " + allowed + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
+								player.spigot().sendMessage(new TextComponent("§4Your speed is " + speed + ", speed limit is " + allowed + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
 							}
 
 							--grace;
@@ -171,10 +161,10 @@ public class SpeedLimit implements Listener
 		List<Map.Entry<String, Double> > list =
 			new ArrayList<Map.Entry<String, Double> >(speeds.entrySet());
 
-		Collections.sort(list, new Comparator<Map.Entry<String, Double> >() {
+		Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+			@Override
 			public int compare(Map.Entry<String, Double> o1,
-					Map.Entry<String, Double> o2)
-			{
+							   Map.Entry<String, Double> o2) {
 				return (o2.getValue()).compareTo(o1.getValue());
 			}
 		});

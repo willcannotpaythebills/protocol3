@@ -1,30 +1,24 @@
 package protocol3.events;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
-
-import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.PlayerMeta;
 import protocol3.commands.Admin;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
 
 // Chat Events
 // protocol3. ~~DO NOT REDISTRIBUTE!~~ n/a 3/6/2021
 
 public class Chat implements Listener {
-	private static Set<String> adminCommands = new HashSet<>(Arrays.asList(
-		"mute", "lagfag", "setdonator", "restart", "op", "deop"
-	));
 	// yes dupehand belongs below, it sends a rude message to non-admins if they try to use it
 	private static Set<String> allUserCommands = new HashSet<>(Arrays.asList(
 		"about", "admin", "discord", "dupehand", "help", "kill", "kit", "kys", "msg", "r",
@@ -114,10 +108,10 @@ public class Chat implements Listener {
 
 	@EventHandler
 	public void onPlayerTab(PlayerCommandSendEvent e) {
-		e.getCommands().clear();
-		e.getCommands().addAll(allUserCommands);
-		if (e.getPlayer().isOp())
-			e.getCommands().addAll(adminCommands);
+		if (!e.getPlayer().isOp()) {
+			e.getCommands().clear();
+			e.getCommands().addAll(allUserCommands);
+		}
 	}
 
 	private boolean isBlank(String check) {

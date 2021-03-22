@@ -37,6 +37,12 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 8. Place this .jar in your plugins directory on your server.
 9. Kill yourself for using IntelliJ like a brainlet
 
+### Testing (No IDE)
+1. open a command prompt in protocol3
+2. start the command `mvnw.cmd package` (or `./mvnw package` on linux)
+3. An .jar file will be produced in /target called `p3-3-shaded.jar`
+4. Place this .jar in your plugins directory on your server.
+
 
 ### Contributing
 Please comment any lines that may be unclear to someone who is less experienced with programming, and follow standard Java convention. If you are on Eclipse, please DISABLE auto-formatting on save. It is disabled by default; if you manually enabled it, disable it.
