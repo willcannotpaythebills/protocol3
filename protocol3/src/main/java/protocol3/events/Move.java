@@ -97,6 +97,10 @@ public class Move implements Listener {
 
 		if (Config.getValue("movement.block.chunkcheck").equals("false"))
 			needsCheck = false;
+		
+		if (inEnd) {
+			needsCheck = false;
+		}
 
 		if (inEnd) {
 			needsCheck = false;
@@ -295,6 +299,18 @@ public class Move implements Listener {
 		if (!inEnd && e.getEntity().getLocation().getY() <= 0 && Config.getValue("movement.block.floor").equals("true")) {
 			e.getEntity().setHealth(0);
 			return;
+		}
+	}
+	
+	@EventHandler
+	public void onEntityPortal(EntityPortalEvent e) {
+		if(e.getEntityType().equals(EntityType.ENDER_CRYSTAL)) {
+			EnderCrystal entity = (EnderCrystal)e.getEntity();
+			if(entity.isShowingBottom())
+			{
+				e.setCancelled(true);
+				return;
+			}
 		}
 	}
 
