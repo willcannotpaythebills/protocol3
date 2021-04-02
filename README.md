@@ -33,9 +33,15 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 4. Build p3 using IDEA's Maven Projects view; View -> Tool Windows -> Maven Projects
 5. Open p3, then Lifestyle
 6. Double click install.
-7. An .jar file will be produced in /target called `p3-3-shaded.jar`
+7. An .jar file will be produced in /target called `p3 or p3-3-shaded.jar`
 8. Place this .jar in your plugins directory on your server.
 9. Kill yourself for using IntelliJ like a brainlet
+
+### Testing (No IDE)
+1. open a command prompt in protocol3
+2. start the command `mvnw.cmd package` (or `./mvnw package` on linux)
+3. An .jar file will be produced in /target called `p3-3-shaded.jar`
+4. Place this .jar in your plugins directory on your server.
 
 
 ### Contributing

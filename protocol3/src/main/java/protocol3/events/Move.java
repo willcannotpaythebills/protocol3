@@ -1,13 +1,7 @@
 package protocol3.events;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
+import io.papermc.paper.event.entity.EntityMoveEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -21,22 +15,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-
-import io.papermc.paper.event.entity.EntityMoveEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
 import protocol3.backend.LruCache;
 import protocol3.backend.PlayerMeta;
 
-public class Move implements Listener
-{
+import java.util.*;
+
+public class Move implements Listener {
 
 	public static HashMap<UUID, Chunk> lastChunks = new HashMap<UUID, Chunk>();
 
 	// per-player cache of chunks that have been checked aggressively for illegal items
-	private static LruCache<Player, LruCache<Chunk, Boolean> > playerChunks
-		= new LruCache<>(Integer.parseInt(Config.getValue("item.illegal.agro.player_count")));
+	private static LruCache<Player, LruCache<Chunk, Boolean>> playerChunks
+			= new LruCache<>(Integer.parseInt(Config.getValue("item.illegal.agro.player_count")));
 
 	private static long lastCacheFlush = System.currentTimeMillis() / 1000;
 
@@ -96,10 +88,8 @@ public class Move implements Listener
 		{
 			lastChunks.put(playerUuid, p.getLocation().getChunk());
 			needsCheck = true;
-		} else
-		{
-			if (lastChunks.get(playerUuid) != p.getLocation().getChunk())
-			{
+		} else {
+			if (lastChunks.get(playerUuid) != p.getLocation().getChunk()) {
 				lastChunks.put(playerUuid, p.getLocation().getChunk());
 				needsCheck = true;
 			}
@@ -112,8 +102,11 @@ public class Move implements Listener
 			needsCheck = false;
 		}
 
-		if (needsCheck)
-		{
+		if (inEnd) {
+			needsCheck = false;
+		}
+
+		if (needsCheck) {
 			boolean containsSpawner = false;
 			boolean portalsIllegal = false;
 			boolean solidifyBedrock = Boolean.parseBoolean(Config.getValue("movement.block.chunkcheck.solidify_bedrock"));
@@ -315,6 +308,17 @@ public class Move implements Listener
 			EnderCrystal entity = (EnderCrystal)e.getEntity();
 			if(entity.isShowingBottom())
 			{
+				e.setCancelled(true);
+				return;
+			}
+		}
+	}
+
+	@EventHandler
+	public void onEntityPortal(EntityPortalEvent e) {
+		if (e.getEntityType().equals(EntityType.ENDER_CRYSTAL)) {
+			EnderCrystal entity = (EnderCrystal) e.getEntity();
+			if (entity.isShowingBottom()) {
 				e.setCancelled(true);
 				return;
 			}
