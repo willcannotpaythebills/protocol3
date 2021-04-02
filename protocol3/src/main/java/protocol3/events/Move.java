@@ -314,15 +314,4 @@ public class Move implements Listener {
 		}
 	}
 
-	@EventHandler
-	public void onEntityPortal(EntityPortalEvent e) {
-		if (e.getEntityType().equals(EntityType.ENDER_CRYSTAL)) {
-			EnderCrystal entity = (EnderCrystal) e.getEntity();
-			if (entity.isShowingBottom()) {
-				e.setCancelled(true);
-				return;
-			}
-		}
-	}
-
 }
