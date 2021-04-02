@@ -11,6 +11,7 @@ import protocol3.backend.PlayerMeta;
 import protocol3.backend.Scheduler;
 import protocol3.backend.ServerMeta;
 import protocol3.backend.Utilities;
+import protocol3.commands.VoteMute;
 
 // Playtime processor
 public class ProcessPlaytime extends TimerTask {
@@ -52,7 +53,7 @@ public class ProcessPlaytime extends TimerTask {
 		if (System.currentTimeMillis() - lastHour >= 3600000) {
 			lastHour = System.currentTimeMillis();
 
-			// do hourly tasks
+			VoteMute.clear();
 		}
 
 		// Check if we need a restart

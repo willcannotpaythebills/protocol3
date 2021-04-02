@@ -91,10 +91,11 @@ public class Admin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("spot")) {
 				Location l = LogOutSpots.get(args[1]);
 				if (l == null) {
-					player.sendMessage("No logout spot logged for " + args[1]);
+					player.sendMessage(new TextComponent("§6No logout spot logged for " + args[1]));
 				} else {
-					player.sendMessage(args[1] + " logged out at " + l.getX() + " " + l.getY() + " " + l.getZ());
+					player.sendMessage(new TextComponent("§6"+args[1] + " logged out at " + l.getX() + " " + l.getY() + " " + l.getZ()));
 				}
+				return true;
 			}
 		}
 		player.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer, Founder"));
