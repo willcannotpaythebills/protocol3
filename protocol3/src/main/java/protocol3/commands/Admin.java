@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import protocol3.backend.Config;
 import protocol3.backend.Pair;
+import protocol3.backend.PlayerMeta;
 import protocol3.backend.Utilities;
 import protocol3.events.SpeedLimit;
 
@@ -22,12 +23,14 @@ public class Admin implements CommandExecutor {
 	public static List<UUID> MsgToggle = new ArrayList<UUID>();
 	public static List<UUID> UseRedName = new ArrayList<UUID>();
 	public static Map<String, Location> LogOutSpots = new HashMap<>();
+	public static boolean disableWarnings = false;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		Player player = (Player) sender;
 		if (args.length == 1) {
-			if (!player.isOp()) {
+			if (!PlayerMeta.isOp(sender)) {
+				sender.sendMessage(new TextComponent("§cYou can't use this."));
 				return true;
 			}
 			switch (args[0].toUpperCase()) {
@@ -61,10 +64,10 @@ public class Admin implements CommandExecutor {
 				case "RELOAD":
 					try {
 						Config.load();
-						player.spigot().sendMessage(new TextComponent("§aSuccessfully reloaded."));
+						sender.spigot().sendMessage(new TextComponent("§aSuccessfully reloaded."));
 
 					} catch (IOException e) {
-						player.spigot().sendMessage(new TextComponent("§4Failed to reload."));
+						sender.spigot().sendMessage(new TextComponent("§4Failed to reload."));
 						Utilities.restart();
 					}
 					return true;
@@ -73,6 +76,7 @@ public class Admin implements CommandExecutor {
 					List< Pair<Double, String> > speeds = SpeedLimit.getSpeeds();
 					for (Pair<Double, String> speedEntry : speeds) {
 						double speed = speedEntry.getLeft();
+						if(speed == 0) continue;
 						String playerName = speedEntry.getRight();
 						String color = "§";
 						if (speed >= 64.0)
@@ -86,14 +90,24 @@ public class Admin implements CommandExecutor {
 					}
 					player.spigot().sendMessage(new TextComponent("§6End of speed list."));
 					return true;
+				case "AGRO":
+					disableWarnings = !disableWarnings;
+					if(disableWarnings) {
+						sender.spigot().sendMessage(new TextComponent("§6Enabled aggressive speed limit."));
+					}
+					else {
+						sender.spigot().sendMessage(new TextComponent("§6Disabled aggressive speed limit."));
+					}
+					return true;
+					
 			}
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("spot")) {
 				Location l = LogOutSpots.get(args[1]);
 				if (l == null) {
-					player.sendMessage(new TextComponent("§6No logout spot logged for " + args[1]));
+					sender.sendMessage(new TextComponent("§6No logout spot logged for " + args[1]));
 				} else {
-					player.sendMessage(new TextComponent("§6"+args[1] + " logged out at " + l.getX() + " " + l.getY() + " " + l.getZ()));
+					sender.sendMessage(new TextComponent("§6"+args[1] + " logged out at " + l.getX() + " " + l.getY() + " " + l.getZ()));
 				}
 				return true;
 			}

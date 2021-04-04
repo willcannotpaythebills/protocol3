@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 21
+config.version = 22
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -119,8 +119,31 @@ speedlimit.tier_two = 36
 speedlimit.medium_kick = 64
 // Hard kick speed limit (insta-kick if exceeded)
 speedlimit.hard_kick = 80
+
 // Reconnect delay when kicked by exceeding the speed limit, in ms. default = 10000 (10s)
 speedlimit.rc_delay = 10000
+// Reconnect delay when reconnecting normally, in ms. default = 5000 (5s). Set to 0 to disable.
+speedlimit.rc_delay_safe = 5000
+
+// Disables speed limit warnings and only kicks 
+speedlimit.agro = false
+
+// ------------ //
+// --- SPAM --- //
+// ------------ //
+
+// Enable the anti-spam system. default = true
+spam.enable = true
+// Maximum similarity to prevent a message being re-sent. default = 95 (percent)
+spam.max_similarity = 95
+// Time required to wait between messages, in ms. default = 1000 (ms)
+spam.wait_time = 1000
+// Required number of violations to punish. default = 20 (vl)
+spam.minimum_vl = 20
+// Reconnect delay after being kicked for spam. default = 5000 (ms)
+spam.rc_delay = 5000
+// Allow ops to bypass anti-spam. default = true
+spam.ops = true
 
 // ------------------ //
 // --- AESTHETICS --- //

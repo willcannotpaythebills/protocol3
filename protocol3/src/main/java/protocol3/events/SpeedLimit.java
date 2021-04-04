@@ -22,7 +22,7 @@ import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.Pair;
 import protocol3.backend.ServerMeta;
-
+import protocol3.commands.Admin;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class SpeedLimit implements Listener
@@ -95,6 +95,13 @@ public class SpeedLimit implements Listener
 
 						Vector v = new_location.subtract(previous_location).toVector();
 						double speed = Math.round(v.length() / duration * 10.0) / 10.0;
+						
+						if(speed > allowed+1 && (Config.getValue("speedlimit.agro").equals("true") || Admin.disableWarnings)) {
+							ServerMeta.kickWithDelay(player,
+									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+							totalKicks++;
+							return;
+						}
 
 						// insta-kick above hard kick speed
 						if (speed > hard_kick)
@@ -114,7 +121,8 @@ public class SpeedLimit implements Listener
 						}
 
 						// player is going too fast, warn or kick
-						if (speed > allowed)
+						// +1 for leniency
+						if (speed > allowed+1)
 						{
 							if (grace == 0) {
 								gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);

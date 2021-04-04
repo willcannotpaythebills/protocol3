@@ -1,6 +1,8 @@
 package protocol3.backend;
 
 import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.events.Chat;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -16,7 +18,8 @@ public class PlayerMeta
 {
 
 	public static List<UUID> _donatorList = new ArrayList<UUID>();
-	public static List<UUID> _permanentMutes = new ArrayList<UUID>();
+	
+	public static HashMap<UUID, String> _permanentMutes = new HashMap<UUID, String>();
 	public static HashMap<UUID, Double> _temporaryMutes = new HashMap<UUID, Double>();
 
 	public static HashMap<UUID, Double> Playtimes = new HashMap<UUID, Double>();
@@ -60,14 +63,30 @@ public class PlayerMeta
 
 	public static boolean isMuted(Player p)
 	{
-		return (_temporaryMutes.containsKey(p.getUniqueId()) || _permanentMutes.contains(p.getUniqueId()));
+		String ip = p.getAddress().toString().split(":")[0].replace("/", "");
+		
+		boolean muted = (_temporaryMutes.containsKey(p.getUniqueId()) || _permanentMutes.containsKey(p.getUniqueId()) || _permanentMutes.containsValue(ip));
+		
+		// make sure this combo of uuid and ip are in db
+		if(muted && !(_permanentMutes.containsKey(p.getUniqueId()) && _permanentMutes.containsValue(ip))) {
+			_permanentMutes.put(p.getUniqueId(), ip);
+			try {
+				saveMuted();
+			} catch (IOException e) {
+				System.out.println("[protocol3] Failed to save mutes.");
+			}
+		}
+		
+		
+		return muted;
 	}
 
 	public static MuteType getMuteType(Player p)
 	{
 		if (isMuted(p))
 		{
-			if (_temporaryMutes.containsKey(p.getUniqueId()) && !_permanentMutes.contains(p.getUniqueId()))
+			String ip = p.getAddress().toString().split(":")[0].replace("/", "");
+			if (_temporaryMutes.containsKey(p.getUniqueId()) && !_permanentMutes.containsKey(p.getUniqueId()))
 			{
 				return MuteType.TEMPORARY;
 			} else
@@ -89,9 +108,17 @@ public class PlayerMeta
 			muteType = "un";
 			if (_temporaryMutes.containsKey(uuid))
 				_temporaryMutes.remove(uuid);
-			if (_permanentMutes.contains(uuid))
+			if (_permanentMutes.containsKey(uuid))
 			{
-				_permanentMutes.remove(uuid);
+				String ip = _permanentMutes.get(uuid);
+				for(UUID val : _permanentMutes.keySet()) {
+					if(_permanentMutes.get(val).equals(ip)) {
+						_permanentMutes.remove(val);
+					}
+					if(val.equals(uuid)) {
+						_permanentMutes.remove(val);
+					}
+				}
 				try
 				{
 					saveMuted();
@@ -100,6 +127,7 @@ public class PlayerMeta
 					System.out.println("[protocol3] Failed to save mutes.");
 				}
 			}
+			Chat.violationLevels.remove(uuid);
 		} else if (type.equals(MuteType.TEMPORARY)) {
 			muteType = "temporarily ";
 			_permanentMutes.remove(uuid);
@@ -107,7 +135,8 @@ public class PlayerMeta
 				_temporaryMutes.put(uuid, 0.0);
 		} else if (type.equals(MuteType.PERMANENT)) {
 			muteType = "permanently ";
-			if (!_permanentMutes.contains(uuid)) _permanentMutes.add(uuid);
+			String ip = p.getAddress().toString().split(":")[0].replace("/", "");
+			if (!_permanentMutes.containsKey(uuid)) _permanentMutes.put(uuid, ip);
 			if (_temporaryMutes.containsKey(uuid)) _temporaryMutes.remove(uuid);
 			try {
 				saveMuted();
@@ -115,7 +144,7 @@ public class PlayerMeta
 				System.out.println("[protocol3] Failed to save mutes.");
 			}
 		}
-		p.spigot().sendMessage(new TextComponent("§cYou are now " + muteType + "muted"));
+		p.spigot().sendMessage(new TextComponent("§7§oYou are now " + muteType + "muted."));
 	}
 
 	public static void tickTempMutes(double msToAdd) {
@@ -174,12 +203,15 @@ public class PlayerMeta
 
 	public static void loadMuted() throws IOException {
 		List<String> lines = Files.readAllLines(Paths.get("plugins/protocol3/muted.db"));
-		lines.forEach(val -> _permanentMutes.add(UUID.fromString(val)));
+		lines.forEach(val -> _permanentMutes.put(UUID.fromString(val.split(":")[0]), val.split(":")[1]));
 	}
 
 	public static void saveMuted() throws IOException {
-		List<String> list = _permanentMutes.stream().map(UUID::toString).collect(Collectors.toList());
-		Files.write(Paths.get("plugins/protocol3/muted.db"), String.join("\n", list).getBytes());
+		List<String> lines = new ArrayList<String>();
+		for(UUID key : _permanentMutes.keySet()) {
+			lines.add(key.toString() + ":" + _permanentMutes.get(key));
+		}
+		Files.write(Paths.get("plugins/protocol3/muted.db"), String.join("\n", lines).getBytes());
 	}
 
 	// --- PLAYTIME --- //

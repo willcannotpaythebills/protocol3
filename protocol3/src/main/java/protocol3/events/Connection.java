@@ -112,6 +112,7 @@ public class Connection implements Listener {
 		}
 		Location l = e.getPlayer().getLocation();            //store Location floored to block
 		Admin.LogOutSpots.put(e.getPlayer().getName(), new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
+		ServerMeta.preventReconnect(e.getPlayer(), Integer.parseInt(Config.getValue("speedlimit.rc_delay_safe")));
 	}
 
 	private String[] motds = { "active doop!!!!!", "do you like my sword sword", "peaceful smp",
