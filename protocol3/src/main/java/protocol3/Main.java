@@ -56,6 +56,7 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new AutoAnnouncer(), 15000L, 15000L);
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new ProcessPlaytime(), 20L, 20L);
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new OnTick(), 1L, 1L);
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new LagPrevention(), 20L, 20L);
 
 		// Load listeners
 		getServer().getPluginManager().registerEvents(new Chat(), this);
