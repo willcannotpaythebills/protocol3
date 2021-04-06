@@ -75,8 +75,8 @@ public class Move implements Listener {
 		Player p = event.getPlayer();
 		UUID playerUuid = p.getUniqueId();
 		boolean needsCheck = false;
-		boolean inNether = p.getLocation().getWorld().getName().equals("world_nether");
-		boolean inEnd = p.getLocation().getWorld().getName().equals("world_the_end");
+		boolean inNether = p.getLocation().getWorld().getName().contains("nether");
+		boolean inEnd = p.getLocation().getWorld().getName().contains("the_end");
 
 		// -- ILLEGAL PLACEMENT PATCH -- //
 		boolean illegalItemAgro = Boolean.parseBoolean(Config.getValue("item.illegal.agro"));
