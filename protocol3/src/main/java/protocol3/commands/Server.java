@@ -30,9 +30,9 @@ public class Server implements CommandExecutor {
 				"§c========== PLAYER ==========", "§cUnique Joins (§eSince Map Creation§c):§7 " + Bukkit.getOfflinePlayers().length,
 				"§cUnique Joins (§eSince Stats Update§c):§7 " + PlayerMeta.Playtimes.keySet().size(),
 				"§cDonators:§7 " + PlayerMeta._donatorList.size(),
-				//"§cLagfags:§7 " + PlayerMeta._lagfagList.size(),
+				"§cLagfags:§7 " + PlayerMeta._lagfagList.size(),
 				"§cPermanent Mutes:§7 " + PlayerMeta._permanentMutes.size(),
-				//"§cOP Accounts:§7 " + Bukkit.getOperators().size(),
+				"§cOP Accounts:§7 " + Bukkit.getOperators().size(),
 				"§c=========== DEBUG ===========", "§cServer Restarting: §7" + (Utilities.restarting ? "True" : "False"),
 				"§cTime below acceptable TPS:§7 " + ProcessPlaytime.lowTpsCounter + "ms (600000ms required to restart)"//,
 				//"§cWither Count:§7 " + LagPrevention.currentWithers
