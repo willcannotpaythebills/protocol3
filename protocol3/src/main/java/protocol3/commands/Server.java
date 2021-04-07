@@ -20,7 +20,8 @@ import protocol3.tasks.ProcessPlaytime;
 public class Server implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		Arrays.asList("§c========== GENERAL ==========", "§cServer Uptime:§7 " + Utilities.calculateTime(ServerMeta.getUptime()),
+		Arrays.asList(
+			"§c========== GENERAL ==========", "§cServer Uptime:§7 " + Utilities.calculateTime(ServerMeta.getUptime()),
 				"§cCurrent Population:§7 " + Bukkit.getOnlinePlayers().size(),
 				"§cCurrent TPS:§7 " + new DecimalFormat("#.##").format(LagProcessor.getTPS()),
 				"§cCurrent Speed Limit:§7 " + (LagProcessor.getTPS() <= 15 ? "36" : "48") + " blocks per second",
@@ -33,8 +34,9 @@ public class Server implements CommandExecutor {
 				"§cPermanent Mutes:§7 " + PlayerMeta._permanentMutes.size(),
 				"§cOP Accounts:§7 " + Bukkit.getOperators().size(),
 				"§c=========== DEBUG ===========", "§cServer Restarting: §7" + (Utilities.restarting ? "True" : "False"),
-				"§cTime below acceptable TPS:§7 " + ProcessPlaytime.lowTpsCounter + "ms (600000ms required to restart)",
-				"§cWither Count:§7 " + LagPrevention.currentWithers)
+				"§cTime below acceptable TPS:§7 " + ProcessPlaytime.lowTpsCounter + "ms (600000ms required to restart)"//,
+				//"§cWither Count:§7 " + LagPrevention.currentWithers
+		)
 				.forEach(s -> sender.spigot().sendMessage(new TextComponent(s)));
 		return true;
 
