@@ -15,7 +15,7 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 
 import protocol3.backend.Config;
 
-public class LagPrevention implements Listener {
+public class LagPrevention implements Listener, Runnable {
 	public static int currentWithers = 0;
 
 	@EventHandler
@@ -30,8 +30,6 @@ public class LagPrevention implements Listener {
 			}
 			currentWithers = getWithers();
 		}
-
-		removeOldSkulls();
 	}
 
 	public static int getWithers() {
@@ -86,5 +84,11 @@ public class LagPrevention implements Listener {
 		});
 
 		return toRet[0];
+	}
+
+	// clear skulls every 20 ticks (~1 sec)
+	@Override
+	public void run() {
+		removeOldSkulls();
 	}
 }
