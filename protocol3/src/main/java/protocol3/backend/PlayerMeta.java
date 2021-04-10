@@ -110,9 +110,10 @@ public class PlayerMeta
 				_temporaryMutes.remove(uuid);
 			if (_permanentMutes.containsKey(uuid))
 			{
+				System.out.println("[protocol3] Failed to save mutes.");
 				String ip = _permanentMutes.get(uuid);
-				HashMap<UUID, String> modified = new HashMap<UUID, String>();
-				modified = _permanentMutes;
+				HashMap<UUID, String> modified = _permanentMutes;
+				
 				for(UUID val : modified.keySet()) {
 					if(_permanentMutes.get(val).equals(ip)) {
 						_permanentMutes.remove(val);
