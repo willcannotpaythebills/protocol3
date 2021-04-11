@@ -1,6 +1,8 @@
 package protocol3.commands;
 
 import net.md_5.bungee.api.chat.TextComponent;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,11 +30,13 @@ public class Admin implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		Player player = (Player) sender;
-		if (args.length == 1) {
+		if(args.length != 0) {
 			if (!PlayerMeta.isOp(sender)) {
 				sender.sendMessage(new TextComponent("§cYou can't use this."));
 				return true;
 			}
+		}
+		if (args.length == 1) {
 			switch (args[0].toUpperCase()) {
 				case "COLOR":
 					if (UseRedName.contains(player.getUniqueId())) {
@@ -99,7 +103,13 @@ public class Admin implements CommandExecutor {
 						sender.spigot().sendMessage(new TextComponent("§6Disabled aggressive speed limit."));
 					}
 					return true;
-					
+				case "WHOIS":
+					Player p = Bukkit.getPlayer(args[2]);
+					String ip = PlayerMeta.getIp(p);
+					boolean muted = PlayerMeta.isMuted(p);
+					int rank = PlayerMeta.getRank(p);
+					sender.spigot().sendMessage(new TextComponent("§6"+p.getName()+": [IP/MUTED/RANK]: "+ip+"/"+muted+"/"+rank));
+					return true;
 			}
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("spot")) {
@@ -111,9 +121,17 @@ public class Admin implements CommandExecutor {
 				}
 				return true;
 			}
+			else if(args[0].equalsIgnoreCase("whois")) {
+				Player p = Bukkit.getPlayer(args[1]);
+				String ip = PlayerMeta.getIp(p);
+				boolean muted = PlayerMeta.isMuted(p);
+				int rank = PlayerMeta.getRank(p);
+				sender.spigot().sendMessage(new TextComponent("§6"+p.getName()+": [IP/MUTED/RANK]: "+ip+"/"+muted+"/"+rank));
+				return true;
+			}
 		}
 		player.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer, Founder"));
-		player.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Community Delegate, Financial, Oldfag"));
+		player.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Community Delegate, Finance, Oldfag"));
 		player.spigot().sendMessage(new TextComponent("§chaJUNT: §7Community Manager, Oldfag"));
 		return true;
 	}

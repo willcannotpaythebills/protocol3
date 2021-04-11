@@ -19,8 +19,9 @@ public class PlayerMeta
 
 	public static List<UUID> _donatorList = new ArrayList<UUID>();
 	
-	public static HashMap<UUID, String> _permanentMutes = new HashMap<UUID, String>();
+	public static List<UUID> _permanentMutes = new ArrayList<UUID>();
 	public static HashMap<UUID, Double> _temporaryMutes = new HashMap<UUID, Double>();
+	public static List<String> _ipMutes = new ArrayList<String>();
 
 	public static HashMap<UUID, Double> Playtimes = new HashMap<UUID, Double>();
 
@@ -63,40 +64,36 @@ public class PlayerMeta
 
 	public static boolean isMuted(Player p)
 	{
-		String ip = p.getAddress().toString().split(":")[0].replace("/", "");
+		if(_temporaryMutes.containsKey(p.getUniqueId())) { return true; }
 		
-		boolean muted = (_temporaryMutes.containsKey(p.getUniqueId()) || _permanentMutes.containsKey(p.getUniqueId()) || _permanentMutes.containsValue(ip));
+		if(_permanentMutes.contains(p.getUniqueId())) { return true; }
 		
-		// make sure this combo of uuid and ip are in db
-		if(muted && !(_permanentMutes.containsKey(p.getUniqueId()) && _permanentMutes.containsValue(ip))) {
-			_permanentMutes.put(p.getUniqueId(), ip);
-			try {
-				saveMuted();
-			} catch (IOException e) {
-				System.out.println("[protocol3] Failed to save mutes.");
+		if(_ipMutes.contains(getIp(p))) 
+		{ 
+			if(!_permanentMutes.contains(p.getUniqueId())) {
+				setMuteType(p, MuteType.PERMANENT);
 			}
+			return true; 
 		}
 		
-		
-		return muted;
+		return false;
 	}
 
 	public static MuteType getMuteType(Player p)
 	{
 		if (isMuted(p))
 		{
-			String ip = p.getAddress().toString().split(":")[0].replace("/", "");
-			if (_temporaryMutes.containsKey(p.getUniqueId()) && !_permanentMutes.containsKey(p.getUniqueId()))
+			if (_temporaryMutes.containsKey(p.getUniqueId()))
 			{
 				return MuteType.TEMPORARY;
-			} else
+			} else if(_permanentMutes.contains(p.getUniqueId()))
 			{
 				return MuteType.PERMANENT;
+			} else if(_ipMutes.contains(getIp(p))) {
+				return MuteType.IP;
 			}
-		} else
-		{
-			return MuteType.NONE;
 		}
+		return MuteType.NONE;
 	}
 
 	public static void setMuteType(Player p, MuteType type)
@@ -108,27 +105,14 @@ public class PlayerMeta
 			muteType = "un";
 			if (_temporaryMutes.containsKey(uuid))
 				_temporaryMutes.remove(uuid);
-			if (_permanentMutes.containsKey(uuid))
+			if (_permanentMutes.contains(uuid))
 			{
-				System.out.println("[protocol3] Failed to save mutes.");
-				String ip = _permanentMutes.get(uuid);
-				HashMap<UUID, String> modified = _permanentMutes;
-				
-				for(UUID val : modified.keySet()) {
-					if(_permanentMutes.get(val).equals(ip)) {
-						_permanentMutes.remove(val);
-					}
-					if(val.equals(uuid)) {
-						_permanentMutes.remove(val);
-					}
-				}
-				try
-				{
-					saveMuted();
-				} catch (IOException e)
-				{
-					System.out.println("[protocol3] Failed to save mutes.");
-				}
+				_permanentMutes.remove(uuid);
+				saveMuted();
+			}
+			if(_ipMutes.contains(getIp(p))) {
+				_ipMutes.remove(getIp(p));
+				saveMuted();
 			}
 			Chat.violationLevels.remove(uuid);
 		} else if (type.equals(MuteType.TEMPORARY)) {
@@ -138,14 +122,14 @@ public class PlayerMeta
 				_temporaryMutes.put(uuid, 0.0);
 		} else if (type.equals(MuteType.PERMANENT)) {
 			muteType = "permanently ";
-			String ip = p.getAddress().toString().split(":")[0].replace("/", "");
-			if (!_permanentMutes.containsKey(uuid)) _permanentMutes.put(uuid, ip);
+			if (!_permanentMutes.contains(uuid)) _permanentMutes.add(uuid);
 			if (_temporaryMutes.containsKey(uuid)) _temporaryMutes.remove(uuid);
-			try {
-				saveMuted();
-			} catch (IOException e) {
-				System.out.println("[protocol3] Failed to save mutes.");
-			}
+			saveMuted();
+		}
+		else if(type.equals(MuteType.IP)) {
+			muteType = "permanently ";
+			setMuteType(p, MuteType.PERMANENT);
+			_ipMutes.add(getIp(p));
 		}
 		p.spigot().sendMessage(new TextComponent("§7§oYou are now " + muteType + "muted."));
 	}
@@ -206,15 +190,31 @@ public class PlayerMeta
 
 	public static void loadMuted() throws IOException {
 		List<String> lines = Files.readAllLines(Paths.get("plugins/protocol3/muted.db"));
-		lines.forEach(val -> _permanentMutes.put(UUID.fromString(val.split(":")[0]), val.split(":")[1]));
+		for(String line : lines) {
+			try {
+				_permanentMutes.add(UUID.fromString(line));
+			}
+			catch(IllegalArgumentException e) {
+				_ipMutes.add(line);
+			}
+		}
 	}
 
-	public static void saveMuted() throws IOException {
+	public static void saveMuted() {
+		try {
 		List<String> lines = new ArrayList<String>();
-		for(UUID key : _permanentMutes.keySet()) {
-			lines.add(key.toString() + ":" + _permanentMutes.get(key));
+		for(UUID key : _permanentMutes) {
+			lines.add(key.toString());
+		}
+		for(String ip : _ipMutes) {
+			lines.add(ip);
 		}
 		Files.write(Paths.get("plugins/protocol3/muted.db"), String.join("\n", lines).getBytes());
+		}
+		catch (IOException e)
+		{
+			System.out.println("[protocol3] Failed to save mutes.");
+		}
 	}
 
 	// --- PLAYTIME --- //
@@ -267,10 +267,14 @@ public class PlayerMeta
 	// --- OTHER -- //
 
 	public enum MuteType {
-		TEMPORARY, PERMANENT, NONE
+		TEMPORARY, PERMANENT, IP, NONE
 	}
 
 	public static boolean isOp(CommandSender sender) {
 		return (sender instanceof Player) ? sender.isOp() : sender instanceof ConsoleCommandSender;
+	}
+	
+	public static String getIp(Player p) {
+		return p.getAddress().toString().split(":")[0].replace("/", "");
 	}
 }

@@ -135,13 +135,11 @@ speedlimit.agro = false
 // Enable the anti-spam system. default = true
 spam.enable = true
 // Maximum similarity to prevent a message being re-sent. default = 95 (percent)
-spam.max_similarity = 95
+spam.max_similarity = 75
 // Time required to wait between messages, in ms. default = 1000 (ms)
-spam.wait_time = 1000
+spam.wait_time = 500
 // Required number of violations to punish. default = 20 (vl)
-spam.minimum_vl = 20
-// Reconnect delay after being kicked for spam. default = 5000 (ms)
-spam.rc_delay = 5000
+spam.minimum_vl = 40
 // Allow ops to bypass anti-spam. default = true
 spam.ops = true
 

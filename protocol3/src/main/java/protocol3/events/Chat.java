@@ -157,6 +157,7 @@ public class Chat implements Listener {
 				}
 			
 				if(censored) {
+					e.getPlayer().sendMessage(new TextComponent("§cYour message was flagged as spam, so it was deleted."));
 					Bukkit.getLogger().log(Level.INFO, "§4<" + username + "> " + finalMessage + " [deleted, vl="+violationLevels.get(e.getPlayer().getUniqueId())+"]");
 					return;
 				}
