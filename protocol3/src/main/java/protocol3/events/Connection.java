@@ -58,6 +58,12 @@ public class Connection implements Listener {
 			e.setResult(Result.KICK_OTHER);
 			return;
 		}
+		
+		if(ProxyFilter.doBlock(e.getPlayer(), e.getAddress().toString().split(":")[0].replace("/", ""))) {
+			e.setKickMessage("§6Connection blocked. Please wait some time before reconnecting.");
+			e.setResult(Result.KICK_OTHER);
+			return;
+		}
 	}
 
 	@EventHandler

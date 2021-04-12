@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import protocol3.backend.Config;
 import protocol3.backend.Pair;
 import protocol3.backend.PlayerMeta;
+import protocol3.backend.ProxyFilter;
 import protocol3.backend.Utilities;
 import protocol3.events.SpeedLimit;
 
@@ -103,13 +104,6 @@ public class Admin implements CommandExecutor {
 						sender.spigot().sendMessage(new TextComponent("§6Disabled aggressive speed limit."));
 					}
 					return true;
-				case "WHOIS":
-					Player p = Bukkit.getPlayer(args[2]);
-					String ip = PlayerMeta.getIp(p);
-					boolean muted = PlayerMeta.isMuted(p);
-					int rank = PlayerMeta.getRank(p);
-					sender.spigot().sendMessage(new TextComponent("§6"+p.getName()+": [IP/MUTED/RANK]: "+ip+"/"+muted+"/"+rank));
-					return true;
 			}
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("spot")) {
@@ -128,6 +122,41 @@ public class Admin implements CommandExecutor {
 				int rank = PlayerMeta.getRank(p);
 				sender.spigot().sendMessage(new TextComponent("§6"+p.getName()+": [IP/MUTED/RANK]: "+ip+"/"+muted+"/"+rank));
 				return true;
+			}
+			else if(args[0].equalsIgnoreCase("filter")) {
+				if(Config.getValue("filter.enabled").equals("false") || Config.getValue("filter.email").equals("example@example.com")) {
+					sender.sendMessage(new TextComponent("§cThe proxy filter is disabled or is not properly set up."));
+					return true;
+				}
+				boolean isArgInt = false;
+				try { Integer.parseInt(args[1]); isArgInt = true; } catch(Exception ex) { }
+				if(isArgInt) {
+					int arg = Integer.parseInt(args[1]);
+					if(arg > 4 || arg < 0) {
+						sender.sendMessage(new TextComponent("§cInvalid filter tier. Pick a number 0 (disabled) through 4 (strict)."));
+						return true;
+					}
+					ProxyFilter.setTier(arg);
+					sender.sendMessage(new TextComponent("§6Security tier was set to "+arg));
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						if(!p.isOp()) {
+							p.kickPlayer("§6A server security change was made. Please rejoin.");
+						}
+					}
+					return true;
+				}
+				else {
+					if(args[1].equals("notify")) {
+						boolean status = ProxyFilter.toggleNotifyAdmin((Player)sender);
+						if(status) {
+							sender.sendMessage(new TextComponent("§6Enabled proxy notifications."));
+						}
+						else {
+							sender.sendMessage(new TextComponent("§6Disabled proxy notifications."));
+						}
+						return true;
+					}
+				}
 			}
 		}
 		player.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer, Founder"));

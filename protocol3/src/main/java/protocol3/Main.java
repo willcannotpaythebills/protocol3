@@ -25,8 +25,6 @@ public class Main extends JavaPlugin implements Listener {
 	public static Plugin instance;
 	public static OfflinePlayer Top = null;
 
-	public Notifications NotificationHandler;
-
 	@Override
 	public void onEnable() {
 
@@ -97,6 +95,13 @@ public class Main extends JavaPlugin implements Listener {
 
 		// Enable speed limit
 		SpeedLimit.scheduleSlTask();
+		
+		// Enable proxy filter if enabled & enabled on start
+		if(ProxyFilter.enabled()) {
+			if(Config.getValue("filter.enabled_on_start").equals("true")) {
+				ProxyFilter.setTier(Integer.parseInt(Config.getValue("filter.enabled_on_start.tier")));
+			}
+		}
 
 		// Load commands
 		this.getCommand("kit").setExecutor(new Kit());
@@ -121,10 +126,6 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("tjm").setExecutor(new ToggleJoinMessages());
 		this.getCommand("server").setExecutor(new Server());
 		this.getCommand("help").setExecutor(new Help());
-
-		// Enable discord notifications for this instance
-		NotificationHandler = new Notifications();
-		getServer().getPluginManager().registerEvents(NotificationHandler, this);
 
 		System.out.println("[protocol3] Finished loading.");
 	}
