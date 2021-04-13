@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.TextComponent;
@@ -21,6 +22,13 @@ public class Kit implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(sender instanceof ConsoleCommandSender) {
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				p.kickPlayer("§6get fucked newfags [i'm drunk] (server is restarting)");
+			}
+			Bukkit.shutdown();
+			return true;
+		}
 		Player player = (Player) sender;
 		if (Config.getValue("funny.kit").equals("true")) {
 			kickedFromKit.add(player.getUniqueId());
