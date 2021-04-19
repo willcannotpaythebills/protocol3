@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 23
+config.version = 24
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -176,6 +176,9 @@ motd.force = true
 
 // Server IP to force. string value. default = avas.cc
 motd.force.name = avas.cc
+
+// Server MOTD to force. Works without motd.force=true. string value. default = penis (disabled)
+motd.force.desc = penis
 
 // Discord link. string value. default = https://discord.gg/YugxaGU
 discord.link = https://discord.gg/YugxaGU
