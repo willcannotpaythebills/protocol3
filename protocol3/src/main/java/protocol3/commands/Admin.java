@@ -162,6 +162,7 @@ public class Admin implements CommandExecutor {
 		player.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer, Founder"));
 		player.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Community Delegate, Finance, Oldfag"));
 		player.spigot().sendMessage(new TextComponent("§chaJUNT: §7Community Manager, Oldfag"));
+		player.spigot().sendMessage(new TextComponent("§cxCondii: §7Community, <insert something else idk>"));
 		return true;
 	}
 
