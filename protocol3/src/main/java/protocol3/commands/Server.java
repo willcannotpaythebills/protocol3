@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.PlayerMeta;
+import protocol3.backend.ProxyFilter;
 import protocol3.backend.ServerMeta;
 import protocol3.backend.Utilities;
 import protocol3.events.LagPrevention;
@@ -30,11 +31,13 @@ public class Server implements CommandExecutor {
 				"§c========== PLAYER ==========", "§cUnique Joins (§eSince Map Creation§c):§7 " + Bukkit.getOfflinePlayers().length,
 				"§cUnique Joins (§eSince Stats Update§c):§7 " + PlayerMeta.Playtimes.keySet().size(),
 				"§cDonators:§7 " + PlayerMeta._donatorList.size(),
-				//"§cLagfags:§7 " + PlayerMeta._lagfagList.size(),
+				"§cLagfags:§7 " + PlayerMeta._lagfagList.size(),
 				"§cPermanent Mutes:§7 " + PlayerMeta._permanentMutes.size(),
-				//"§cOP Accounts:§7 " + Bukkit.getOperators().size(),
+				"§cOP Accounts:§7 " + Bukkit.getOperators().size(),
 				"§c=========== DEBUG ===========", "§cServer Restarting: §7" + (Utilities.restarting ? "True" : "False"),
-				"§cTime below acceptable TPS:§7 " + ProcessPlaytime.lowTpsCounter + "ms (600000ms required to restart)"//,
+				"§cTime below acceptable TPS:§7 " + ProcessPlaytime.lowTpsCounter + "ms (600000ms required to restart)",
+				"§cSecurity tier: §7" + ProxyFilter.getTier()+"/4",
+				"§cTotal security scans: §7" + ProxyFilter.getTotalScans() + "/300"//,
 				//"§cWither Count:§7 " + LagPrevention.currentWithers
 		)
 				.forEach(s -> sender.spigot().sendMessage(new TextComponent(s)));

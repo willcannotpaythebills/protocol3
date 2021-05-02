@@ -50,7 +50,8 @@ public class ServerMeta {
 	}
 
 	public static void tickRcDelays(double elapsed) {
-		for (UUID u : Delays.keySet()) {
+		HashMap<UUID, Double> temp = Delays;
+		for (UUID u : temp.keySet()) {
 			double oldValue = Delays.get(u);
 			Delays.put(u, oldValue + elapsed);
 			if (oldValue + elapsed >= InitialDelays.get(u)) {

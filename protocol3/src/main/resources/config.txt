@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 22
+config.version = 24
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -135,25 +135,50 @@ speedlimit.agro = false
 // Enable the anti-spam system. default = true
 spam.enable = true
 // Maximum similarity to prevent a message being re-sent. default = 95 (percent)
-spam.max_similarity = 95
+spam.max_similarity = 75
 // Time required to wait between messages, in ms. default = 1000 (ms)
-spam.wait_time = 1000
+spam.wait_time = 500
 // Required number of violations to punish. default = 20 (vl)
-spam.minimum_vl = 20
-// Reconnect delay after being kicked for spam. default = 5000 (ms)
-spam.rc_delay = 5000
+spam.minimum_vl = 40
 // Allow ops to bypass anti-spam. default = true
 spam.ops = true
+
+// -------------------- //
+// --- PROXY FILTER --- //
+// -------------------- //
+
+// YOU NEED TO SET UP THIS SECTION BEFORE ENABLING IT!
+// IT *WILL NOT* WORK UNTIL YOU SET IT UP.
+
+// Enable the anti-proxy and anti-botting system. default = false
+filter.enabled = false
+// Email is required for anti-proxy API to work. PROXY FILTER WILL NOT FUNCTION UNTIL THIS EMAIL IS CHANGED TO A VALID!!! EMAIL.
+filter.email = example@example.com
+
+// If the proxy filter should be enabled upon starting the server. default = false
+filter.enabled_on_start = false
+// Tier to be enabled by default. default = 1
+filter.enabled_on_start.tier = 1
+
+// Minimum IP score to be kicked off from the server when tier 1 is enabled. default = 99
+filter.tier_one = 99
+// Minimum IP score to be kicked off from the server when tier 2 is enabled. default = 85
+filter.tier_two = 85
+// Maximum player count when tier 4 is enabled. default = 20
+filter.tier_four = 20 
 
 // ------------------ //
 // --- AESTHETICS --- //
 // ------------------ //
 
-// Force the server IP. true/false. default = false
-motd.force = false
+// Force the server IP. true/false. default = true
+motd.force = true
 
 // Server IP to force. string value. default = avas.cc
 motd.force.name = avas.cc
+
+// Server MOTD to force. Works without motd.force=true. string value. default = penis (disabled)
+motd.force.desc = penis
 
 // Discord link. string value. default = https://discord.gg/YugxaGU
 discord.link = https://discord.gg/YugxaGU

@@ -58,6 +58,12 @@ public class Connection implements Listener {
 			e.setResult(Result.KICK_OTHER);
 			return;
 		}
+		
+		if(ProxyFilter.doBlock(e.getPlayer(), e.getAddress().toString().split(":")[0].replace("/", ""))) {
+			e.setKickMessage("§6Connection blocked. Please wait some time before reconnecting.");
+			e.setResult(Result.KICK_OTHER);
+			return;
+		}
 	}
 
 	@EventHandler
@@ -142,13 +148,21 @@ public class Connection implements Listener {
 		}
 		int rnd = r.nextInt(allMotds.size());
 		String tps = new DecimalFormat("#.##").format(LagProcessor.getTPS());
-		e.setMotd("§9"+serverHostname+" §7| §5" + allMotds.get(rnd) + " §7| §9TPS: " + tps);
+		if(!Config.getValue("motd.force.desc").equals("penis")) {
+			e.setMotd("§9"+serverHostname+" §7| §5" + allMotds.get(rnd) + " §7| §9TPS: " + tps);
+		}
+		else {
+			e.setMotd("§9"+serverHostname+" §7| §5" + Config.getValue("motd.force.desc") + " §7| §9TPS: " + tps);
+		}
 		if(serverHostname.equals("test.avas.cc")) {
 			if(Bukkit.hasWhitelist()) {
 				e.setMotd("§9test.avas.cc §7| §4closed §7| §9TPS: " + tps);
 			}
 			else {
 				e.setMotd("§9test.avas.cc §7| §aopen §7| §9TPS: " + tps);
+			}
+			if(!Config.getValue("motd.force.desc").equals("penis")) {
+				e.setMotd("§9test.avas.cc §7| "+Config.getValue("motd.force.desc")+" §7| §9TPS: " + tps);
 			}
 		}
 		e.setMaxPlayers(1);
