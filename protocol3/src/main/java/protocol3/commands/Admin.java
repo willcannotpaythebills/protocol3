@@ -4,6 +4,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,11 +27,13 @@ public class Admin implements CommandExecutor {
 	public static List<UUID> MsgToggle = new ArrayList<UUID>();
 	public static List<UUID> UseRedName = new ArrayList<UUID>();
 	public static Map<String, Location> LogOutSpots = new HashMap<>();
+	public static List<UUID> AllowedAdmins = new ArrayList<UUID>();
+	public static List<UUID> FailedLoginNotifs = new ArrayList<UUID>();
+	public static List<UUID> LagMachineNotifs = new ArrayList<UUID>();
 	public static boolean disableWarnings = false;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		Player player = (Player) sender;
 		if(args.length != 0) {
 			if (!PlayerMeta.isOp(sender)) {
 				sender.sendMessage(new TextComponent("§cYou can't use this."));
@@ -40,6 +43,7 @@ public class Admin implements CommandExecutor {
 		if (args.length == 1) {
 			switch (args[0].toUpperCase()) {
 				case "COLOR":
+					Player player = (Player)sender;
 					if (UseRedName.contains(player.getUniqueId())) {
 						player.spigot().sendMessage(new TextComponent("§6Disabled red name."));
 						UseRedName.remove(player.getUniqueId());
@@ -49,21 +53,23 @@ public class Admin implements CommandExecutor {
 					}
 					return true;
 				case "SPY":
-					if (Spies.contains(player.getUniqueId())) {
-						player.spigot().sendMessage(new TextComponent("§6Disabled spying on player messages."));
-						Spies.remove(player.getUniqueId());
+					Player player2 = (Player)sender;
+					if (Spies.contains(player2.getUniqueId())) {
+						player2.spigot().sendMessage(new TextComponent("§6Disabled spying on player messages."));
+						Spies.remove(player2.getUniqueId());
 					} else {
-						player.spigot().sendMessage(new TextComponent("§6Enabled spying on player messages."));
-						Spies.add(player.getUniqueId());
+						player2.spigot().sendMessage(new TextComponent("§6Enabled spying on player messages."));
+						Spies.add(player2.getUniqueId());
 					}
 					return true;
 				case "MSGTOGGLE":
-					if (MsgToggle.contains(player.getUniqueId())) {
-						player.spigot().sendMessage(new TextComponent("§6Enabled recieving player messages."));
-						MsgToggle.remove(player.getUniqueId());
+					Player player3 = (Player)sender;
+					if (MsgToggle.contains(player3.getUniqueId())) {
+						player3.spigot().sendMessage(new TextComponent("§6Enabled recieving player messages."));
+						MsgToggle.remove(player3.getUniqueId());
 					} else {
-						player.spigot().sendMessage(new TextComponent("§6Disabled recieving player messages."));
-						MsgToggle.add(player.getUniqueId());
+						player3.spigot().sendMessage(new TextComponent("§6Disabled recieving player messages."));
+						MsgToggle.add(player3.getUniqueId());
 					}
 					return true;
 				case "RELOAD":
@@ -77,7 +83,7 @@ public class Admin implements CommandExecutor {
 					}
 					return true;
 				case "SPEED":
-					player.spigot().sendMessage(new TextComponent("§6Player speeds:"));
+					sender.spigot().sendMessage(new TextComponent("§6Player speeds:"));
 					List< Pair<Double, String> > speeds = SpeedLimit.getSpeeds();
 					for (Pair<Double, String> speedEntry : speeds) {
 						double speed = speedEntry.getLeft();
@@ -90,10 +96,10 @@ public class Admin implements CommandExecutor {
 							color += "e"; // yellow
 						else
 							color += "a"; // green
-						player.spigot().sendMessage(new TextComponent(color
+						sender.spigot().sendMessage(new TextComponent(color
 								+ String.format("%4.1f: %s", speed, playerName)));
 					}
-					player.spigot().sendMessage(new TextComponent("§6End of speed list."));
+					sender.spigot().sendMessage(new TextComponent("§6End of speed list."));
 					return true;
 				case "AGRO":
 					disableWarnings = !disableWarnings;
@@ -102,6 +108,17 @@ public class Admin implements CommandExecutor {
 					}
 					else {
 						sender.spigot().sendMessage(new TextComponent("§6Disabled aggressive speed limit."));
+					}
+					return true;
+				case "SUS": 
+					Player player4 = (Player)sender;
+					if(!LagMachineNotifs.contains(player4.getUniqueId())) {
+						sender.spigot().sendMessage(new TextComponent("§6Enabled lag machine detection."));
+						LagMachineNotifs.add(player4.getUniqueId());
+					}
+					else {
+						sender.spigot().sendMessage(new TextComponent("§6Disabled lag machine detection."));
+						LagMachineNotifs.remove(player4.getUniqueId());
 					}
 					return true;
 			}
@@ -158,11 +175,61 @@ public class Admin implements CommandExecutor {
 					}
 				}
 			}
+			else if(args[0].equalsIgnoreCase("allow")) {
+				
+				if(Config.getValue("2fa").equals("false")) {
+					sender.sendMessage(new TextComponent("§cThis command has been disabled by the server administrator."));
+					return true;
+				}
+				
+				if(args[1].equalsIgnoreCase("notify")) {
+					Player p = (Player)sender;
+					if(!FailedLoginNotifs.contains(p.getUniqueId())) {
+						sender.sendMessage(new TextComponent("§6Enabled OP login notifications."));
+						FailedLoginNotifs.add(((Player)sender).getUniqueId());
+						return true;
+					}
+					else {
+						sender.sendMessage(new TextComponent("§6Disabled OP login notifications."));
+						FailedLoginNotifs.remove(((Player)sender).getUniqueId());
+						return true;
+					}
+				}
+				
+				OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]);
+				
+				if(p.getUniqueId() == null) {
+					sender.sendMessage(new TextComponent("§cPlayer does not exist."));
+					return true;
+				}
+				
+				if(p.isOnline()) {
+					sender.sendMessage(new TextComponent("§cPlayer is online."));
+					return true;
+				}
+				
+				if(p.isOp()) {
+					AllowedAdmins.add(p.getUniqueId());
+					sender.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join."));
+					return true;
+				}
+				else {
+					sender.sendMessage(new TextComponent("§c"+args[1]+" is not a server administrator."));
+					return true;
+				}
+			}
 		}
+<<<<<<< Updated upstream
 		player.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer, Founder"));
 		player.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Community Delegate, Finance, Oldfag"));
 		player.spigot().sendMessage(new TextComponent("§chaJUNT: §7Community Manager, Oldfag"));
 		player.spigot().sendMessage(new TextComponent("§cxCondii: §7Community, <insert something else idk>"));
+=======
+		sender.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer"));
+		sender.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Technical Administrator, Finance"));
+		sender.spigot().sendMessage(new TextComponent("§chaJUNT: §7Community Representative, Community Event Manager"));
+		sender.spigot().sendMessage(new TextComponent("§cxCondii: §7Community Representative, Discord Admin"));
+>>>>>>> Stashed changes
 		return true;
 	}
 

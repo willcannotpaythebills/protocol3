@@ -10,6 +10,7 @@ import org.bukkit.block.Container;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -75,7 +76,7 @@ public class Move implements Listener {
 		Player p = event.getPlayer();
 		UUID playerUuid = p.getUniqueId();
 		boolean needsCheck = false;
-		boolean inNether = p.getLocation().getWorld().getName().endsWith("the_nether");
+		boolean inNether = p.getLocation().getWorld().getName().endsWith("nether");
 		boolean inEnd = p.getLocation().getWorld().getName().endsWith("the_end");
 
 		// -- ILLEGAL PLACEMENT PATCH -- //
@@ -172,13 +173,13 @@ public class Move implements Listener {
 				}
 
 				// if it's not in any player's cache, check it and add it to current player's cache
-				if (doAgroCheck)
-				{
+				//if (doAgroCheck)
+				//{
 					// Containers.
-					Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
-							.forEach(blockState -> ((Container) blockState).getInventory()
-									.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK", event.getPlayer())));
-				}
+					//Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
+							//.forEach(blockState -> ((Container) blockState).getInventory()
+									//.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK", event.getPlayer())));
+				//}
 
 				// it was either previously checked or we just checked it, so add it to the cache
 				currentPlayerChunks.put(c, true);
@@ -280,16 +281,19 @@ public class Move implements Listener {
 		// -- ROOF AND FLOOR PATCH -- //
 
 		// kill players on the roof of the nether
-		if (inNether && p.getLocation().getY() > 127 && Config.getValue("movement.block.roof").equals("true"))
+		if (inNether && p.getLocation().getY() > 127 && Config.getValue("movement.block.roof").equals("true") && !p.isOp())
 			p.setHealth(0);
 
 		// kill players below ground in overworld and nether
-		if (!inEnd && p.getLocation().getY() <= 0 && Config.getValue("movement.block.floor").equals("true"))
+		if (!inEnd && p.getLocation().getY() <= 0 && Config.getValue("movement.block.floor").equals("true") && !p.isOp())
 			p.setHealth(0);
 	}
 	
 	@EventHandler
 	public void onEntityMove(EntityMoveEvent e) {
+		if(e.getEntity() instanceof HumanEntity) {
+			return;
+		}
 		boolean inNether = e.getEntity().getLocation().getWorld().getName().equals("world_nether");
 		boolean inEnd = e.getEntity().getLocation().getWorld().getName().equals("world_the_end");
 		if (inNether && e.getEntity().getLocation().getY() > 127 && Config.getValue("movement.block.roof").equals("true")) {

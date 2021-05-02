@@ -1,5 +1,6 @@
 package protocol3.tasks;
 
+import java.io.IOException;
 import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import protocol3.backend.PlayerMeta;
 import protocol3.backend.Scheduler;
 import protocol3.backend.ServerMeta;
 import protocol3.backend.Utilities;
+import protocol3.commands.Admin;
 import protocol3.commands.VoteMute;
 import protocol3.events.Chat;
 
@@ -53,9 +55,23 @@ public class ProcessPlaytime extends TimerTask {
 
 		if (System.currentTimeMillis() - lastHour >= 3600000) {
 			lastHour = System.currentTimeMillis();
-
 			Chat.violationLevels.clear();
 			VoteMute.clear();
+			Admin.AllowedAdmins.clear();
+			
+			if(Bukkit.getOnlinePlayers().size() < 10) {
+				System.out.println("[protocol3] Saving files...");
+				try
+				{
+					PlayerMeta.saveDonators();
+					PlayerMeta.saveMuted();
+					PlayerMeta.saveLagfags();
+					PlayerMeta.writePlaytime();
+				} catch (IOException ex)
+				{
+					System.out.println("[protocol3] Failed to save one or more files.");
+				}
+			}
 		}
 
 		// Check if we need a restart

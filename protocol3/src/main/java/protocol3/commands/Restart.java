@@ -18,6 +18,33 @@ public class Restart implements CommandExecutor {
 			sender.spigot().sendMessage(new TextComponent("§cYou can't run this."));
 			return true;
 		}
+		if(args.length == 0) {
+			Utilities.restart();
+		}
+		else if(args.length == 1) {
+			if(args[0].equalsIgnoreCase("fast")) {
+				Utilities.restart();
+				return true;
+			}
+			else if(args[0].equalsIgnoreCase("slow")) {
+				Utilities.restart(true);
+				return true;
+			}
+		}
+		else {
+			String kickMessage = "§6";
+			for(int x = 1; x < args.length; x++) {
+				kickMessage += args[x] + " ";
+			}
+			if(args[0].equalsIgnoreCase("fast")) {
+				Utilities.restart(false, kickMessage);
+				return true;
+			}
+			else if(args[0].equalsIgnoreCase("slow")) {
+				Utilities.restart(true, kickMessage);
+				return true;
+			}
+		}
 		Utilities.restart(args.length != 0);
 		return true;
 	}
