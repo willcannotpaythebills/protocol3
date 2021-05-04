@@ -26,6 +26,7 @@ public class FileManager {
 		File lagfag_user_database = new File(plugin_work_path + "lagfag.db");
 		File playtime_user_database = new File(plugin_work_path + "playtime.db");
 		File motd_message_list = new File(plugin_work_path + "motds.txt");
+		File uuid_resolution_list = new File(plugin_work_path + "uuid.db");
 
 		//
 		if (!plugin_work_directory.exists()) plugin_work_directory.mkdir();
@@ -72,6 +73,10 @@ public class FileManager {
 
 		Files.readAllLines(playtime_user_database.toPath()).forEach(val ->
 				PlayerMeta.Playtimes.put(UUID.fromString(val.split(":")[0]), Double.parseDouble(val.split(":")[1]))
+		);
+		
+		Files.readAllLines(uuid_resolution_list.toPath()).forEach(val ->
+			PlayerMeta.UUIDResolutions.put(val.split(":")[0], UUID.fromString(val.split(":")[1]))
 		);
 
 	}

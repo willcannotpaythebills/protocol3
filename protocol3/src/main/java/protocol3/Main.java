@@ -140,6 +140,7 @@ public class Main extends JavaPlugin implements Listener {
 			PlayerMeta.saveMuted();
 			PlayerMeta.saveLagfags();
 			PlayerMeta.writePlaytime();
+			PlayerMeta.writeUuids();
 		} catch (IOException ex)
 		{
 			System.out.println("[protocol3] Failed to save one or more files.");

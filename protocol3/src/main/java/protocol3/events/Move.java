@@ -16,6 +16,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
+
 import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
 import protocol3.backend.LruCache;
@@ -27,6 +29,14 @@ public class Move implements Listener {
 
 	public static HashMap<UUID, Chunk> lastChunks = new HashMap<UUID, Chunk>();
 
+	public static Material[] ChunkbanItems = {
+			Material.ENCHANTING_TABLE,
+			Material.FURNACE,
+			Material.FURNACE_MINECART,
+			Material.BLAST_FURNACE,
+			Material.SMOKER
+	};
+	
 	// per-player cache of chunks that have been checked aggressively for illegal items
 	private static LruCache<Player, LruCache<Chunk, Boolean>> playerChunks
 			= new LruCache<>(Integer.parseInt(Config.getValue("item.illegal.agro.player_count")));
@@ -184,6 +194,8 @@ public class Move implements Listener {
 				// it was either previously checked or we just checked it, so add it to the cache
 				currentPlayerChunks.put(c, true);
 			}
+			
+			int lagCount = 0;
 
 			for (int x = 0; x < 16; x++)
 			{
@@ -241,6 +253,18 @@ public class Move implements Listener {
 							}
 
 							block.setType(Material.AIR);
+						}
+						
+						// Chunk ban patch (cred: sinse420)
+						for(Material m : ChunkbanItems) {
+							if(block.getType().equals(m)) {
+								if(lagCount == 1024) {
+									block.getLocation().getWorld().dropItem(block.getLocation(), new ItemStack(block.getType(),1));
+									block.setType(Material.AIR);
+									break;
+								}
+								lagCount++;
+							}
 						}
 
 						// make sure the floor is solid in both dimensions at y=1

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 // Connection Events
 // protocol3. ~~DO NOT REDISTRIBUTE!~~ n/a 3/6/2021
@@ -64,7 +65,7 @@ public class Connection implements Listener {
 		
 		if(e.getPlayer().isOp() && Admin.AllowedAdmins.contains(e.getPlayer().getUniqueId()) && Config.getValue("2fa").equals("true")) {
 			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(p.isOp() && Admin.FailedLoginNotifs.contains(p.getUniqueId())) {
+				if(p.isOp()) {
 					p.sendMessage(new TextComponent("§aOP login success - "+e.getPlayer().getName()+" - "+e.getAddress().toString().split(":")[0].replace("/", "")));
 				}
 			}
@@ -73,7 +74,7 @@ public class Connection implements Listener {
 		if(e.getPlayer().isOp() && !Admin.AllowedAdmins.contains(e.getPlayer().getUniqueId()) && Config.getValue("2fa").equals("true")) {
 			e.setKickMessage("§6You need to authenticate via console or another admin first.\n§oTip: You can disable this option by setting §n2fa = false§r§6 in config.txt.");
 			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(p.isOp() && Admin.FailedLoginNotifs.contains(p.getUniqueId())) {
+				if(p.isOp()) {
 					p.sendMessage(new TextComponent("§cOP login failure - "+e.getPlayer().getName()+" - "+e.getAddress().toString().split(":")[0].replace("/", "")));
 				}
 			}
@@ -87,14 +88,30 @@ public class Connection implements Listener {
 			return;
 		}
 		
-		if(ProxyFilter.doBlock(e.getPlayer(), e.getAddress().toString().split(":")[0].replace("/", ""))) {
-			e.setKickMessage("§6Connection blocked. Please wait some time before reconnecting.");
-			e.setResult(Result.KICK_OTHER);
-			return;
+		if(!PlayerMeta.isDonator(e.getPlayer())) {
+			if(ProxyFilter.doBlock(e.getPlayer(), e.getAddress().toString().split(":")[0].replace("/", ""))) {
+				e.setKickMessage("§6Connection blocked. Please wait some time before reconnecting.");
+				e.setResult(Result.KICK_OTHER);
+				return;
+			}
 		}
 		
-		if(Admin.AllowedAdmins.contains(e.getPlayer().getUniqueId())) {
-			Admin.AllowedAdmins.remove(e.getPlayer().getUniqueId());
+		// store uuid
+		if(PlayerMeta.getCachedUUID(e.getPlayer().getName()) != null) {
+			if(!PlayerMeta.getCachedUUID(e.getPlayer().getName()).equals(e.getPlayer().getUniqueId())) {
+				// name change
+				PlayerMeta.UUIDResolutions.put(e.getPlayer().getName(), e.getPlayer().getUniqueId());
+				// remove old name
+				Set<String> names = PlayerMeta.UUIDResolutions.keySet();
+				for(String p : names) {
+					if(PlayerMeta.UUIDResolutions.get(p).equals(e.getPlayer().getUniqueId())) {
+						PlayerMeta.UUIDResolutions.remove(p);
+					}
+				}
+			}
+		}
+		else {
+			PlayerMeta.UUIDResolutions.put(e.getPlayer().getName(), e.getPlayer().getUniqueId());
 		}
 	}
 

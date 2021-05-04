@@ -24,6 +24,8 @@ public class PlayerMeta
 	public static List<String> _ipMutes = new ArrayList<String>();
 
 	public static HashMap<UUID, Double> Playtimes = new HashMap<UUID, Double>();
+	
+	public static HashMap<String, UUID> UUIDResolutions = new HashMap<String, UUID>();
 
 	public static HashMap<UUID, String> _lagfagList = new HashMap<UUID, String>();
 
@@ -227,6 +229,15 @@ public class PlayerMeta
 			Playtimes.put(p.getUniqueId(), msToAdd / 1000);
 		}
 	}
+	
+	public static UUID getCachedUUID(String name) {
+		if(UUIDResolutions.containsKey(name)) {
+			return UUIDResolutions.get(name);
+		}
+		else {
+			return null;
+		}
+	}
 
 	public static double getPlaytime(OfflinePlayer p) {
 		return (Playtimes.containsKey(p.getUniqueId())) ? Playtimes.get(p.getUniqueId()) : 0;
@@ -257,11 +268,17 @@ public class PlayerMeta
 	}
 
 	public static void writePlaytime() throws IOException {
-		List<String> list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 
 		Playtimes.keySet().forEach(user -> list.add(user.toString() + ":" + Math.rint(Playtimes.get(user))));
 
 		Files.write(Paths.get("plugins/protocol3/playtime.db"), String.join("\n", list).getBytes());
+	}
+	
+	public static void writeUuids() throws IOException {
+		List<String> list = new ArrayList<String>();
+		UUIDResolutions.keySet().forEach(user -> list.add(user + ":" + UUIDResolutions.get(user).toString()));
+		Files.write(Paths.get("plugins/protocol3/uuid.db"), String.join("\n", list).getBytes());
 	}
 
 	// --- OTHER -- //

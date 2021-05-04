@@ -28,7 +28,6 @@ public class Admin implements CommandExecutor {
 	public static List<UUID> UseRedName = new ArrayList<UUID>();
 	public static Map<String, Location> LogOutSpots = new HashMap<>();
 	public static List<UUID> AllowedAdmins = new ArrayList<UUID>();
-	public static List<UUID> FailedLoginNotifs = new ArrayList<UUID>();
 	public static List<UUID> LagMachineNotifs = new ArrayList<UUID>();
 	public static boolean disableWarnings = false;
 
@@ -182,20 +181,6 @@ public class Admin implements CommandExecutor {
 					return true;
 				}
 				
-				if(args[1].equalsIgnoreCase("notify")) {
-					Player p = (Player)sender;
-					if(!FailedLoginNotifs.contains(p.getUniqueId())) {
-						sender.sendMessage(new TextComponent("§6Enabled OP login notifications."));
-						FailedLoginNotifs.add(((Player)sender).getUniqueId());
-						return true;
-					}
-					else {
-						sender.sendMessage(new TextComponent("§6Disabled OP login notifications."));
-						FailedLoginNotifs.remove(((Player)sender).getUniqueId());
-						return true;
-					}
-				}
-				
 				OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]);
 				
 				if(p.getUniqueId() == null) {
@@ -211,6 +196,11 @@ public class Admin implements CommandExecutor {
 				if(p.isOp()) {
 					AllowedAdmins.add(p.getUniqueId());
 					sender.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join."));
+					for(Player pl : Bukkit.getOnlinePlayers()) {
+						if(pl.isOp()) {
+							sender.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join."));
+						}
+					}
 					return true;
 				}
 				else {
@@ -219,17 +209,10 @@ public class Admin implements CommandExecutor {
 				}
 			}
 		}
-<<<<<<< Updated upstream
-		player.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer, Founder"));
-		player.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Community Delegate, Finance, Oldfag"));
-		player.spigot().sendMessage(new TextComponent("§chaJUNT: §7Community Manager, Oldfag"));
-		player.spigot().sendMessage(new TextComponent("§cxCondii: §7Community, <insert something else idk>"));
-=======
 		sender.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer"));
 		sender.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Technical Administrator, Finance"));
 		sender.spigot().sendMessage(new TextComponent("§chaJUNT: §7Community Representative, Community Event Manager"));
 		sender.spigot().sendMessage(new TextComponent("§cxCondii: §7Community Representative, Discord Admin"));
->>>>>>> Stashed changes
 		return true;
 	}
 

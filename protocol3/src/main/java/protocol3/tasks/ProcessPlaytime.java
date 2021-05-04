@@ -53,11 +53,13 @@ public class ProcessPlaytime extends TimerTask {
 		// Tick reconnect delays
 		ServerMeta.tickRcDelays(sinceLast);
 
+		// Hour
 		if (System.currentTimeMillis() - lastHour >= 3600000) {
 			lastHour = System.currentTimeMillis();
 			Chat.violationLevels.clear();
 			VoteMute.clear();
 			Admin.AllowedAdmins.clear();
+			OnTick.lowestTps = 20.0D;
 			
 			if(Bukkit.getOnlinePlayers().size() < 10) {
 				System.out.println("[protocol3] Saving files...");
