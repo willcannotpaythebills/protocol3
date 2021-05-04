@@ -126,6 +126,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("tjm").setExecutor(new ToggleJoinMessages());
 		this.getCommand("server").setExecutor(new Server());
 		this.getCommand("help").setExecutor(new Help());
+		this.getCommand("ignore").setExecutor(new Ignore());
 
 		System.out.println("[protocol3] Finished loading.");
 	}

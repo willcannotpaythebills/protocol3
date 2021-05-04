@@ -195,10 +195,9 @@ public class Admin implements CommandExecutor {
 				
 				if(p.isOp()) {
 					AllowedAdmins.add(p.getUniqueId());
-					sender.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join."));
 					for(Player pl : Bukkit.getOnlinePlayers()) {
 						if(pl.isOp()) {
-							sender.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join."));
+							pl.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join."));
 						}
 					}
 					return true;

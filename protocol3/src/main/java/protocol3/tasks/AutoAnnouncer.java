@@ -16,7 +16,7 @@ public class AutoAnnouncer extends TimerTask {
 
 	@Override
 	public void run() {
-		int rnd = r.nextInt(11);
+		int rnd = r.nextInt(14);
 
 		switch (rnd) {
 			case 0:
@@ -24,32 +24,25 @@ public class AutoAnnouncer extends TimerTask {
 				Bukkit.spigot().broadcast(new TextComponent("§6You are playing on AVAS Survival. TPS is " + tps + "."));
 				break;
 			case 1:
-				Bukkit.spigot()
-						.broadcast(new TextComponent("§6You can vote to mute a player by doing §l/vm [playername]."));
+				Bukkit.spigot().broadcast(new TextComponent("§6You can vote to mute a player by doing §l/vm [playername]."));
 				break;
 			case 2:
-				Bukkit.spigot().broadcast(new TextComponent(
-						"§6You can dupe the item in your hand by holding the item you want to dupe and then voting using /vote. (not a troll)"));
+				Bukkit.spigot().broadcast(new TextComponent("§6You can dupe the item in your hand by holding the item you want to dupe and then voting using /vote. (not a troll)"));
 				break;
 			case 3:
-				Bukkit.spigot().broadcast(new TextComponent(
-						"§6Dont forget to get your /kit starter, including §lsteak§6, basic §ldiamond armor§6, and a §lnetherite sword."));
+				Bukkit.spigot().broadcast(new TextComponent("§6Dont forget to get your /kit starter, including §lsteak§6, basic §ldiamond armor§6, and a §lnetherite sword."));
 				break;
 			case 4:
-				Bukkit.spigot().broadcast(
-						new TextComponent("§6You can sign items to show them as uniquely yours by doing §l/sign."));
+				Bukkit.spigot().broadcast(new TextComponent("§6You can sign items to show them as uniquely yours by doing §l/sign."));
 				break;
 			case 5:
-				Bukkit.spigot()
-						.broadcast(new TextComponent("§6You can buy donor for life for $20 at https://avas.cc/donate"));
+				Bukkit.spigot().broadcast(new TextComponent("§6You can buy donor for life for $20 at https://avas.cc/donate"));
 				break;
 			case 6:
-				Bukkit.spigot()
-						.broadcast(new TextComponent("§6You can buy an MOTD for life for $10 at https://avas.cc/donate"));
+				Bukkit.spigot().broadcast(new TextComponent("§6You can buy an MOTD for life for $10 at https://avas.cc/donate"));
 				break;
 			case 7:
-				Bukkit.spigot().broadcast(
-						new TextComponent("§6You can toggle death messages with /tdm, and join messages with /tjm."));
+				Bukkit.spigot().broadcast(new TextComponent("§6You can toggle death messages with /tdm, and join messages with /tjm."));
 				break;
 			case 8:
 				Bukkit.spigot().broadcast(new TextComponent("§6Lagging the server will result in §lsevere consequences."));
@@ -57,9 +50,14 @@ public class AutoAnnouncer extends TimerTask {
 			case 9:
 				Bukkit.spigot().broadcast(new TextComponent("§6Do /help to see the commands available to you."));
 				break;
-			default:
-				Bukkit.spigot().broadcast(new TextComponent(
-						"§6The source code for AVAS is available at https://github.com/gcurtiss/protocol3."));
+			case 10:
+				Bukkit.spigot().broadcast(new TextComponent("§6AVAS has four admins. Each perform a unique task essential to the server's survival. You can see them by running /admin."));
+				break;
+			case 11:
+				Bukkit.spigot().broadcast(new TextComponent("§6Book dupe §6§ldoes not work §6on AVAS. It has been patched by Mojang and Spigot as of 1.16.5. Please stop asking."));
+				break;
+			case 12:
+				Bukkit.spigot().broadcast(new TextComponent("§6The source code for AVAS is available at https://avas.cc/github."));
 				break;
 		}
 		Scheduler.setLastTaskId("autoAnnounce");

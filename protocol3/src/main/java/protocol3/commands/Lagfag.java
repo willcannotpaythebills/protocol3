@@ -34,7 +34,7 @@ public class Lagfag implements CommandExecutor {
 			return true;
 		}
 
-		if (sender.isOp()) {
+		if (!(sender instanceof ConsoleCommandSender)) {
 			Player op = (Player) sender;
 			switch (args[0]) {
 				case "cam":
@@ -96,12 +96,17 @@ public class Lagfag implements CommandExecutor {
 					return true;
 			}
 		}
+		else {
+			sender.spigot().sendMessage(new TextComponent("§cThis command can not be ran via the console."));
+			return true;
+		}
 
 		Player lagfag = Bukkit.getPlayer(args[0]);
 		if (lagfag == null) {
 			sender.spigot().sendMessage(new TextComponent("§cPlayer is not online."));
 			return true;
 		}
+		
 		PlayerMeta.setLagfag(lagfag, !PlayerMeta.isLagfag(lagfag));
 		if (PlayerMeta.isLagfag(lagfag)) {
 			Arrays.asList("§6" + lagfag.getName() + " is a lagfag!", "§6IP: " + lagfag.getAddress().toString().split(":")[0].replace("/", ""),

@@ -88,6 +88,7 @@ public class Mute implements CommandExecutor {
 				Bukkit.getServer().spigot().broadcast(new TextComponent(
 						"§4§l" + name + " §r§4has IP muted §4§l" + toMute.getName() + "§r§4."));
 				PlayerMeta.setMuteType(toMute, MuteType.IP);
+				break;
 			default:
 				sender.sendMessage("§cInvalid syntax. Syntax: /mute <perm/temp/ip/none/all> [player]");
 				return true;

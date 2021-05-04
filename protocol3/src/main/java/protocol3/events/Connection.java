@@ -119,10 +119,6 @@ public class Connection implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
 		
-		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
-			doJoinMessage(MessageType.JOIN, e.getPlayer());
-		}
-		
 		if(!PlayerMeta.Playtimes.containsKey(e.getPlayer().getUniqueId())) {
 			PlayerMeta.Playtimes.put(e.getPlayer().getUniqueId(), 0.0D);
 		}
@@ -145,6 +141,14 @@ public class Connection implements Listener {
 		// Set survival if enabled; exempt ops
 		if (Config.getValue("misc.survival").equals("true") && !e.getPlayer().isOp()) {
 			e.getPlayer().setGameMode(GameMode.SURVIVAL);
+		}
+		
+		if(!e.getPlayer().hasPlayedBefore()) {
+			Bukkit.spigot().broadcast(new TextComponent("§6§o"+e.getPlayer().getName()+" is a verified newfag. Go get em!"));
+		}
+		
+		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
+			doJoinMessage(MessageType.JOIN, e.getPlayer());
 		}
 	}
 

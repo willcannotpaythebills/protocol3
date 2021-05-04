@@ -1,6 +1,7 @@
 package protocol3.backend;
 
 import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.commands.Ignore;
 import protocol3.events.Chat;
 
 import org.bukkit.OfflinePlayer;
@@ -142,6 +143,13 @@ public class PlayerMeta
 			_temporaryMutes.put(u, oldValue + (msToAdd / 1000));
 			if (oldValue + (msToAdd / 1000) >= 3600) _temporaryMutes.remove(u);
 		});
+	}
+	
+	public static boolean isIgnoring(UUID ignorer, UUID ignored) {
+		if(Ignore.Ignores.containsKey(ignorer)) {
+			return Ignore.Ignores.get(ignorer).contains(ignored);
+		}
+		return false;
 	}
 
 	// -- LAGFAGS -- //
