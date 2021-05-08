@@ -1,7 +1,6 @@
 <img src="https://github.com/DipLeChip/protocol3/blob/main/p3long.png" width=""></img>
 <p align="center">
-  <img alt="Stable v3.2.2" src="https://img.shields.io/badge/stable-v3.2.2-informational"></img>
-  <img alt="Development v3.2.2" src="https://img.shields.io/badge/development-v3.3.0-informational"></img>
+  <img alt="Latest release" src="https://img.shields.io/github/v/release/gcurtiss/protocol3?color=dodgerblue&include_prereleases&label=Latest%20release&style=flat-square"></img>
 <h2 align="center">The Plugin That Runs Avas</h2>
 protocol3 is the plugin that runs avas.cc. It manages things like the speed limit, anti-illegals, and commands like vote mute. It also provides quality of life commands and debug information for server administrators.
 
