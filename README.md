@@ -5,7 +5,7 @@
 protocol3 is the plugin that runs avas.cc. It manages things like the speed limit, anti-illegals, and commands like vote mute. It also provides quality of life commands and debug information for server administrators.
 
 ### Download
-You can download the current stable version [here](https://github.com/gcurtiss/protocol3/releases/tag/v3.2.2-stable)
+You can download the latest version [here](https://github.com/gcurtiss/protocol3/releases/latest)
 
 ### Dependencies
 At this time, only [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) and [ArmorEquipEvent](https://www.spigotmc.org/resources/lib-armorequipevent.5478/) is required for the plugin to run correctly. Use [Paper 1.16.5 Build #446](https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/446/downloads/paper-1.16.5-446.jar) or newer.
@@ -22,7 +22,7 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 2. Use Eclipse to import the repo in a workspace. 
 3. Right click pom.xml, and use "Run as -> Maven build.."
 4. Type "package" in the Goals box. This will save the package configuration. You can later run it with "Run as -> Maven build" and select the configuration.
-5. An .jar file will be produced in /target called `p3 or p3-3-shaded.jar` 
+5. A .jar file will be produced in /target called `p3 or p3-3-shaded.jar` 
 6. Place this .jar in your plugins directory on your server.
 
 ### Testing (IntelliJ)
@@ -32,14 +32,14 @@ Note: For testing illegals and speed limit, you cannot be opped. For testing adm
 4. Build p3 using IDEA's Maven Projects view; View -> Tool Windows -> Maven Projects
 5. Open p3, then Lifestyle
 6. Double click install.
-7. An .jar file will be produced in /target called `p3 or p3-3-shaded.jar`
-8. Place this .jar in your plugins directory on your server.
+7. A .jar file will be produced in /target called `p3 or p3-3-shaded.jar`
+8. Place this .jar file in your plugins directory on your server.
 9. Kill yourself for using IntelliJ like a brainlet
 
 ### Testing (No IDE)
-1. open a command prompt in protocol3
-2. start the command `mvnw.cmd package` (or `./mvnw package` on linux)
-3. An .jar file will be produced in /target called `p3-3-shaded.jar`
+1. Open a command prompt in protocol3
+2. Start the command `mvnw.cmd package` (or `./mvnw package` on linux)
+3. A .jar file will be produced in /target called `p3-3-shaded.jar`
 4. Place this .jar in your plugins directory on your server.
 
 
