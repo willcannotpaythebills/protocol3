@@ -181,7 +181,7 @@ motd.force.name = avas.cc
 motd.force.desc = false
 
 // Discord link. string value. default = https://discord.gg/YugxaGU
-discord.link = https://discord.gg/YugxaGU
+discord.link = https://discord.gg/nmSXZzVhcm
 
 // ------------ //
 // --- MISC --- //
