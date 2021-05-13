@@ -2,26 +2,24 @@ package protocol3.events;
 
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Chunk;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.Container;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import protocol3.backend.Config;
-import protocol3.backend.ItemCheck;
 import protocol3.backend.LruCache;
 import protocol3.backend.PlayerMeta;
+import protocol3.backend.Utilities;
 
 import java.util.*;
 
@@ -318,8 +316,8 @@ public class Move implements Listener {
 		if(e.getEntity() instanceof HumanEntity) {
 			return;
 		}
-		boolean inNether = e.getEntity().getLocation().getWorld().getName().equals("world_nether");
-		boolean inEnd = e.getEntity().getLocation().getWorld().getName().equals("world_the_end");
+		boolean inNether = e.getEntity().getLocation().getWorld().getName().endsWith("nether");
+		boolean inEnd = e.getEntity().getLocation().getWorld().getName().endsWith("the_end");
 		if (inNether && e.getEntity().getLocation().getY() > 127 && Config.getValue("movement.block.roof").equals("true")) {
 			e.getEntity().setHealth(0);
 			return;
@@ -329,17 +327,37 @@ public class Move implements Listener {
 			return;
 		}
 	}
-	
+
 	@EventHandler
 	public void onEntityPortal(EntityPortalEvent e) {
+		// Prevent invulnerable end-crystals from breaking spawn chunks
+		// https://github.com/PaperMC/Paper/issues/5404
+
 		if(e.getEntityType().equals(EntityType.ENDER_CRYSTAL)) {
-			EnderCrystal entity = (EnderCrystal)e.getEntity();
-			if(entity.isShowingBottom())
-			{
+			EnderCrystal crystal = (EnderCrystal)e.getEntity();
+
+			if (crystal.getWorld().getEnvironment().equals(World.Environment.THE_END) &&
+					crystal.isShowingBottom() || crystal.isInvulnerable()) {
+
 				e.setCancelled(true);
-				return;
+
+				World overworld = Utilities.getWorldByDimension(World.Environment.NORMAL);
+				if (overworld == null) {
+					System.out.println("WARN couldn't find NORMAL dimension onEntityPortal()");
+					return;
+				}
+
+				Location spawnLoc = Utilities.getRandomSpawn(overworld, overworld.getSpawnLocation());
+				spawnLoc.getChunk().load();
+				EnderCrystal finalCrystal = (EnderCrystal)overworld.spawnEntity(spawnLoc, EntityType.ENDER_CRYSTAL);
+
+				finalCrystal.setInvulnerable(true);
+				finalCrystal.setPersistent(true);
+				finalCrystal.setShowingBottom(true);
+				finalCrystal.setBeamTarget(new Location(overworld, 0.5, 128, 0.5));
+
+				crystal.remove();
 			}
 		}
 	}
-
 }

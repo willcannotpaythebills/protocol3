@@ -4,9 +4,15 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.io.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.TextComponent;
@@ -136,5 +142,80 @@ public class Utilities {
 	    } catch (NumberFormatException nfe) {
 	        return false;
 	    }
+	}
+
+	public static int getRandomNumber(int min, int max) {
+		return (int) ((Math.random() * (max - min)) + min);
+	}
+
+	public static World getWorldByDimension(World.Environment thisEnv) {
+
+		for (World thisWorld: Bukkit.getServer().getWorlds()) {
+			if (thisWorld.getEnvironment().equals(thisEnv)) return thisWorld;
+		}
+		return null;
+	}
+
+	static double max_x = 420; static double max_z = 420;
+	static double min_x = -420; static double min_z = -420;
+
+	public static ArrayList<Material> BannedSpawnFloors = new ArrayList<>(); static {
+		BannedSpawnFloors.addAll(Arrays.asList(
+				Material.CAVE_AIR, Material.VOID_AIR, Material.WALL_TORCH,
+				Material.WATER, Material.LAVA, Material.FIRE));
+	}
+
+	public static Location getRandomSpawn(World thisWorld, Location newSpawnLocation) {
+
+		boolean valid_spawn_location = false;
+
+		// get random x, z coords and check them top-down from y256 for validity
+		while (!valid_spawn_location) {
+
+			// get random x, z coords within range and refer to the *center* of blocks
+			double tryLocation_x = Math.rint(getRandomNumber((int)min_x, (int)max_x)) + 0.5;
+			double tryLocation_z = Math.rint(getRandomNumber((int)min_z, (int)max_z)) + 0.5;
+
+			System.out.println("RVAS: Checking coords for respawn: " + tryLocation_x + ", " + tryLocation_z);
+
+			int y = 257;
+			while (y > 1) {
+
+				Location headLoc = new Location(thisWorld, tryLocation_x, y, tryLocation_z);
+				Location legsLoc = new Location(thisWorld, tryLocation_x, (double)y-1, tryLocation_z);
+				Location floorLoc = new Location(thisWorld, tryLocation_x, (double)y-2, tryLocation_z);
+
+				Block headBlock = headLoc.getBlock();
+				Block legsBlock = legsLoc.getBlock();
+				Block floorBlock = floorLoc.getBlock();
+
+				y--;
+
+				if (!headBlock.getType().equals(Material.AIR) || !legsBlock.getType().equals(Material.AIR)) {
+					continue;
+
+				} else if (!floorBlock.getType().equals(Material.AIR)) {
+
+					// potential valid spawn, check for unwanted spawn surfaces
+					if (!BannedSpawnFloors.contains(floorBlock.getType())) {
+
+						if (Config.getValue("debug").equals("true"))
+							System.out.println("Found valid respawn location on "
+									+ floorBlock.getType() + "!");
+
+						valid_spawn_location = true;
+
+						newSpawnLocation.setWorld(thisWorld);
+						newSpawnLocation.setX(tryLocation_x);
+						newSpawnLocation.setY(y);
+						newSpawnLocation.setZ(tryLocation_z);
+
+						break;
+
+					} else break;
+				}
+			}
+		}
+		return newSpawnLocation;
 	}
 }
