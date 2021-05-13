@@ -31,7 +31,7 @@ public class Chat implements Listener {
 	// yes dupehand belongs below, it sends a rude message to non-admins if they try to use it
 	private static Set<String> allUserCommands = new HashSet<>(Arrays.asList(
 		"about", "admin", "discord", "dupehand", "help", "kill", "kit", "kys", "msg", "r",
-		"redeem", "server", "sign", "stats", "suicide", "tdm", "tjm", "tps", "vm", "vote", "w"
+		"redeem", "server", "sign", "stats", "suicide", "tdm", "tjm", "tps", "vm", "vote", "w", "ignore"
 	));
 	
 	private HashMap<UUID, Long> lastChatTimes = new HashMap<UUID, Long>();
