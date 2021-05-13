@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -164,7 +165,11 @@ public class Chat implements Listener {
 			}
 			
 			Bukkit.getLogger().log(Level.INFO, "§f<" + usernameColor + username + "§f> " + color + finalMessage);
-			Bukkit.getServer().spigot().broadcast(finalCom);
+			for(Player pl : Bukkit.getOnlinePlayers()) {
+				if(!PlayerMeta.isIgnoring(pl.getUniqueId(), e.getPlayer().getUniqueId())) {
+					pl.sendMessage(finalCom);
+				}
+			}
 		}
 	}
 	

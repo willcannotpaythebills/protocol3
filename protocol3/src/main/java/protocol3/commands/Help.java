@@ -39,6 +39,7 @@ public class Help implements CommandExecutor
 			case 2:
 				Arrays.asList("§6/server: §7Get statistics about the server.",
 						"§6/vm [player]: §7Vote to mute a player.",
+						"§6/ignore [player]: §7Ignore someone.",
 						"§6/kill, /suicide, /kys: §7End it all.",
 						"§6/msg, /w, /r: §7Message or reply to a player.",
 						"§6/tdm: §7Toggle death messages.",

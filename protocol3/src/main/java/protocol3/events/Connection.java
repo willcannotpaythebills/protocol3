@@ -11,6 +11,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerListPingEvent;
+
+import net.md_5.bungee.api.chat.TextComponent;
 import protocol3.backend.*;
 import protocol3.commands.Admin;
 import protocol3.commands.Kit;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 // Connection Events
 // protocol3. ~~DO NOT REDISTRIBUTE!~~ n/a 3/6/2021
@@ -31,9 +34,16 @@ import java.util.Random;
 public class Connection implements Listener {
 	
 	public static String serverHostname = "unknown";
+	public static boolean serverRestarting = false;
 	
 	@EventHandler
 	public void onConnect(PlayerLoginEvent e) {
+		
+		if(serverRestarting) {
+			e.setKickMessage("§6Server is restarting");
+			e.setResult(Result.KICK_OTHER);
+			return;
+		}
 		
 		// Set server name if it's forced
 		if(Config.getValue("motd.force").equals("true")) {
@@ -53,26 +63,61 @@ public class Connection implements Listener {
 			return;
 		}
 		
+		if(e.getPlayer().isOp() && Admin.AllowedAdmins.contains(e.getPlayer().getUniqueId()) && Config.getValue("2fa").equals("true")) {
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(p.isOp()) {
+					p.sendMessage(new TextComponent("§aOP login success - "+e.getPlayer().getName()+" - "+e.getAddress().toString().split(":")[0].replace("/", "")));
+				}
+			}
+		}
+		
+		if(e.getPlayer().isOp() && !Admin.AllowedAdmins.contains(e.getPlayer().getUniqueId()) && Config.getValue("2fa").equals("true")) {
+			e.setKickMessage("§6You need to authenticate via console or another admin first.\n§oTip: You can disable this option by setting §n2fa = false§r§6 in config.txt.");
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(p.isOp()) {
+					p.sendMessage(new TextComponent("§cOP login failure - "+e.getPlayer().getName()+" - "+e.getAddress().toString().split(":")[0].replace("/", "")));
+				}
+			}
+			e.setResult(Result.KICK_OTHER);
+			return;
+		}
+		
 		if (!ServerMeta.canReconnect(e.getPlayer())) {
 			e.setKickMessage("§6Connection throttled. Please wait some time before reconnecting.");
 			e.setResult(Result.KICK_OTHER);
 			return;
 		}
 		
-		if(ProxyFilter.doBlock(e.getPlayer(), e.getAddress().toString().split(":")[0].replace("/", ""))) {
-			e.setKickMessage("§6Connection blocked. Please wait some time before reconnecting.");
-			e.setResult(Result.KICK_OTHER);
-			return;
+		if(!PlayerMeta.isDonator(e.getPlayer())) {
+			if(ProxyFilter.doBlock(e.getPlayer(), e.getAddress().toString().split(":")[0].replace("/", ""))) {
+				e.setKickMessage("§6Connection blocked. Please wait some time before reconnecting.");
+				e.setResult(Result.KICK_OTHER);
+				return;
+			}
+		}
+		
+		// store uuid
+		if(PlayerMeta.getCachedUUID(e.getPlayer().getName()) != null) {
+			if(!PlayerMeta.getCachedUUID(e.getPlayer().getName()).equals(e.getPlayer().getUniqueId())) {
+				// name change
+				PlayerMeta.UUIDResolutions.put(e.getPlayer().getName(), e.getPlayer().getUniqueId());
+				// remove old name
+				Set<String> names = PlayerMeta.UUIDResolutions.keySet();
+				for(String p : names) {
+					if(PlayerMeta.UUIDResolutions.get(p).equals(e.getPlayer().getUniqueId())) {
+						PlayerMeta.UUIDResolutions.remove(p);
+					}
+				}
+			}
+		}
+		else {
+			PlayerMeta.UUIDResolutions.put(e.getPlayer().getName(), e.getPlayer().getUniqueId());
 		}
 	}
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
-		
-		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
-			doJoinMessage(MessageType.JOIN, e.getPlayer());
-		}
 		
 		if(!PlayerMeta.Playtimes.containsKey(e.getPlayer().getUniqueId())) {
 			PlayerMeta.Playtimes.put(e.getPlayer().getUniqueId(), 0.0D);
@@ -96,6 +141,14 @@ public class Connection implements Listener {
 		// Set survival if enabled; exempt ops
 		if (Config.getValue("misc.survival").equals("true") && !e.getPlayer().isOp()) {
 			e.getPlayer().setGameMode(GameMode.SURVIVAL);
+		}
+		
+		if(!e.getPlayer().hasPlayedBefore()) {
+			Bukkit.spigot().broadcast(new TextComponent("§6§o"+e.getPlayer().getName()+" is a verified newfag. Go get em!"));
+		}
+		
+		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
+			doJoinMessage(MessageType.JOIN, e.getPlayer());
 		}
 	}
 
@@ -148,7 +201,7 @@ public class Connection implements Listener {
 		}
 		int rnd = r.nextInt(allMotds.size());
 		String tps = new DecimalFormat("#.##").format(LagProcessor.getTPS());
-		if(!Config.getValue("motd.force.desc").equals("penis")) {
+		if(Config.getValue("motd.force.desc").equals("false")) {
 			e.setMotd("§9"+serverHostname+" §7| §5" + allMotds.get(rnd) + " §7| §9TPS: " + tps);
 		}
 		else {

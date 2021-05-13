@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 24
+config.version = 25
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -177,8 +177,8 @@ motd.force = true
 // Server IP to force. string value. default = avas.cc
 motd.force.name = avas.cc
 
-// Server MOTD to force. Works without motd.force=true. string value. default = penis (disabled)
-motd.force.desc = penis
+// Server MOTD to force. Works without motd.force=true. string value. default = off (disabled)
+motd.force.desc = false
 
 // Discord link. string value. default = https://discord.gg/YugxaGU
 discord.link = https://discord.gg/YugxaGU
@@ -201,3 +201,6 @@ funny.kit = true
 
 // Enable EXTREMELY LOUD debugging. false = disabled true = enabled
 debug = false
+
+// Require admin authentication via console. true = enabled false = disabled
+2fa = true

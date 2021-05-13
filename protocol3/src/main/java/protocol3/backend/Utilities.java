@@ -7,8 +7,10 @@ import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.Main;
 
 public class Utilities {
 	public static String calculateTime(double seconds) {
@@ -45,10 +47,14 @@ public class Utilities {
 	public static boolean restarting = false;
 
 	public static void restart() {
-		restart(false);
+		restart(false, "§6Server is restarting");
+	}
+	
+	public static void restart(boolean doDelay) {
+		restart(doDelay, "§6Server is restarting");
 	}
 
-	public static void restart(boolean slow) {
+	public static void restart(boolean doDelay, String message) {
 		if (restarting) {
 			return;
 		} else {
@@ -56,41 +62,51 @@ public class Utilities {
 		}
 		new Thread(() -> {
 			try {
-				if (slow) {
+				if (doDelay) {
 					Bukkit.getServer().spigot()
 							.broadcast(new TextComponent("§6Server restarting in §6§l5 §r§6minutes."));
 					TimeUnit.MINUTES.sleep(4);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l1 §r§6minute."));
+					TimeUnit.SECONDS.sleep(30);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l30 §r§6seconds."));
+					TimeUnit.SECONDS.sleep(15);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l15 §r§6seconds."));
+					TimeUnit.SECONDS.sleep(5);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l10 §r§6seconds."));
+					TimeUnit.SECONDS.sleep(5);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l5 §r§6seconds."));
+					TimeUnit.SECONDS.sleep(1);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l4 §r§6seconds."));
+					TimeUnit.SECONDS.sleep(1);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l3 §r§6seconds."));
+					TimeUnit.SECONDS.sleep(1);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l2 §r§6seconds."));
+					TimeUnit.SECONDS.sleep(1);
+					Bukkit.getServer().spigot()
+							.broadcast(new TextComponent("§6Server restarting in §6§l1 §r§6second."));
+				TimeUnit.SECONDS.sleep(1);
 				}
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l1 §r§6minute."));
-				TimeUnit.SECONDS.sleep(30);
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l30 §r§6seconds."));
-				TimeUnit.SECONDS.sleep(15);
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l15 §r§6seconds."));
-				TimeUnit.SECONDS.sleep(5);
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l10 §r§6seconds."));
-				TimeUnit.SECONDS.sleep(5);
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l5 §r§6seconds."));
-				TimeUnit.SECONDS.sleep(1);
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l4 §r§6seconds."));
-				TimeUnit.SECONDS.sleep(1);
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l3 §r§6seconds."));
-				TimeUnit.SECONDS.sleep(1);
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l2 §r§6seconds."));
-				TimeUnit.SECONDS.sleep(1);
-				Bukkit.getServer().spigot()
-						.broadcast(new TextComponent("§6Server restarting in §6§l1 §r§6second."));
-				TimeUnit.SECONDS.sleep(1);
 			} catch (Exception e) {
 			}
 			Bukkit.getServer().spigot().broadcast(new TextComponent("§6Server is restarting."));
+			Bukkit.getScheduler().runTask(Main.instance, new Runnable() 
+			{
+				  @Override
+				public void run() {
+					  for(Player p : Bukkit.getOnlinePlayers()) {
+						  p.kickPlayer(message);
+					  }
+				  }
+	        });
+			try { TimeUnit.SECONDS.sleep(2); } catch(Exception e) { }
 			Bukkit.shutdown();
 		}).start();
 	}

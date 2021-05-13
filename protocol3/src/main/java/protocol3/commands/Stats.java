@@ -72,13 +72,14 @@ public class Stats implements CommandExecutor {
 					return true;
 			}
 
-			OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
-			if (p == null) {
+			OfflinePlayer p = null;
+			UUID offlineUUID = PlayerMeta.getCachedUUID(args[0]);
+			if (offlineUUID == null) {
 				player.spigot().sendMessage(new TextComponent("§cThis player has never joined."));
 				return true;
-			} else if (!p.hasPlayedBefore()) {
-				player.spigot().sendMessage(new TextComponent("§cThis player has never joined."));
-				return true;
+			} 
+			else {
+				p = Bukkit.getOfflinePlayer(offlineUUID);
 			}
 			Date date = new Date(p.getFirstPlayed());
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");

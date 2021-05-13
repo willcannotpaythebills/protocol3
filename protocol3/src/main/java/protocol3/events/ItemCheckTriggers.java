@@ -1,7 +1,13 @@
 package protocol3.events;
 
 import net.md_5.bungee.api.chat.TextComponent;
+
+import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
 import protocol3.backend.PlayerMeta;
+import protocol3.commands.Admin;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -25,7 +32,7 @@ public class ItemCheckTriggers implements Listener {
 
 	static Material[] lagItems = { Material.REDSTONE, Material.REDSTONE_BLOCK, Material.ARMOR_STAND,
 			Material.STICKY_PISTON, Material.PISTON, Material.REDSTONE_WALL_TORCH, Material.COMPARATOR,
-			Material.REDSTONE_WIRE, Material.REPEATER, Material.OBSERVER, Material.LEVER };
+			Material.REDSTONE_WIRE, Material.REPEATER, Material.OBSERVER, Material.LEVER, Material.TRIPWIRE_HOOK, Material.DISPENSER, Material.DROPPER };
 
 	static Random r = new Random();
 
@@ -33,7 +40,8 @@ public class ItemCheckTriggers implements Listener {
 	public void onPlace(BlockPlaceEvent e) {
 		
 		// No roof placement
-		if(e.getBlock().getLocation().getY() > 127 && e.getBlock().getLocation().getWorld().getName().equals("world_nether")) {
+		if(e.getBlock().getLocation().getY() > 127 && e.getBlock().getLocation().getWorld().getName().equals("world_nether") 
+				&& Config.getValue("movement.block.roof").equals("true")) {
 			e.setCancelled(true);
 			return;
 		}
@@ -53,6 +61,48 @@ public class ItemCheckTriggers implements Listener {
 				e.getPlayer().spigot().sendMessage(new TextComponent("§cThis is what you get for being a lagfag!"));
 				e.setCancelled(true);
 				return;
+			}
+		}
+		
+		for(Material m : Move.ChunkbanItems) {
+			if(e.getBlock().getType().equals(m)) {
+				int lagCount = 0;
+				Chunk c = e.getBlock().getLocation().getChunk();
+				int X = c.getX() * 16;
+				int Z = c.getZ() * 16;
+				for (int x = 0; x < 16; x++)
+				{
+					for (int z = 0; z < 16; z++)
+					{
+						for (int y = 0; y < 256; y++)
+						{
+							Block block = e.getBlock().getWorld().getBlockAt(X + x, y, Z + z);
+							for(Material mat : Move.ChunkbanItems) {
+								if(block.getType().equals(mat)) {
+									if(lagCount == 1024) {
+										block.getLocation().getWorld().dropItem(block.getLocation(), new ItemStack(block.getType(),1));
+										block.setType(Material.AIR);
+										break;
+									}
+									lagCount++;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		for(Material m : lagItems) {
+			if(e.getBlock().getType().equals(m)) {
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					if(Admin.LagMachineNotifs.contains(p.getUniqueId())) {
+						String word = WordUtils.capitalizeFully(e.getBlock().getType().toString().replaceAll("_", " "));
+						Location loc = e.getBlock().getLocation();
+						String coords = loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ();
+						p.spigot().sendMessage(new TextComponent("§cLaggy Block - "+e.getPlayer().getName()+" - " + word + " - [" + coords + "]"));
+					}
+				}
 			}
 		}
 

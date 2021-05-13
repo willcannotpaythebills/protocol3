@@ -54,6 +54,14 @@ public class Reply implements CommandExecutor {
 			sender.spigot().sendMessage(new TextComponent("§cYou can't send messages to this person."));
 			return true;
 		}
+		if(PlayerMeta.isIgnoring(p.getUniqueId(), recv.getUniqueId())) {
+			sender.spigot().sendMessage(new TextComponent("§cYou can't send messages to this person."));
+			return true;
+		}
+		if(PlayerMeta.isIgnoring(recv.getUniqueId(), p.getUniqueId())) {
+			sender.spigot().sendMessage(new TextComponent("§cYou can't send messages to this person."));
+			return true;
+		}
 
 		// Concatenate
 		final String msg[] = new String[]{""};

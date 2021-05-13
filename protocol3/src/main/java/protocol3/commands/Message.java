@@ -76,6 +76,14 @@ public class Message implements CommandExecutor {
 				sender.spigot().sendMessage(new TextComponent("§cYou can't send messages to this person."));
 				return true;
 			}
+			if(PlayerMeta.isIgnoring(player.getUniqueId(), recv.getUniqueId())) {
+				sender.spigot().sendMessage(new TextComponent("§cYou can't send messages to this person."));
+				return true;
+			}
+			if(PlayerMeta.isIgnoring(recv.getUniqueId(), player.getUniqueId())) {
+				sender.spigot().sendMessage(new TextComponent("§cYou can't send messages to this person."));
+				return true;
+			}
 		}
 
 		// Cycle through online players & if they're an admin with spy enabled, send
