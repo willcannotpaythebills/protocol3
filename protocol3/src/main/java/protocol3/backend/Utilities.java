@@ -176,8 +176,6 @@ public class Utilities {
 			double tryLocation_x = Math.rint(getRandomNumber((int)min_x, (int)max_x)) + 0.5;
 			double tryLocation_z = Math.rint(getRandomNumber((int)min_z, (int)max_z)) + 0.5;
 
-			System.out.println("RVAS: Checking coords for respawn: " + tryLocation_x + ", " + tryLocation_z);
-
 			int y = 257;
 			while (y > 1) {
 
@@ -198,11 +196,6 @@ public class Utilities {
 
 					// potential valid spawn, check for unwanted spawn surfaces
 					if (!BannedSpawnFloors.contains(floorBlock.getType())) {
-
-						if (Config.getValue("debug").equals("true"))
-							System.out.println("Found valid respawn location on "
-									+ floorBlock.getType() + "!");
-
 						valid_spawn_location = true;
 
 						newSpawnLocation.setWorld(thisWorld);
@@ -210,9 +203,8 @@ public class Utilities {
 						newSpawnLocation.setY(y);
 						newSpawnLocation.setZ(tryLocation_z);
 
-						break;
-
-					} else break;
+					}
+					break;
 				}
 			}
 		}
