@@ -127,6 +127,8 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("server").setExecutor(new Server());
 		this.getCommand("help").setExecutor(new Help());
 		this.getCommand("ignore").setExecutor(new Ignore());
+		this.getCommand("donate").setExecutor(new Donate());
+		this.getCommand("faq").setExecutor(new Faq());
 
 		System.out.println("[protocol3] Finished loading.");
 	}

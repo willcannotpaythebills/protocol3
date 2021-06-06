@@ -4,6 +4,7 @@ import io.papermc.paper.event.entity.EntityMoveEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Container;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EntityType;
@@ -17,6 +18,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import protocol3.backend.Config;
+import protocol3.backend.ItemCheck;
 import protocol3.backend.LruCache;
 import protocol3.backend.PlayerMeta;
 import protocol3.backend.Utilities;
@@ -181,13 +183,13 @@ public class Move implements Listener {
 				}
 
 				// if it's not in any player's cache, check it and add it to current player's cache
-				//if (doAgroCheck)
-				//{
+				if (doAgroCheck)
+				{
 					// Containers.
-					//Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
-							//.forEach(blockState -> ((Container) blockState).getInventory()
-									//.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK", event.getPlayer())));
-				//}
+					 Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
+							.forEach(blockState -> ((Container) blockState).getInventory()
+									.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK", event.getPlayer())));
+				}
 
 				// it was either previously checked or we just checked it, so add it to the cache
 				currentPlayerChunks.put(c, true);

@@ -29,6 +29,40 @@ public class Lagfag implements CommandExecutor {
 			sender.spigot().sendMessage(new TextComponent("§cYou can't run this."));
 			return true;
 		}
+		
+		if (args.length == 2) {
+			if(args[0].equalsIgnoreCase("warn")) {
+				if(PlayerMeta.getCachedUUID(args[1]) == null) {
+					sender.spigot().sendMessage(new TextComponent("§cPlayer is not online."));
+					return true;
+				}
+				Player playertbw = Bukkit.getPlayer(PlayerMeta.getCachedUUID(args[1]));
+				if(!playertbw.isOnline()) {
+					sender.spigot().sendMessage(new TextComponent("§cPlayer is not online."));
+					return true;
+				}
+				for(int x = 0; x < 200; x++) {
+					playertbw.sendMessage("");
+				}
+				playertbw.sendMessage(new TextComponent("§cAn admin has sent you this message because it appears you are making a lag machine."));
+				playertbw.sendMessage(new TextComponent("§cThe consequences of making a lag machine are many and severe. This is your only warning."));
+				playertbw.sendMessage(new TextComponent(""));
+				playertbw.sendMessage(new TextComponent("§cLagfag consequences include:"));
+				playertbw.sendMessage(new TextComponent("§c* IP leaked in public chat"));
+				playertbw.sendMessage(new TextComponent("§c* Current coordinates leaked"));
+				playertbw.sendMessage(new TextComponent("§c* Ender chest cleared"));
+				playertbw.sendMessage(new TextComponent("§c* Permanent branding as a lagfag"));
+				playertbw.sendMessage(new TextComponent("§c* Possible revocation of donator status"));
+				playertbw.sendMessage(new TextComponent("§c* Random and frequent slight lagbacks when moving or placing blocks"));
+				playertbw.sendMessage(new TextComponent("§c* Lower speed limit"));
+				playertbw.sendMessage(new TextComponent(""));
+				playertbw.sendMessage(new TextComponent("§cThese steps are necessary to keep a healthy server. Lagging the server goes beyond gameplay and is prohibited."));
+				playertbw.sendMessage(new TextComponent("§c§lYou will still be able to play §r§c if you make a lag machine, but your gameplay will be §c§lseverely hindered."));
+				playertbw.sendMessage(new TextComponent("§c§lAll players who have ever been lagfagged have quit the server."));
+				return true;
+			}
+		}
+		
 		if (args.length != 1) {
 			sender.spigot().sendMessage(new TextComponent("§cInvalid syntax. Syntax: /lagfag [name]"));
 			return true;

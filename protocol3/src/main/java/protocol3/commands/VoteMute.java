@@ -41,6 +41,12 @@ public class VoteMute implements CommandExecutor {
 			sender.spigot().sendMessage(new TextComponent("§cThis command has been disabled by your server administrator."));
 			return true;
 		}
+		
+		if(!canVoteMute()) {
+			sender.spigot().sendMessage(new TextComponent("§cThis command is disabled because "+Config.getValue("mute.max")+ "% of the server or more is muted. "
+					+ "If you believe there is enough reason for another mute, contact your server administrator."));
+			return true;
+		}
 
 		Player voter = (Player) sender;
 		Player toMute = Bukkit.getPlayer(args[0]);
@@ -181,6 +187,20 @@ public class VoteMute implements CommandExecutor {
 			cooldown = 1500;
 			return true;
 		}
+	}
+	
+	public static boolean canVoteMute() {
+		double muted = 0;
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			if(PlayerMeta.isMuted(p)) {
+				muted++;
+			}
+		}
+		double total = Bukkit.getOnlinePlayers().size();
+		if((muted / total) * 100 < Integer.parseInt(Config.getValue("mute.max"))) {
+			return true;
+		}
+		return false;
 	}
 
 	public static void clear() {

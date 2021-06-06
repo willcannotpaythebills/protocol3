@@ -1,7 +1,10 @@
 package protocol3.backend;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -61,6 +64,12 @@ public class ItemCheck {
 		if (item.getItemMeta() instanceof BlockStateMeta) {
 			BlockStateMeta itemstack_metadata = (BlockStateMeta) item.getItemMeta();
 			if (itemstack_metadata.getBlockState() instanceof ShulkerBox) {
+				ItemStack originalShulkerBox = item;
+				ItemStack correctedShulkerBox = fixByCache(item);
+				if(correctedShulkerBox != null) {
+					item.setItemMeta(correctedShulkerBox.getItemMeta());
+					return;
+				}
 				((ShulkerBox) itemstack_metadata.getBlockState()).getInventory().forEach(itemStack -> {
 					if (isShulker(itemStack)){
 						itemStack.setAmount(0);
@@ -70,6 +79,7 @@ public class ItemCheck {
 				});
 
 				if (item.getAmount() > 1) item.setAmount(1);
+				ScannedItems.put(originalShulkerBox, item);
 				return;
 			}
 		}
@@ -241,10 +251,14 @@ public class ItemCheck {
 			removeEnchants(item);
 			return;
 		}
-
-		// Fix written books
-
+		
 		if (item.getType().equals(Material.WRITTEN_BOOK) || item.getType().equals(Material.WRITABLE_BOOK)) {
+			ItemStack originalBook = item;
+			ItemStack correctedBook = fixByCache(item);
+			if(correctedBook != null) {
+				item.setItemMeta(correctedBook.getItemMeta());
+				return;
+			}
 			ItemMeta meta = item.getItemMeta();
 			if (meta.hasEnchants()) {
 				for (Enchantment ench : meta.getEnchants().keySet()) {
@@ -253,15 +267,32 @@ public class ItemCheck {
 			}
 			item.setItemMeta(meta);
 			BookMeta bm = (BookMeta) item.getItemMeta();
-			if (bm.getPageCount() > 5) {
-				for (int x = 5; x < bm.getPageCount(); x++) {
+			for (int x = 1; x <= bm.getPageCount(); x++) {
+				if(x >= 51) {
 					bm.setPage(x, "");
+				}
+				else {
+					String newString = "";
+					for(char ch : bm.getPage(x).toCharArray()) {
+						if(!Charset.forName("US-ASCII").newEncoder().canEncode(bm.getPage(x))) {
+							newString += "?";
+						}
+						else {
+							newString += ch;
+						}
+					}
+					if(newString.length() > 256) {
+						newString = newString.substring(0, 256);
+					}
+					bm.setPage(x, newString);
+					
 				}
 			}
 			if (item.getAmount() > 16) {
 				item.setAmount(16);
 			}
 			item.setItemMeta(bm);
+			ScannedItems.put(originalBook, item);
 			return;
 		}
 
@@ -357,5 +388,22 @@ public class ItemCheck {
 		}
 		return false;
 	}
+	
+	public static HashMap<ItemStack, ItemStack> ScannedItems = new HashMap<ItemStack, ItemStack>();  
+	// Determine if item is similar to an item we've scanned before
+	public static ItemStack fixByCache(ItemStack stack) {
+		if(Config.getValue("item.illegal.hdic").equals("false")) {
+			return null;
+		}
+		  for(ItemStack i : ScannedItems.keySet()) {
+			  if (stack == i) {
+				  return ScannedItems.get(i);
+			  }
+		      boolean similar = i.getType() == stack.getType() && i.hasItemMeta() == stack.hasItemMeta() && (i.hasItemMeta() ? Bukkit.getItemFactory().equals(i.getItemMeta(), stack.getItemMeta()) : true);
+		      if(similar) return ScannedItems.get(i);
+		  }
+		  return null;
+	}
+
 
 }

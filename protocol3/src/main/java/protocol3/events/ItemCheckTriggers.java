@@ -19,7 +19,10 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+
 import protocol3.backend.Config;
 import protocol3.backend.ItemCheck;
 import protocol3.backend.PlayerMeta;
@@ -96,7 +99,7 @@ public class ItemCheckTriggers implements Listener {
 		for(Material m : lagItems) {
 			if(e.getBlock().getType().equals(m)) {
 				for(Player p : Bukkit.getOnlinePlayers()) {
-					if(Admin.LagMachineNotifs.contains(p.getUniqueId())) {
+					if(Admin.LagMachineNotifs.contains(p.getUniqueId()) && !Admin.LagMachineNotifsExcept.contains(p.getUniqueId())) {
 						String word = WordUtils.capitalizeFully(e.getBlock().getType().toString().replaceAll("_", " "));
 						Location loc = e.getBlock().getLocation();
 						String coords = loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ();
@@ -172,6 +175,15 @@ public class ItemCheckTriggers implements Listener {
 				e.setCancelled(true);
 				return;
 		}
+	}
+	
+	@EventHandler
+	public void onBookEdit(PlayerEditBookEvent e) {
+		BookMeta bm = e.getNewBookMeta();
+		ItemStack i = new ItemStack(Material.WRITTEN_BOOK,1);
+		i.setItemMeta(bm);
+		ItemCheck.IllegalCheck(i, "BOOK_EDITED", e.getPlayer());
+		e.setNewBookMeta((BookMeta)i.getItemMeta());
 	}
 
 }

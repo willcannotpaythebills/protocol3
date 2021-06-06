@@ -95,18 +95,22 @@ public class ProxyFilter
 	    catch(Exception e) 
 	    {
 	    	notifyAdmins("§cA player ("+p.getName()+"@"+ip+") was disconnected due to an error, which has been printed to console.");
+	    	_verifiedIps.put(ip,0D);
 	    	System.out.println(e.getMessage());
 	    	return false;
 	    }
 	}
 	
 	private static void notifyAdmins(String notification) {
-		for(UUID o : _notifiedAdmins) {
-    		if(Bukkit.getPlayer(o).isOnline()) {
-    			Bukkit.getPlayer(o).
-    				sendMessage(new TextComponent(notification));
+		for(Player p : Bukkit.getOnlinePlayers()) {
+    		if(p.isOp()) {
+    			p.sendMessage(new TextComponent(notification));
     		}
     	}
+	}
+	
+	public static void whitelist(String ip) {
+		_verifiedIps.put(ip, 0.0);
 	}
 	
 	public static boolean enabled() {

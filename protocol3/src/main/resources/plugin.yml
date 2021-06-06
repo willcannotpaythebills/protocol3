@@ -51,3 +51,7 @@ commands:
    desription: help
   ignore:
    description: ignore
+  faq:
+   description: faq
+  donate:
+   description: donate

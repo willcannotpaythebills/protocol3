@@ -21,6 +21,7 @@ import protocol3.Main;
 import protocol3.backend.Config;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.Pair;
+import protocol3.backend.PlayerMeta;
 import protocol3.backend.ServerMeta;
 import protocol3.commands.Admin;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -69,6 +70,8 @@ public class SpeedLimit implements Listener
 							locs.put(player.getUniqueId(), player.getLocation().clone());
 							return;
 						}
+						
+						int lagfagFactor = PlayerMeta.isLagfag(player) ? Integer.parseInt(Config.getValue("speedlimit.lagfag")) : 0;
 
 						// set previous location if it doesn't exist and bail
 						Location previous_location = locs.get(player.getUniqueId());
@@ -96,7 +99,7 @@ public class SpeedLimit implements Listener
 						Vector v = new_location.subtract(previous_location).toVector();
 						double speed = Math.round(v.length() / duration * 10.0) / 10.0;
 						
-						if(speed > allowed+1 && (Config.getValue("speedlimit.agro").equals("true") || Admin.disableWarnings)) {
+						if(speed > allowed+1-lagfagFactor && (Config.getValue("speedlimit.agro").equals("true") || Admin.disableWarnings)) {
 							ServerMeta.kickWithDelay(player,
 									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
 							totalKicks++;
@@ -132,7 +135,7 @@ public class SpeedLimit implements Listener
 								return;
 							} else {
 								// display speed with one decimal
-								player.spigot().sendMessage(new TextComponent("§4Your speed is " + speed + ", speed limit is " + allowed + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
+								player.spigot().sendMessage(new TextComponent("§4Your speed is " + speed + ", speed limit is " + (allowed-lagfagFactor) + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
 							}
 
 							--grace;

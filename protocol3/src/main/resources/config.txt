@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 25
+config.version = 27
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -62,6 +62,10 @@ item.illegal.invalid = false
 // Can cause some lag on lower-end servers
 item.illegal.agro = true
 
+// Enable or disable high-data item caching. false = disabled true = enabled [default]
+// Can cause some lag on servers with high item circulation and low RAM
+item.illegal.hdic = true
+
 // Number of players to cache chunks for in agro check mode
 // Set this to a number a little larger than the typical player pop
 item.illegal.agro.player_count = 40
@@ -99,6 +103,9 @@ mute.enabled = true
 // Percent of population that needs to vote before a mute is ordered. Default: 40
 mute.pop = 40
 
+// Maximum percent of population that can be muted. Default: 25
+mute.max = 25
+
 // Enable voting by already-muted persons. false = disabled true = enabled [default]
 mute.hypocrisy = true
 
@@ -108,20 +115,28 @@ mute.hypocrisy = true
 
 // Global wither limit. default = 1000
 wither.limit = 1000
+
 // Global wither skull age limit. default = 4800 (4 minutes in ticks if server is running at 20TPS)
 wither.skull.max_age = 4800
 
 // Global speed limit when TPS is 20. default = 48
 speedlimit.tier_one = 48
+
 // Global speed limit when TPS is 15 or less. default = 36
 speedlimit.tier_two = 36
+
 // Medium kick speed limit (grace period is 2 seconds)
 speedlimit.medium_kick = 64
+
 // Hard kick speed limit (insta-kick if exceeded)
 speedlimit.hard_kick = 80
 
+// Lagfag factor (drop speed limit by X for lagfags). default = 10
+speedlimit.lagfag = 10
+
 // Reconnect delay when kicked by exceeding the speed limit, in ms. default = 10000 (10s)
 speedlimit.rc_delay = 10000
+
 // Reconnect delay when reconnecting normally, in ms. default = 5000 (5s). Set to 0 to disable.
 speedlimit.rc_delay_safe = 5000
 
@@ -134,12 +149,16 @@ speedlimit.agro = false
 
 // Enable the anti-spam system. default = true
 spam.enable = true
+
 // Maximum similarity to prevent a message being re-sent. default = 95 (percent)
 spam.max_similarity = 75
+
 // Time required to wait between messages, in ms. default = 1000 (ms)
 spam.wait_time = 500
+
 // Required number of violations to punish. default = 20 (vl)
 spam.minimum_vl = 40
+
 // Allow ops to bypass anti-spam. default = true
 spam.ops = true
 
@@ -152,18 +171,22 @@ spam.ops = true
 
 // Enable the anti-proxy and anti-botting system. default = false
 filter.enabled = false
+
 // Email is required for anti-proxy API to work. PROXY FILTER WILL NOT FUNCTION UNTIL THIS EMAIL IS CHANGED TO A VALID!!! EMAIL.
 filter.email = example@example.com
 
 // If the proxy filter should be enabled upon starting the server. default = false
 filter.enabled_on_start = false
+
 // Tier to be enabled by default. default = 1
 filter.enabled_on_start.tier = 1
 
 // Minimum IP score to be kicked off from the server when tier 1 is enabled. default = 99
 filter.tier_one = 99
+
 // Minimum IP score to be kicked off from the server when tier 2 is enabled. default = 85
 filter.tier_two = 85
+
 // Maximum player count when tier 4 is enabled. default = 20
 filter.tier_four = 20 
 
@@ -180,8 +203,11 @@ motd.force.name = avas.cc
 // Server MOTD to force. Works without motd.force=true. string value. default = off (disabled)
 motd.force.desc = false
 
-// Discord link. string value. default = https://discord.gg/YugxaGU
-discord.link = https://discord.gg/YugxaGU
+// Discord link. string value. default = none (disabled)
+discord.link = none
+
+// Donation link. string value. default = none (disabled)
+donate.link = none
 
 // ------------ //
 // --- MISC --- //

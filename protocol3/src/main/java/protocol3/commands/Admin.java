@@ -17,6 +17,7 @@ import protocol3.backend.Utilities;
 import protocol3.events.SpeedLimit;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.*;
 
 // funny command haha
@@ -29,6 +30,7 @@ public class Admin implements CommandExecutor {
 	public static Map<String, Location> LogOutSpots = new HashMap<>();
 	public static List<UUID> AllowedAdmins = new ArrayList<UUID>();
 	public static List<UUID> LagMachineNotifs = new ArrayList<UUID>();
+	public static List<UUID> LagMachineNotifsExcept = new ArrayList<UUID>();
 	public static boolean disableWarnings = false;
 
 	@Override
@@ -47,24 +49,24 @@ public class Admin implements CommandExecutor {
 						player.spigot().sendMessage(new TextComponent("§6Disabled red name."));
 						UseRedName.remove(player.getUniqueId());
 					} else {
-						player.spigot().sendMessage(new TextComponent("§6Enabled red name."));
+						player.spigot().sendMessage(new TextComponent("§6Enabled red name. §6§lThis is not permanent, and will expire on next restart."));
 						UseRedName.add(player.getUniqueId());
 					}
 					return true;
 				case "SPY":
 					Player player2 = (Player)sender;
 					if (Spies.contains(player2.getUniqueId())) {
-						player2.spigot().sendMessage(new TextComponent("§6Disabled spying on player messages."));
+						player2.spigot().sendMessage(new TextComponent("§6Disabled spying on player messages. "));
 						Spies.remove(player2.getUniqueId());
 					} else {
-						player2.spigot().sendMessage(new TextComponent("§6Enabled spying on player messages."));
+						player2.spigot().sendMessage(new TextComponent("§6Enabled spying on player messages. §6§lThis is not permanent, and will expire on next restart."));
 						Spies.add(player2.getUniqueId());
 					}
 					return true;
 				case "MSGTOGGLE":
 					Player player3 = (Player)sender;
 					if (MsgToggle.contains(player3.getUniqueId())) {
-						player3.spigot().sendMessage(new TextComponent("§6Enabled recieving player messages."));
+						player3.spigot().sendMessage(new TextComponent("§6Enabled recieving player messages. §6§lThis is not permanent, and will expire on next restart."));
 						MsgToggle.remove(player3.getUniqueId());
 					} else {
 						player3.spigot().sendMessage(new TextComponent("§6Disabled recieving player messages."));
@@ -103,22 +105,14 @@ public class Admin implements CommandExecutor {
 				case "AGRO":
 					disableWarnings = !disableWarnings;
 					if(disableWarnings) {
-						sender.spigot().sendMessage(new TextComponent("§6Enabled aggressive speed limit."));
+						sender.spigot().sendMessage(new TextComponent("§6Enabled aggressive speed limit. §6§lThis is not permanent, and will expire on next restart."));
 					}
 					else {
 						sender.spigot().sendMessage(new TextComponent("§6Disabled aggressive speed limit."));
 					}
 					return true;
-				case "SUS": 
-					Player player4 = (Player)sender;
-					if(!LagMachineNotifs.contains(player4.getUniqueId())) {
-						sender.spigot().sendMessage(new TextComponent("§6Enabled lag machine detection."));
-						LagMachineNotifs.add(player4.getUniqueId());
-					}
-					else {
-						sender.spigot().sendMessage(new TextComponent("§6Disabled lag machine detection."));
-						LagMachineNotifs.remove(player4.getUniqueId());
-					}
+				case "SUS":
+					sender.spigot().sendMessage(new TextComponent("§6when the §cimpostor §6is sus :OO dingdingdingdingdingdingding. dingdingding. dongdong"));
 					return true;
 			}
 		} else if (args.length == 2) {
@@ -153,7 +147,7 @@ public class Admin implements CommandExecutor {
 						return true;
 					}
 					ProxyFilter.setTier(arg);
-					sender.sendMessage(new TextComponent("§6Security tier was set to "+arg));
+					sender.sendMessage(new TextComponent("§6Security tier was set to "+arg+". §6§lThis is not permanent, and will expire on next restart."));
 					for(Player p : Bukkit.getOnlinePlayers()) {
 						if(!p.isOp()) {
 							p.kickPlayer("§6A server security change was made. Please rejoin.");
@@ -165,10 +159,10 @@ public class Admin implements CommandExecutor {
 					if(args[1].equals("notify")) {
 						boolean status = ProxyFilter.toggleNotifyAdmin((Player)sender);
 						if(status) {
-							sender.sendMessage(new TextComponent("§6Enabled proxy notifications."));
+							sender.sendMessage(new TextComponent("§6Enabled proxy notifications. §6§lThis is not permanent, and will expire on next restart."));
 						}
 						else {
-							sender.sendMessage(new TextComponent("§6Disabled proxy notifications."));
+							sender.sendMessage(new TextComponent("§6Disabled proxy notifications. §6§lThis is not permanent, and will expire on next restart."));
 						}
 						return true;
 					}
@@ -178,6 +172,12 @@ public class Admin implements CommandExecutor {
 				
 				if(Config.getValue("2fa").equals("false")) {
 					sender.sendMessage(new TextComponent("§cThis command has been disabled by the server administrator."));
+					return true;
+				}
+				
+				if(args[1].contains(".")) {
+					ProxyFilter.whitelist(args[1]);
+					sender.sendMessage(new TextComponent("§6Whitelisted "+args[1] +". §6§lThis is not permanent, and will expire on next restart."));
 					return true;
 				}
 				
@@ -197,7 +197,7 @@ public class Admin implements CommandExecutor {
 					AllowedAdmins.add(p.getUniqueId());
 					for(Player pl : Bukkit.getOnlinePlayers()) {
 						if(pl.isOp()) {
-							pl.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join."));
+							pl.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join. §6§lThis is not permanent, and will expire in one hour."));
 						}
 					}
 					return true;
@@ -207,11 +207,46 @@ public class Admin implements CommandExecutor {
 					return true;
 				}
 			}
+			else if(args[0].equalsIgnoreCase("lmd")) {
+				Player player = (Player)sender;
+				
+				if(args.length == 2) {
+					OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]);
+					
+					if(p.getUniqueId() == null) {
+						sender.sendMessage(new TextComponent("§cPlayer does not exist."));
+						return true;
+					}
+					
+					if(LagMachineNotifsExcept.contains(p.getUniqueId())) {
+						LagMachineNotifsExcept.remove(p.getUniqueId());
+						sender.spigot().sendMessage(new TextComponent("§6Whitelisted "+p.getName()+". §6§lThis is not permanent and will expire on next restart."));
+						return true;
+					}
+					else {
+						LagMachineNotifsExcept.add(p.getUniqueId());
+						sender.spigot().sendMessage(new TextComponent("§6Unwhitelisted "+p.getName()+"."));
+						return true;
+					}
+				}
+				
+				if(!LagMachineNotifs.contains(player.getUniqueId())) {
+					sender.spigot().sendMessage(new TextComponent("§6Enabled lag machine detection. §6§lThis is not permanent, and will expire on next restart."));
+					LagMachineNotifs.add(player.getUniqueId());
+				}
+				else {
+					sender.spigot().sendMessage(new TextComponent("§6Disabled lag machine detection."));
+					LagMachineNotifs.remove(player.getUniqueId());
+				}
+				return true;
+			}
 		}
 		sender.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer"));
 		sender.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Technical Administrator, Finance"));
 		sender.spigot().sendMessage(new TextComponent("§chaJUNT: §7Community Representative, Community Event Manager"));
 		sender.spigot().sendMessage(new TextComponent("§cxCondii: §7Community Representative, Discord Admin"));
+		sender.spigot().sendMessage(new TextComponent("§7§oA reminder that admins will always be identified by red names. Anyone who tells you otherwise is lying."));
+		sender.spigot().sendMessage(new TextComponent("§7§oIf a supposed admin is requesting sensitive information, please contact an admin listed here to verify their status."));
 		return true;
 	}
 
