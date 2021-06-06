@@ -220,12 +220,12 @@ public class Admin implements CommandExecutor {
 					
 					if(LagMachineNotifsExcept.contains(p.getUniqueId())) {
 						LagMachineNotifsExcept.remove(p.getUniqueId());
-						sender.spigot().sendMessage(new TextComponent("§6Whitelisted "+p.getName()+". §6§lThis is not permanent and will expire on next restart."));
+						sender.spigot().sendMessage(new TextComponent("§6Unwhitelisted "+p.getName()+"."));
 						return true;
 					}
 					else {
 						LagMachineNotifsExcept.add(p.getUniqueId());
-						sender.spigot().sendMessage(new TextComponent("§6Unwhitelisted "+p.getName()+"."));
+						sender.spigot().sendMessage(new TextComponent("§6Whitelisted "+p.getName()+". §6§lThis is not permanent and will expire on next restart."));
 						return true;
 					}
 				}
