@@ -164,6 +164,10 @@ public class Utilities {
 				Material.CAVE_AIR, Material.VOID_AIR, Material.WALL_TORCH,
 				Material.WATER, Material.LAVA, Material.FIRE));
 	}
+	
+	public static int distanceBetweenPoints(int x1, int x2, int y1, int y2) {
+        return (int)Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    }
 
 	public static Location getRandomSpawn(World thisWorld, Location newSpawnLocation) {
 

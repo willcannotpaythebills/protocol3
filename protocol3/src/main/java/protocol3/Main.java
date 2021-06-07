@@ -6,8 +6,10 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -63,7 +65,7 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new ItemCheckTriggers(), this);
 		getServer().getPluginManager().registerEvents(new LagPrevention(), this);
 		getServer().getPluginManager().registerEvents(new SpeedLimit(), this);
-
+		
 		// Disable Wither spawn sound
 		ProtocolLibrary.getProtocolManager()
 				.addPacketListener(new PacketAdapter(this, ListenerPriority.HIGHEST, PacketType.Play.Server.WORLD_EVENT)
@@ -75,6 +77,33 @@ public class Main extends JavaPlugin implements Listener {
 						if (packetContainer.getIntegers().read(0) == 1023)
 						{
 							packetContainer.getBooleans().write(0, false);
+						}
+					}
+				});
+		
+		// ThunderHack patch
+		ProtocolLibrary.getProtocolManager()
+				.addPacketListener(new PacketAdapter(this, ListenerPriority.HIGHEST, PacketType.Play.Server.NAMED_SOUND_EFFECT)
+				{
+					@Override
+					public void onPacketSending(PacketEvent event) 
+					{
+						if(event.getPacketType().equals(PacketType.Play.Server.NAMED_SOUND_EFFECT)) 
+						{
+							PacketContainer packet = event.getPacket();
+							org.bukkit.entity.Player p = event.getPlayer();
+							Sound soundName = packet.getSoundEffects().read(0);
+							if (soundName == Sound.ENTITY_LIGHTNING_BOLT_THUNDER) 
+							{
+								int x = packet.getIntegers().read(0) / 8;
+								int z = packet.getIntegers().read(2) / 8;
+								int distance = Utilities.distanceBetweenPoints(x, p.getLocation().getBlockX(), z, p.getLocation().getBlockZ());
+								if (distance > 512) 
+								{
+									packet.getIntegers().write(0, 0);
+									packet.getIntegers().write(2, 0);
+								}
+							}
 						}
 					}
 				});

@@ -114,6 +114,38 @@ public class Admin implements CommandExecutor {
 				case "SUS":
 					sender.spigot().sendMessage(new TextComponent("§6when the §cimpostor §6is sus :OO dingdingdingdingdingdingding. dingdingding. dongdong"));
 					return true;
+				case "LMD":
+					Player player5 = (Player)sender;
+					
+					if(args.length == 2) {
+						OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]);
+						
+						if(p.getUniqueId() == null) {
+							sender.sendMessage(new TextComponent("§cPlayer does not exist."));
+							return true;
+						}
+						
+						if(LagMachineNotifsExcept.contains(p.getUniqueId())) {
+							LagMachineNotifsExcept.remove(p.getUniqueId());
+							sender.spigot().sendMessage(new TextComponent("§6Unwhitelisted "+p.getName()+"."));
+							return true;
+						}
+						else {
+							LagMachineNotifsExcept.add(p.getUniqueId());
+							sender.spigot().sendMessage(new TextComponent("§6Whitelisted "+p.getName()+". §6§lThis is not permanent and will expire on next restart."));
+							return true;
+						}
+					}
+					
+					if(!LagMachineNotifs.contains(player5.getUniqueId())) {
+						sender.spigot().sendMessage(new TextComponent("§6Enabled lag machine detection. §6§lThis is not permanent, and will expire on next restart."));
+						LagMachineNotifs.add(player5.getUniqueId());
+					}
+					else {
+						sender.spigot().sendMessage(new TextComponent("§6Disabled lag machine detection."));
+						LagMachineNotifs.remove(player5.getUniqueId());
+					}
+					return true;
 			}
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("spot")) {
@@ -206,39 +238,6 @@ public class Admin implements CommandExecutor {
 					sender.sendMessage(new TextComponent("§c"+args[1]+" is not a server administrator."));
 					return true;
 				}
-			}
-			else if(args[0].equalsIgnoreCase("lmd")) {
-				Player player = (Player)sender;
-				
-				if(args.length == 2) {
-					OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]);
-					
-					if(p.getUniqueId() == null) {
-						sender.sendMessage(new TextComponent("§cPlayer does not exist."));
-						return true;
-					}
-					
-					if(LagMachineNotifsExcept.contains(p.getUniqueId())) {
-						LagMachineNotifsExcept.remove(p.getUniqueId());
-						sender.spigot().sendMessage(new TextComponent("§6Unwhitelisted "+p.getName()+"."));
-						return true;
-					}
-					else {
-						LagMachineNotifsExcept.add(p.getUniqueId());
-						sender.spigot().sendMessage(new TextComponent("§6Whitelisted "+p.getName()+". §6§lThis is not permanent and will expire on next restart."));
-						return true;
-					}
-				}
-				
-				if(!LagMachineNotifs.contains(player.getUniqueId())) {
-					sender.spigot().sendMessage(new TextComponent("§6Enabled lag machine detection. §6§lThis is not permanent, and will expire on next restart."));
-					LagMachineNotifs.add(player.getUniqueId());
-				}
-				else {
-					sender.spigot().sendMessage(new TextComponent("§6Disabled lag machine detection."));
-					LagMachineNotifs.remove(player.getUniqueId());
-				}
-				return true;
 			}
 		}
 		sender.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer"));
