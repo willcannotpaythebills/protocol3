@@ -32,12 +32,20 @@ public class Sign implements CommandExecutor
 		if (!(sender instanceof Player)) {
 			return true;
 		}
+		
+		boolean includeCoords = true;
+		
+		if(args.length != 0) {
+			if(args[0].equalsIgnoreCase("nocoords") || args[0].equalsIgnoreCase("nc")) {
+				includeCoords = false;
+			}
+		}
 
 		Player p = (Player) sender;
 		if (p.getInventory().getItemInMainHand() != null
 				&& !p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
 			ItemStack item = p.getInventory().getItemInMainHand();
-			if (sign(item, p)) {
+			if (sign(item, p, includeCoords)) {
 				p.spigot()
 						.sendMessage(new TextComponent(
 								"§a§i" + WordUtils.capitalizeFully(item.getType().toString().replaceAll("_", " "))
@@ -48,8 +56,8 @@ public class Sign implements CommandExecutor
 		p.spigot().sendMessage(new TextComponent("§cYou cannot sign this item."));
 		return true;
 	}
-
-	private boolean sign(ItemStack i, Player p) {
+	
+	private boolean sign(ItemStack i, Player p, boolean includeCoords) {
 
 		ItemCheck.IllegalCheck(i, "ITEM_SIGNED", p);
 
@@ -108,7 +116,9 @@ public class Sign implements CommandExecutor
 		lores.add(verifier);
 		lores.add(date);
 		lores.add(signer);
-		lores.add(coords);
+		if(includeCoords) {
+			lores.add(coords);
+		}
 		lores.add(verify);
 
 		im.setLore(lores);

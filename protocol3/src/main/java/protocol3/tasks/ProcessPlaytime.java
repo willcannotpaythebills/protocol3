@@ -20,6 +20,7 @@ import protocol3.events.Chat;
 public class ProcessPlaytime extends TimerTask {
 	private static long lastTime = 0;
 	private static long lastHour = 0;
+	private static long lastMinute = 0;
 
 	public static long lowTpsCounter = 0;
 	private static long timeTillReset = 3600000;
@@ -31,6 +32,7 @@ public class ProcessPlaytime extends TimerTask {
 		if (lastTime == 0) {
 			lastTime = System.currentTimeMillis();
 			lastHour = System.currentTimeMillis();
+			lastMinute = System.currentTimeMillis();
 			return;
 		}
 
@@ -74,6 +76,12 @@ public class ProcessPlaytime extends TimerTask {
 					System.out.println("[protocol3] Failed to save one or more files.");
 				}
 			}
+		}
+		
+		// Minute
+		if(System.currentTimeMillis() - lastMinute >= 60000) {
+			lastMinute = System.currentTimeMillis();
+			Chat.lastChatMessages.clear();
 		}
 
 		// Check if we need a restart

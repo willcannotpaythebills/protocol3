@@ -33,7 +33,7 @@ public class ProxyFilter
 		if(Config.getValue("filter.email").equals("example@example.com")) return false;
 		if(_currentTier == 0) return false;
 		
-		int blockValue = 0;
+		int blockValue;
 		
 		if(_currentTier < 2) {
 			blockValue = Integer.parseInt(Config.getValue("filter.tier_one"));
@@ -61,6 +61,9 @@ public class ProxyFilter
 				double value = _verifiedIps.get(ip);
 				notifyAdmins("§cA player ("+p.getName()+"@"+ip+") was disconnected due to a high score. ("+value+")");
 				return true;
+			}
+			else {
+				return false;
 			}
 		}
 		
@@ -104,7 +107,7 @@ public class ProxyFilter
 	private static void notifyAdmins(String notification) {
 		for(Player p : Bukkit.getOnlinePlayers()) {
     		if(p.isOp()) {
-    			p.sendMessage(new TextComponent(notification));
+    			p.spigot().sendMessage(new TextComponent(notification));
     		}
     	}
 	}
@@ -114,8 +117,8 @@ public class ProxyFilter
 	}
 	
 	public static boolean enabled() {
-		return Config.getValue("filter.enabled").equals("false") || 
-				Config.getValue("filter.email").equals("example@example.com");
+		return !(Config.getValue("filter.enabled").equals("false") || 
+				Config.getValue("filter.email").equals("example@example.com"));
 	}
 	
 	public static boolean toggleNotifyAdmin(Player p) {

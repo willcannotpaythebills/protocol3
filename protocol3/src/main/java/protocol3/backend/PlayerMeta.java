@@ -27,6 +27,8 @@ public class PlayerMeta
 	public static HashMap<UUID, Double> Playtimes = new HashMap<UUID, Double>();
 	
 	public static HashMap<String, UUID> UUIDResolutions = new HashMap<String, UUID>();
+	
+	public static HashMap<String, String> IPResolutions = new HashMap<String, String>();
 
 	public static HashMap<UUID, String> _lagfagList = new HashMap<UUID, String>();
 
@@ -287,6 +289,12 @@ public class PlayerMeta
 		List<String> list = new ArrayList<String>();
 		UUIDResolutions.keySet().forEach(user -> list.add(user + ":" + UUIDResolutions.get(user).toString()));
 		Files.write(Paths.get("plugins/protocol3/uuid.db"), String.join("\n", list).getBytes());
+	}
+	
+	public static void writeIps() throws IOException {
+		List<String> list = new ArrayList<String>();
+		IPResolutions.keySet().forEach(user -> list.add(user + ":" + IPResolutions.get(user).toString()));
+		Files.write(Paths.get("plugins/protocol3/ip.db"), String.join("\n", list).getBytes());
 	}
 
 	// --- OTHER -- //

@@ -1,5 +1,6 @@
 package protocol3.events;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ public class Chat implements Listener {
 	));
 	
 	private HashMap<UUID, Long> lastChatTimes = new HashMap<UUID, Long>();
-	private HashMap<UUID, String> lastChatMessages = new HashMap<UUID, String>();
+	public static HashMap<UUID, List<String>> lastChatMessages = new HashMap<UUID, List<String>>();
 	
 	public static HashMap<UUID, Integer> violationLevels = new HashMap<UUID, Integer>();
 
@@ -122,52 +123,62 @@ public class Chat implements Listener {
 						}
 					}
 				}
+				
+				List<String> allTimeMessages = new ArrayList<String>();
 			
 				if(lastChatMessages.containsKey(e.getPlayer().getUniqueId())) {
 					// case: chat is suspected spam
-					if(similarity(lastChatMessages.get(e.getPlayer().getUniqueId()), finalMessage) * 100 > Integer.parseInt(Config.getValue("spam.max_similarity"))) {
+					allTimeMessages = lastChatMessages.get(e.getPlayer().getUniqueId());
+					
+					for(String s : allTimeMessages) {
+						if(similarity(s, finalMessage) * 100 > Integer.parseInt(Config.getValue("spam.max_similarity"))) {
 						
-						censored = true;
+							censored = true;
 						
-						if(violationLevels.containsKey(e.getPlayer().getUniqueId())) {
-							violationLevels.put(e.getPlayer().getUniqueId(), violationLevels.get(e.getPlayer().getUniqueId()) + 1);
-						}
-						else {
-							violationLevels.put(e.getPlayer().getUniqueId(), 1);
+							if(violationLevels.containsKey(e.getPlayer().getUniqueId())) {
+								violationLevels.put(e.getPlayer().getUniqueId(), violationLevels.get(e.getPlayer().getUniqueId()) + 1);
+							}
+							else {
+								violationLevels.put(e.getPlayer().getUniqueId(), 1);
+							}
+							
+							break;
 						}
 					}
 				}
 				
+				allTimeMessages.add(finalMessage);
+				
 				lastChatTimes.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
-				lastChatMessages.put(e.getPlayer().getUniqueId(), finalMessage);
+				lastChatMessages.put(e.getPlayer().getUniqueId(), allTimeMessages);
 				
 				if(violationLevels.containsKey(e.getPlayer().getUniqueId())) {
-					if(violationLevels.get(e.getPlayer().getUniqueId()) == Integer.parseInt(Config.getValue("spam.minimum_vl"))) {
-						PlayerMeta.setMuteType(e.getPlayer(), MuteType.TEMPORARY);
-						return;
+					if(violationLevels.get(e.getPlayer().getUniqueId()) >= Integer.parseInt(Config.getValue("spam.minimum_vl"))) {
+						if(PlayerMeta.getMuteType(e.getPlayer()) == MuteType.NONE) {
+							PlayerMeta.setMuteType(e.getPlayer(), MuteType.TEMPORARY);
+							return;
+						}
 					}
 				}
 				
 				// op bypass
 				if(e.getPlayer().isOp() && Config.getValue("spam.ops").equals("true")) {
-					if(censored) {
-						e.getPlayer().sendMessage(new TextComponent("§cYour message was flagged as spam, but since you are an OP, it was not filtered."));
-						censored = false;
-					}
+					censored = false;
 					violationLevels.remove(e.getPlayer().getUniqueId());
 				}
 			
 				if(censored) {
-					e.getPlayer().sendMessage(new TextComponent("§cYour message was flagged as spam, so it was deleted."));
-					Bukkit.getLogger().log(Level.INFO, "§4<" + username + "> " + finalMessage + " [deleted, vl="+violationLevels.get(e.getPlayer().getUniqueId())+"]");
+					Bukkit.getLogger().log(Level.INFO, "§4<" + username + "> " + finalMessage + " [vl="+violationLevels.get(e.getPlayer().getUniqueId())+"]");
 					return;
+				}
+				else {
+					Bukkit.getLogger().log(Level.INFO, "§f<" + usernameColor + username + "§f> " + color + finalMessage);
 				}
 			}
 			
-			Bukkit.getLogger().log(Level.INFO, "§f<" + usernameColor + username + "§f> " + color + finalMessage);
 			for(Player pl : Bukkit.getOnlinePlayers()) {
 				if(!PlayerMeta.isIgnoring(pl.getUniqueId(), e.getPlayer().getUniqueId())) {
-					pl.sendMessage(finalCom);
+					pl.spigot().sendMessage(finalCom);
 				}
 			}
 		}

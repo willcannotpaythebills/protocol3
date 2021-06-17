@@ -1,6 +1,6 @@
 package protocol3.events;
 
-import io.papermc.paper.event.entity.EntityMoveEvent;
+//import io.papermc.paper.event.entity.EntityMoveEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -313,6 +313,7 @@ public class Move implements Listener {
 			p.setHealth(0);
 	}
 	
+	/*
 	@EventHandler
 	public void onEntityMove(EntityMoveEvent e) {
 		if(e.getEntity() instanceof HumanEntity) {
@@ -329,6 +330,7 @@ public class Move implements Listener {
 			return;
 		}
 	}
+	*/
 
 	@EventHandler
 	public void onEntityPortal(EntityPortalEvent e) {

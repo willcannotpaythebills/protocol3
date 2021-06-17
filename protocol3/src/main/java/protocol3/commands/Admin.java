@@ -1,5 +1,6 @@
 package protocol3.commands;
 
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Bukkit;
@@ -37,7 +38,7 @@ public class Admin implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(args.length != 0) {
 			if (!PlayerMeta.isOp(sender)) {
-				sender.sendMessage(new TextComponent("§cYou can't use this."));
+				sender.spigot().sendMessage(new TextComponent("§cYou can't use this."));
 				return true;
 			}
 		}
@@ -121,7 +122,7 @@ public class Admin implements CommandExecutor {
 						OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]);
 						
 						if(p.getUniqueId() == null) {
-							sender.sendMessage(new TextComponent("§cPlayer does not exist."));
+							sender.spigot().sendMessage(new TextComponent("§cPlayer does not exist."));
 							return true;
 						}
 						
@@ -151,9 +152,9 @@ public class Admin implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("spot")) {
 				Location l = LogOutSpots.get(args[1]);
 				if (l == null) {
-					sender.sendMessage(new TextComponent("§6No logout spot logged for " + args[1]));
+					sender.spigot().sendMessage(new TextComponent("§6No logout spot logged for " + args[1]));
 				} else {
-					sender.sendMessage(new TextComponent("§6"+args[1] + " logged out at " + l.getX() + " " + l.getY() + " " + l.getZ()));
+					sender.spigot().sendMessage(new TextComponent("§6"+args[1] + " logged out at " + l.getX() + " " + l.getY() + " " + l.getZ()));
 				}
 				return true;
 			}
@@ -165,9 +166,34 @@ public class Admin implements CommandExecutor {
 				sender.spigot().sendMessage(new TextComponent("§6"+p.getName()+": [IP/MUTED/RANK]: "+ip+"/"+muted+"/"+rank));
 				return true;
 			}
+			else if(args[0].equalsIgnoreCase("ip")) {
+				if(PlayerMeta.IPResolutions.containsKey(args[1])) {
+					String data = PlayerMeta.IPResolutions.get(args[1]);
+					String[] ips = data.split(",");
+					sender.spigot().sendMessage(new TextComponent("§6--- §6§l"+args[1]+"§r§6's IP History ---"));
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						if(p.getName().equals(args[1])) {
+							sender.spigot().sendMessage(new TextComponent("§6§oPlayer is online and their current IP is: "+PlayerMeta.getIp(p)));
+						}
+					}
+					sender.spigot().sendMessage(new TextComponent("§6§l"+args[1]+"§r§6 has §6§l"+ips.length+"§r§6 past IP(s). In order from least to most recent:"));
+					int x = 0;
+					for(String ip : ips) {
+						x++;
+						sender.spigot().sendMessage(new TextComponent("§6"+x+": "+ip));
+					}
+					TextComponent t = new TextComponent("§6§oClick here to open the website to analyze IP info.");
+					t.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://whatismyipaddress.com/ip-lookup"));
+					sender.spigot().sendMessage(t);
+				}
+				else {
+					sender.spigot().sendMessage(new TextComponent("§cPlayer has not been tracked."));
+				}
+				return true;
+			}
 			else if(args[0].equalsIgnoreCase("filter")) {
 				if(Config.getValue("filter.enabled").equals("false") || Config.getValue("filter.email").equals("example@example.com")) {
-					sender.sendMessage(new TextComponent("§cThe proxy filter is disabled or is not properly set up."));
+					sender.spigot().sendMessage(new TextComponent("§cThe proxy filter is disabled or is not properly set up."));
 					return true;
 				}
 				boolean isArgInt = false;
@@ -175,11 +201,11 @@ public class Admin implements CommandExecutor {
 				if(isArgInt) {
 					int arg = Integer.parseInt(args[1]);
 					if(arg > 4 || arg < 0) {
-						sender.sendMessage(new TextComponent("§cInvalid filter tier. Pick a number 0 (disabled) through 4 (strict)."));
+						sender.spigot().sendMessage(new TextComponent("§cInvalid filter tier. Pick a number 0 (disabled) through 4 (strict)."));
 						return true;
 					}
 					ProxyFilter.setTier(arg);
-					sender.sendMessage(new TextComponent("§6Security tier was set to "+arg+". §6§lThis is not permanent, and will expire on next restart."));
+					sender.spigot().sendMessage(new TextComponent("§6Security tier was set to "+arg+". §6§lThis is not permanent, and will expire on next restart."));
 					for(Player p : Bukkit.getOnlinePlayers()) {
 						if(!p.isOp()) {
 							p.kickPlayer("§6A server security change was made. Please rejoin.");
@@ -191,10 +217,10 @@ public class Admin implements CommandExecutor {
 					if(args[1].equals("notify")) {
 						boolean status = ProxyFilter.toggleNotifyAdmin((Player)sender);
 						if(status) {
-							sender.sendMessage(new TextComponent("§6Enabled proxy notifications. §6§lThis is not permanent, and will expire on next restart."));
+							sender.spigot().sendMessage(new TextComponent("§6Enabled proxy notifications. §6§lThis is not permanent, and will expire on next restart."));
 						}
 						else {
-							sender.sendMessage(new TextComponent("§6Disabled proxy notifications. §6§lThis is not permanent, and will expire on next restart."));
+							sender.spigot().sendMessage(new TextComponent("§6Disabled proxy notifications. §6§lThis is not permanent, and will expire on next restart."));
 						}
 						return true;
 					}
@@ -203,25 +229,25 @@ public class Admin implements CommandExecutor {
 			else if(args[0].equalsIgnoreCase("allow")) {
 				
 				if(Config.getValue("2fa").equals("false")) {
-					sender.sendMessage(new TextComponent("§cThis command has been disabled by the server administrator."));
+					sender.spigot().sendMessage(new TextComponent("§cThis command has been disabled by the server administrator."));
 					return true;
 				}
 				
 				if(args[1].contains(".")) {
 					ProxyFilter.whitelist(args[1]);
-					sender.sendMessage(new TextComponent("§6Whitelisted "+args[1] +". §6§lThis is not permanent, and will expire on next restart."));
+					sender.spigot().sendMessage(new TextComponent("§6Whitelisted "+args[1] +". §6§lThis is not permanent, and will expire on next restart."));
 					return true;
 				}
 				
 				OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]);
 				
 				if(p.getUniqueId() == null) {
-					sender.sendMessage(new TextComponent("§cPlayer does not exist."));
+					sender.spigot().sendMessage(new TextComponent("§cPlayer does not exist."));
 					return true;
 				}
 				
 				if(p.isOnline()) {
-					sender.sendMessage(new TextComponent("§cPlayer is online."));
+					sender.spigot().sendMessage(new TextComponent("§cPlayer is online."));
 					return true;
 				}
 				
@@ -229,13 +255,13 @@ public class Admin implements CommandExecutor {
 					AllowedAdmins.add(p.getUniqueId());
 					for(Player pl : Bukkit.getOnlinePlayers()) {
 						if(pl.isOp()) {
-							pl.sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join. §6§lThis is not permanent, and will expire in one hour."));
+							pl.spigot().sendMessage(new TextComponent("§6"+args[1]+" has been authenticated to join. §6§lThis is not permanent, and will expire in one hour."));
 						}
 					}
 					return true;
 				}
 				else {
-					sender.sendMessage(new TextComponent("§c"+args[1]+" is not a server administrator."));
+					sender.spigot().sendMessage(new TextComponent("§c"+args[1]+" is not a server administrator."));
 					return true;
 				}
 			}

@@ -66,7 +66,7 @@ public class Connection implements Listener {
 		if(e.getPlayer().isOp() && Admin.AllowedAdmins.contains(e.getPlayer().getUniqueId()) && Config.getValue("2fa").equals("true")) {
 			for(Player p : Bukkit.getOnlinePlayers()) {
 				if(p.isOp()) {
-					p.sendMessage(new TextComponent("§aOP login success - "+e.getPlayer().getName()+" - "+e.getAddress().toString().split(":")[0].replace("/", "")));
+					p.spigot().sendMessage(new TextComponent("§aOP login success - "+e.getPlayer().getName()+" - "+e.getAddress().toString().split(":")[0].replace("/", "")));
 				}
 			}
 		}
@@ -75,7 +75,7 @@ public class Connection implements Listener {
 			e.setKickMessage("§6You need to authenticate via console or another admin first.\n§oTip: You can disable this option by setting §n2fa = false§r§6 in config.txt.");
 			for(Player p : Bukkit.getOnlinePlayers()) {
 				if(p.isOp()) {
-					p.sendMessage(new TextComponent("§cOP login failure - "+e.getPlayer().getName()+" - "+e.getAddress().toString().split(":")[0].replace("/", "")));
+					p.spigot().sendMessage(new TextComponent("§cOP login failure - "+e.getPlayer().getName()+" - "+e.getAddress().toString().split(":")[0].replace("/", "")));
 				}
 			}
 			e.setResult(Result.KICK_OTHER);
@@ -88,9 +88,20 @@ public class Connection implements Listener {
 			return;
 		}
 		
+		if(!PlayerMeta.IPResolutions.containsKey(e.getPlayer().getName())) {
+			PlayerMeta.IPResolutions.put(e.getPlayer().getName(), e.getAddress().toString().split(":")[0].replace("/", ""));
+		}
+		else {
+			String value = PlayerMeta.IPResolutions.get(e.getPlayer().getName());
+			if(!value.contains(e.getAddress().toString().split(":")[0].replace("/", ""))) {
+				value += ","+e.getAddress().toString().split(":")[0].replace("/", "");
+			}
+			PlayerMeta.IPResolutions.put(e.getPlayer().getName(), value);
+		}
+		
 		if(!PlayerMeta.isDonator(e.getPlayer())) {
 			if(ProxyFilter.doBlock(e.getPlayer(), e.getAddress().toString().split(":")[0].replace("/", ""))) {
-				e.setKickMessage("§6Connection blocked. Please wait some time before reconnecting.");
+				e.setKickMessage("§6Connection blocked. If the server just started, please wait some time before reconnecting. \nIf it hasn't, ensure you're not on a VPN or proxy. You can use a VPN or proxy if you're a donator.");
 				e.setResult(Result.KICK_OTHER);
 				return;
 			}
@@ -206,17 +217,6 @@ public class Connection implements Listener {
 		}
 		else {
 			e.setMotd("§9"+serverHostname+" §7| §5" + Config.getValue("motd.force.desc") + " §7| §9TPS: " + tps);
-		}
-		if(serverHostname.equals("test.avas.cc")) {
-			if(Bukkit.hasWhitelist()) {
-				e.setMotd("§9test.avas.cc §7| §4closed §7| §9TPS: " + tps);
-			}
-			else {
-				e.setMotd("§9test.avas.cc §7| §aopen §7| §9TPS: " + tps);
-			}
-			if(!Config.getValue("motd.force.desc").equals("penis")) {
-				e.setMotd("§9test.avas.cc §7| "+Config.getValue("motd.force.desc")+" §7| §9TPS: " + tps);
-			}
 		}
 		e.setMaxPlayers(1);
 	}

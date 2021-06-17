@@ -21,12 +21,12 @@ public class FileManager {
 		File all_donor_codes = new File(plugin_work_path + "codes/all.db");
 		File used_donor_codes = new File(plugin_work_path + "codes/used.db");
 		File muted_user_database = new File(plugin_work_path + "muted.db");
-		File server_statistics_list = new File(plugin_work_path + "analytics.csv");
 		File protocol3_server_config = new File(plugin_work_path + "config.txt");
 		File lagfag_user_database = new File(plugin_work_path + "lagfag.db");
 		File playtime_user_database = new File(plugin_work_path + "playtime.db");
 		File motd_message_list = new File(plugin_work_path + "motds.txt");
 		File uuid_resolution_list = new File(plugin_work_path + "uuid.db");
+		File ip_username_list = new File(plugin_work_path + "ip.db");
 
 		//
 		if (!plugin_work_directory.exists()) plugin_work_directory.mkdir();
@@ -36,12 +36,7 @@ public class FileManager {
 		if (!used_donor_codes.exists()) used_donor_codes.createNewFile();
 		if (!muted_user_database.exists()) muted_user_database.createNewFile();
 		if (!motd_message_list.exists()) motd_message_list.createNewFile();
-
-		if (!server_statistics_list.exists()) {
-			server_statistics_list.createNewFile();
-			Files.write(Paths.get(server_statistics_list.getAbsolutePath()),
-					"\"Average Playtime\",\"New Joins\", \"Unique Joins\"\n".getBytes());
-		}
+		if (!ip_username_list.exists()) ip_username_list.createNewFile();
 
 		if (!protocol3_server_config.exists()) {
 			InputStream protocol3_server_config_template = (Main.class.getResourceAsStream("/config.txt"));
@@ -77,6 +72,10 @@ public class FileManager {
 		
 		Files.readAllLines(uuid_resolution_list.toPath()).forEach(val ->
 			PlayerMeta.UUIDResolutions.put(val.split(":")[0], UUID.fromString(val.split(":")[1]))
+		);
+		
+		Files.readAllLines(ip_username_list.toPath()).forEach(val ->
+			PlayerMeta.IPResolutions.put(val.split(":")[0], val.split(":")[1])
 		);
 
 	}

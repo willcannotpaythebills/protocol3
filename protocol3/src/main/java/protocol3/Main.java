@@ -80,33 +80,6 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 				});
-		
-		// ThunderHack patch
-		ProtocolLibrary.getProtocolManager()
-				.addPacketListener(new PacketAdapter(this, ListenerPriority.HIGHEST, PacketType.Play.Server.NAMED_SOUND_EFFECT)
-				{
-					@Override
-					public void onPacketSending(PacketEvent event) 
-					{
-						if(event.getPacketType().equals(PacketType.Play.Server.NAMED_SOUND_EFFECT)) 
-						{
-							PacketContainer packet = event.getPacket();
-							org.bukkit.entity.Player p = event.getPlayer();
-							Sound soundName = packet.getSoundEffects().read(0);
-							if (soundName == Sound.ENTITY_LIGHTNING_BOLT_THUNDER) 
-							{
-								int x = packet.getIntegers().read(0) / 8;
-								int z = packet.getIntegers().read(2) / 8;
-								int distance = Utilities.distanceBetweenPoints(x, p.getLocation().getBlockX(), z, p.getLocation().getBlockZ());
-								if (distance > 512) 
-								{
-									packet.getIntegers().write(0, 0);
-									packet.getIntegers().write(2, 0);
-								}
-							}
-						}
-					}
-				});
 
 		// Define banned & special blocks
 		// Banned materials.
@@ -127,8 +100,11 @@ public class Main extends JavaPlugin implements Listener {
 		
 		// Enable proxy filter if enabled & enabled on start
 		if(ProxyFilter.enabled()) {
+			System.out.println("[protocol3] Proxy filter is enabled.");
 			if(Config.getValue("filter.enabled_on_start").equals("true")) {
+				System.out.println("[protocol3] Setting proxy filter level.");
 				ProxyFilter.setTier(Integer.parseInt(Config.getValue("filter.enabled_on_start.tier")));
+				System.out.println("[protocol3] Proxy filter level is "+ProxyFilter.getTier());
 			}
 		}
 
@@ -173,6 +149,7 @@ public class Main extends JavaPlugin implements Listener {
 			PlayerMeta.saveLagfags();
 			PlayerMeta.writePlaytime();
 			PlayerMeta.writeUuids();
+			PlayerMeta.writeIps();
 		} catch (IOException ex)
 		{
 			System.out.println("[protocol3] Failed to save one or more files.");

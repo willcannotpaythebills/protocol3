@@ -156,7 +156,7 @@ spam.max_similarity = 75
 // Time required to wait between messages, in ms. default = 1000 (ms)
 spam.wait_time = 500
 
-// Required number of violations to punish. default = 20 (vl)
+// Required number of violations to punish. default = 40 (vl)
 spam.minimum_vl = 40
 
 // Allow ops to bypass anti-spam. default = true
