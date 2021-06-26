@@ -34,10 +34,14 @@ public class Sign implements CommandExecutor
 		}
 		
 		boolean includeCoords = true;
+		boolean doUnsign = false;
 		
 		if(args.length != 0) {
 			if(args[0].equalsIgnoreCase("nocoords") || args[0].equalsIgnoreCase("nc")) {
 				includeCoords = false;
+			}
+			if(args[0].equalsIgnoreCase("unsign")) {
+				doUnsign = true;
 			}
 		}
 
@@ -45,6 +49,33 @@ public class Sign implements CommandExecutor
 		if (p.getInventory().getItemInMainHand() != null
 				&& !p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
 			ItemStack item = p.getInventory().getItemInMainHand();
+			
+			if(doUnsign) {
+				if (item == null || item.getType().equals(Material.AIR)) {
+					p.spigot().sendMessage(new TextComponent("§cThis item isn't signed."));
+					return true;
+				}
+				if (!item.getItemMeta().hasLore()) {
+					p.spigot().sendMessage(new TextComponent("§cThis item isn't signed."));
+					return true;
+				}
+				boolean completeUnsign = false;
+				for(String s : item.getLore()) {
+					if(s.contains(p.getName())) {
+						completeUnsign = true;
+					}
+				}
+				if(!completeUnsign) {
+					p.spigot().sendMessage(new TextComponent("§cYou can only unsign items you signed."));
+					return true;
+				}
+				else {
+					item.setLore(null);
+					p.spigot().sendMessage(new TextComponent("§aSuccessfully unsigned this item."));
+					return true;
+				}
+			}
+			
 			if (sign(item, p, includeCoords)) {
 				p.spigot()
 						.sendMessage(new TextComponent(

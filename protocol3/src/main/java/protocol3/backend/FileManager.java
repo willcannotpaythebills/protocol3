@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import protocol3.Main;
+import protocol3.events.Connection;
 
 public class FileManager {
 
@@ -18,8 +19,6 @@ public class FileManager {
 		File plugin_work_directory = new File(plugin_work_path);
 		File donor_code_directory = new File(plugin_work_path + "codes");
 		File donor_list = new File(plugin_work_path + "donator.db");
-		File all_donor_codes = new File(plugin_work_path + "codes/all.db");
-		File used_donor_codes = new File(plugin_work_path + "codes/used.db");
 		File muted_user_database = new File(plugin_work_path + "muted.db");
 		File protocol3_server_config = new File(plugin_work_path + "config.txt");
 		File lagfag_user_database = new File(plugin_work_path + "lagfag.db");
@@ -27,16 +26,20 @@ public class FileManager {
 		File motd_message_list = new File(plugin_work_path + "motds.txt");
 		File uuid_resolution_list = new File(plugin_work_path + "uuid.db");
 		File ip_username_list = new File(plugin_work_path + "ip.db");
+		File on_join_announce = new File(plugin_work_path + "onjoin.txt");
 
 		//
 		if (!plugin_work_directory.exists()) plugin_work_directory.mkdir();
 		if (!donor_code_directory.exists()) donor_code_directory.mkdir();
 		if (!donor_list.exists()) donor_list.createNewFile();
-		if (!all_donor_codes.exists()) all_donor_codes.createNewFile();
-		if (!used_donor_codes.exists()) used_donor_codes.createNewFile();
 		if (!muted_user_database.exists()) muted_user_database.createNewFile();
 		if (!motd_message_list.exists()) motd_message_list.createNewFile();
 		if (!ip_username_list.exists()) ip_username_list.createNewFile();
+		
+		if(on_join_announce.exists()) {
+			Connection.doJoinAnnounce = true;
+			Connection.joinAnnounceText = String.join("\n", Files.readAllLines(on_join_announce.toPath()));
+		}
 
 		if (!protocol3_server_config.exists()) {
 			InputStream protocol3_server_config_template = (Main.class.getResourceAsStream("/config.txt"));
@@ -58,14 +61,6 @@ public class FileManager {
 
 		Config.load();
 
-		Files.readAllLines(all_donor_codes.toPath()).forEach( val ->
-				PlayerMeta.DonorCodes.add(val.replace("\"", "").trim())
-		);
-
-		Files.readAllLines(used_donor_codes.toPath()).forEach( val ->
-				PlayerMeta.UsedDonorCodes.add(val)
-		);
-
 		Files.readAllLines(playtime_user_database.toPath()).forEach(val ->
 				PlayerMeta.Playtimes.put(UUID.fromString(val.split(":")[0]), Double.parseDouble(val.split(":")[1]))
 		);
@@ -77,6 +72,7 @@ public class FileManager {
 		Files.readAllLines(ip_username_list.toPath()).forEach(val ->
 			PlayerMeta.IPResolutions.put(val.split(":")[0], val.split(":")[1])
 		);
+	
 
 	}
 }

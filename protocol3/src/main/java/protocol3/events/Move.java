@@ -48,7 +48,7 @@ public class Move implements Listener {
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
-		// This method is actually fired upon head rotate to; if the player's coords did
+		// This method is actually fired upon head rotate too; if the player's coords did
 		// not change,
 		// don't fire this event
 
@@ -69,7 +69,7 @@ public class Move implements Listener {
 
 			if (randomNumber == 5 || randomNumber == 6)
 			{
-				event.getPlayer().spigot().sendMessage(new TextComponent("§cThis is what you get for being a lagfag!"));
+				event.getPlayer().spigot().sendMessage(new TextComponent("§csuffer peasant"));
 				event.setCancelled(true);
 				return;
 			}
@@ -78,7 +78,7 @@ public class Move implements Listener {
 
 			if (randomNumber == 21)
 			{
-				event.getPlayer().kickPlayer("§6fuck you lol");
+				event.getPlayer().kickPlayer("§6lmao");
 				return;
 			}
 		}

@@ -15,10 +15,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 
 import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.backend.AntiSpam;
 import protocol3.backend.Config;
 import protocol3.backend.PlayerMeta;
 import protocol3.backend.ServerMeta;
@@ -34,14 +36,10 @@ public class Chat implements Listener {
 		"about", "admin", "discord", "dupehand", "help", "kill", "kit", "kys", "msg", "r",
 		"redeem", "server", "sign", "stats", "suicide", "tdm", "tjm", "tps", "vm", "vote", "w", "ignore"
 	));
-	
-	private HashMap<UUID, Long> lastChatTimes = new HashMap<UUID, Long>();
-	public static HashMap<UUID, List<String>> lastChatMessages = new HashMap<UUID, List<String>>();
-	
-	public static HashMap<UUID, Integer> violationLevels = new HashMap<UUID, Integer>();
 
 	@EventHandler
-	public void onChat(AsyncPlayerChatEvent e) {
+	public void onChat(PlayerChatEvent e) {
+		
 		// Cancel this event so we can override vanilla chat
 		e.setCancelled(true);
 
@@ -49,7 +47,7 @@ public class Chat implements Listener {
 		if (PlayerMeta.isMuted(e.getPlayer()) || (PlayerMeta.MuteAll && !e.getPlayer().isOp()))
 			return;
 
-		// -- CREATE PROPERTIES --
+		// -- CREATE PROPERTIES -- //
 
 		// Chat color to send the message with.
 		String color;
@@ -100,86 +98,23 @@ public class Chat implements Listener {
 
 		// -- SEND FINAL MESSAGE -- //
 
-		if (doSend) {
-			String username = e.getPlayer().getName();
-
-			TextComponent finalCom = new TextComponent(
-					"§f<" + usernameColor + username + "§f> " + color + finalMessage);
+		if (!doSend) { return; }
+		
+		String username = e.getPlayer().getName();
+		TextComponent finalCom = new TextComponent("§f<" + usernameColor + username + "§f> " + color + finalMessage);
+		doSend = AntiSpam.doSendMessage(finalMessage, e.getPlayer());	
+		
+		if(!doSend) {
+			Bukkit.getLogger().log(Level.INFO, "§4<" + username + "> " + finalMessage + " [vl="+AntiSpam.violationLevels.get(e.getPlayer().getUniqueId())+"]");
+			return;
+		}
+		else {
+			Bukkit.getLogger().log(Level.INFO, "§f<" + usernameColor + username + "§f> " + color + finalMessage);
+		}
 			
-			if(Config.getValue("spam.enable").equals("true")) {
-				
-				boolean censored = false;
-				
-				if(lastChatTimes.containsKey(e.getPlayer().getUniqueId())) {
-					if(lastChatTimes.get(e.getPlayer().getUniqueId()) + Integer.parseInt(Config.getValue("spam.wait_time")) > System.currentTimeMillis()) {
-						
-						censored = true;
-						
-						if(violationLevels.containsKey(e.getPlayer().getUniqueId())) {
-							violationLevels.put(e.getPlayer().getUniqueId(), violationLevels.get(e.getPlayer().getUniqueId()) + 1);
-						}
-						else {
-							violationLevels.put(e.getPlayer().getUniqueId(), 1);
-						}
-					}
-				}
-				
-				List<String> allTimeMessages = new ArrayList<String>();
-			
-				if(lastChatMessages.containsKey(e.getPlayer().getUniqueId())) {
-					// case: chat is suspected spam
-					allTimeMessages = lastChatMessages.get(e.getPlayer().getUniqueId());
-					
-					for(String s : allTimeMessages) {
-						if(similarity(s, finalMessage) * 100 > Integer.parseInt(Config.getValue("spam.max_similarity"))) {
-						
-							censored = true;
-						
-							if(violationLevels.containsKey(e.getPlayer().getUniqueId())) {
-								violationLevels.put(e.getPlayer().getUniqueId(), violationLevels.get(e.getPlayer().getUniqueId()) + 1);
-							}
-							else {
-								violationLevels.put(e.getPlayer().getUniqueId(), 1);
-							}
-							
-							break;
-						}
-					}
-				}
-				
-				allTimeMessages.add(finalMessage);
-				
-				lastChatTimes.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
-				lastChatMessages.put(e.getPlayer().getUniqueId(), allTimeMessages);
-				
-				if(violationLevels.containsKey(e.getPlayer().getUniqueId())) {
-					if(violationLevels.get(e.getPlayer().getUniqueId()) >= Integer.parseInt(Config.getValue("spam.minimum_vl"))) {
-						if(PlayerMeta.getMuteType(e.getPlayer()) == MuteType.NONE) {
-							PlayerMeta.setMuteType(e.getPlayer(), MuteType.TEMPORARY);
-							return;
-						}
-					}
-				}
-				
-				// op bypass
-				if(e.getPlayer().isOp() && Config.getValue("spam.ops").equals("true")) {
-					censored = false;
-					violationLevels.remove(e.getPlayer().getUniqueId());
-				}
-			
-				if(censored) {
-					Bukkit.getLogger().log(Level.INFO, "§4<" + username + "> " + finalMessage + " [vl="+violationLevels.get(e.getPlayer().getUniqueId())+"]");
-					return;
-				}
-				else {
-					Bukkit.getLogger().log(Level.INFO, "§f<" + usernameColor + username + "§f> " + color + finalMessage);
-				}
-			}
-			
-			for(Player pl : Bukkit.getOnlinePlayers()) {
-				if(!PlayerMeta.isIgnoring(pl.getUniqueId(), e.getPlayer().getUniqueId())) {
-					pl.spigot().sendMessage(finalCom);
-				}
+		for(Player pl : Bukkit.getOnlinePlayers()) {
+			if(!PlayerMeta.isIgnoring(pl.getUniqueId(), e.getPlayer().getUniqueId())) {
+				pl.spigot().sendMessage(finalCom);
 			}
 		}
 	}

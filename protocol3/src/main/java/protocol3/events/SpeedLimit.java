@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -63,95 +64,96 @@ public class SpeedLimit implements Listener
 
 			speeds.clear();
 
-			Bukkit.getOnlinePlayers().stream().filter(player -> !player.isOp()).forEach(player -> {
-						// updated teleported player position
-						if (tped.contains(player.getUniqueId())) {
-							tped.remove(player.getUniqueId());
-							locs.put(player.getUniqueId(), player.getLocation().clone());
-							return;
-						}
+			for(Player player : Bukkit.getOnlinePlayers()) {
+				if(player.isOp()) return;
+				// updated teleported player position
+				if (tped.contains(player.getUniqueId())) {
+					tped.remove(player.getUniqueId());
+					locs.put(player.getUniqueId(), player.getLocation().clone());
+					return;
+				}
 						
-						int lagfagFactor = PlayerMeta.isLagfag(player) ? Integer.parseInt(Config.getValue("speedlimit.lagfag")) : 0;
+				int lagfagFactor = PlayerMeta.isLagfag(player) ? Integer.parseInt(Config.getValue("speedlimit.lagfag")) : 0;
 
-						// set previous location if it doesn't exist and bail
-						Location previous_location = locs.get(player.getUniqueId());
-						if (previous_location == null) {
-							locs.put(player.getUniqueId(), player.getLocation().clone());
-							return;
-						}
-						Location new_location = player.getLocation().clone();
-						if (new_location.equals(previous_location)) {
-							return;
-						}
-						new_location.setY(previous_location.getY()); // only consider movement in X/Z
+				// set previous location if it doesn't exist and bail
+				Location previous_location = locs.get(player.getUniqueId());
+				if (previous_location == null) {
+					locs.put(player.getUniqueId(), player.getLocation().clone());
+					return;
+				}
+				Location new_location = player.getLocation().clone();
+				if (new_location.equals(previous_location)) {
+					return;
+				}
+				new_location.setY(previous_location.getY()); // only consider movement in X/Z
 
-						if (previous_location.getWorld() != new_location.getWorld())
-						{
-							locs.remove(player.getUniqueId());
-							return;
-						}
-
-						Integer grace = gracePeriod.get(player.getUniqueId());
-						if (grace == null) {
-							grace = GRACE_PERIOD;
-						}
-
-						Vector v = new_location.subtract(previous_location).toVector();
-						double speed = Math.round(v.length() / duration * 10.0) / 10.0;
 						
-						if(speed > allowed+1-lagfagFactor && (Config.getValue("speedlimit.agro").equals("true") || Admin.disableWarnings)) {
-							ServerMeta.kickWithDelay(player,
-									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-							totalKicks++;
-							return;
-						}
+				if (previous_location.getWorld() != new_location.getWorld()) {
+					locs.remove(player.getUniqueId());
+					return;
+				}
 
-						// insta-kick above hard kick speed
-						if (speed > hard_kick)
-						{
-							gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
-							ServerMeta.kickWithDelay(player,
-									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-							totalKicks++;
-							return;
-						}
+				Integer grace = gracePeriod.get(player.getUniqueId());
+				if (grace == null) {
+					grace = GRACE_PERIOD;
+				}
 
-						// medium-kick: set grace period to 2 sec
-						if (speed > medium_kick)
-						{
-							if (grace > 2)
-								grace = 2;
-						}
+				Vector v = new_location.subtract(previous_location).toVector();
+				double speed = Math.round(v.length() / duration * 10.0) / 10.0;
+						
+				if(speed > allowed+1-lagfagFactor && (Config.getValue("speedlimit.agro").equals("true") || Admin.disableWarnings)) {
+					ServerMeta.kickWithDelay(player,
+							Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+					totalKicks++;
+					return;
+				}
 
-						// player is going too fast, warn or kick
-						// +1 for leniency
-						if (speed > allowed+1)
-						{
-							if (grace == 0) {
-								gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
-								ServerMeta.kickWithDelay(player,
-										Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-								totalKicks++;
-								return;
-							} else {
-								// display speed with one decimal
-								player.spigot().sendMessage(new TextComponent("§4Your speed is " + speed + ", speed limit is " + (allowed-lagfagFactor) + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
-							}
+				// insta-kick above hard kick speed
+				if (speed > hard_kick)
+				{
+					gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
+					ServerMeta.kickWithDelay(player,
+							Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+					totalKicks++;
+					return;
+				}
 
-							--grace;
-							gracePeriod.put(player.getUniqueId(), grace);
-						}
+				// medium-kick: set grace period to 2 sec
+				if (speed > medium_kick)
+				{
+					if (grace > 2)
+						grace = 2;
+				}
 
-						// player isn't going too fast, reset grace period
-						else {
-							if (grace < GRACE_PERIOD)
-								++grace;
-						}
+				// player is going too fast, warn or kick
+				// +1 for leniency
+				if (speed > allowed+1)
+				{
+					if (grace == 0) {
+						gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
+						ServerMeta.kickWithDelay(player,
+								Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+						totalKicks++;
+						return;
+					} else {
+						// display speed with one decimal
+						player.spigot().sendMessage(new TextComponent("§4Your speed is " + speed + ", speed limit is " + (allowed-lagfagFactor) + ". Slow down or be kicked in " + grace + " second" + (grace == 1 ? "" : "s")));
+					}
 
-						gracePeriod.put(player.getUniqueId(), grace);
-						locs.put(player.getUniqueId(), player.getLocation().clone());
-						speeds.put(player.getName(), speed);
-					});
+					--grace;
+					gracePeriod.put(player.getUniqueId(), grace);
+				}
+
+				// player isn't going too fast, reset grace period
+				else {
+					if (grace < GRACE_PERIOD)
+						++grace;
+				}
+
+				gracePeriod.put(player.getUniqueId(), grace);
+				locs.put(player.getUniqueId(), player.getLocation().clone());
+				speeds.put(player.getName(), speed);
+			}
 		}, 20L, 20L);
 	}
 

@@ -76,7 +76,7 @@ public class Admin implements CommandExecutor {
 					return true;
 				case "RELOAD":
 					try {
-						Config.load();
+						Config.reload();
 						sender.spigot().sendMessage(new TextComponent("§aSuccessfully reloaded."));
 
 					} catch (IOException e) {
@@ -228,14 +228,14 @@ public class Admin implements CommandExecutor {
 			}
 			else if(args[0].equalsIgnoreCase("allow")) {
 				
-				if(Config.getValue("2fa").equals("false")) {
+				if(Config.getValue("2fa").equals("false") && !args[1].contains(".")) {
 					sender.spigot().sendMessage(new TextComponent("§cThis command has been disabled by the server administrator."));
 					return true;
 				}
 				
 				if(args[1].contains(".")) {
 					ProxyFilter.whitelist(args[1]);
-					sender.spigot().sendMessage(new TextComponent("§6Whitelisted "+args[1] +". §6§lThis is not permanent, and will expire on next restart."));
+					sender.spigot().sendMessage(new TextComponent("§6Whitelisted "+args[1] +". §6§lThis is not permanent, and will expire on next restart. To permanently whitelist, manually add it to /protocol3/whitelist.txt."));
 					return true;
 				}
 				

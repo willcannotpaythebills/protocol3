@@ -3,7 +3,7 @@
 // ########################################### //
 
 // Internal use only. Do not change or you'll break the entire thing.
-config.version = 27
+config.version = 28
 
 // ------------------------ //
 // --- MOVEMENT PATCHES --- //
@@ -113,12 +113,6 @@ mute.hypocrisy = true
 // --- LAG --- //
 // ----------- //
 
-// Global wither limit. default = 1000
-wither.limit = 1000
-
-// Global wither skull age limit. default = 4800 (4 minutes in ticks if server is running at 20TPS)
-wither.skull.max_age = 4800
-
 // Global speed limit when TPS is 20. default = 48
 speedlimit.tier_one = 48
 
@@ -224,6 +218,15 @@ misc.survival = true
 
 // Enable or disable the prank /kit command. false = disabled true = enabled [default]
 funny.kit = true
+
+// Enable or disable the server punching bag command (/beat). false = disabled true = enabled [default]
+funny.beat = true
+
+// The UUID to target for the beat command. 4f491b34-9e68-4724-922c-0e8a737ee1cf = default (willpaysthebills)
+funny.beat.uuid = 4f491b34-9e68-4724-922c-0e8a737ee1cf
+
+// The amount of damage to do on /beat. default = 40
+funny.beat.damage = 40
 
 // Enable EXTREMELY LOUD debugging. false = disabled true = enabled
 debug = false

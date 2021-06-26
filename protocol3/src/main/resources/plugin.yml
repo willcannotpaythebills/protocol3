@@ -39,8 +39,6 @@ commands:
    description: admin
   stats:
    description: stats
-  redeem:
-   description: redeem
   lagfag:
    description: lagfag
   tjm:
@@ -55,3 +53,7 @@ commands:
    description: faq
   donate:
    description: donate
+  beat:
+   description: beat 
+  login:
+   description: login

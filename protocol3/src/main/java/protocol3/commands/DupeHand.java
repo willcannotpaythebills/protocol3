@@ -1,7 +1,10 @@
 package protocol3.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import org.bukkit.Bukkit;
@@ -24,20 +27,31 @@ import protocol3.backend.PlayerMeta;
 
 public class DupeHand implements CommandExecutor {
 
+	public static List<UUID> dupedAlready = new ArrayList<UUID>();
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		
 		if (!PlayerMeta.isOp(sender)) {
 			Player player = (Player) sender;
 			player.kickPlayer("§6get fucked newfag [pog]");
 			return true;
-		} else {
+		} 
+		else 
+		{
+			
 			if (args.length != 1) {
 				sender.spigot().sendMessage(new TextComponent("§cInvalid syntax. Syntax: /dupehand [name]"));
 				return true;
 			}
+
 			Player player = Bukkit.getPlayer(args[0]);
 			if (player == null) {
 				sender.spigot().sendMessage(new TextComponent("§cPlayer is not online."));
+				return true;
+			}
+			
+			if(dupedAlready.contains(player) && !(sender instanceof Player)) {
+				sender.spigot().sendMessage(new TextComponent("§c"+player.getName()+" attempted to dupe more than once in 24 hours"));
 				return true;
 			}
 
@@ -62,6 +76,7 @@ public class DupeHand implements CommandExecutor {
 					});
 				}
 			});
+			dupedAlready.add(player.getUniqueId());
 			return true;
 		}
 	}

@@ -36,6 +36,11 @@ public class Connection implements Listener {
 	public static String serverHostname = "unknown";
 	public static boolean serverRestarting = false;
 	
+	public static boolean doJoinAnnounce = false;
+	public static String joinAnnounceText = "";
+	
+	public static int newfags = 0;
+	
 	@EventHandler
 	public void onConnect(PlayerLoginEvent e) {
 		
@@ -155,7 +160,17 @@ public class Connection implements Listener {
 		}
 		
 		if(!e.getPlayer().hasPlayedBefore()) {
-			Bukkit.spigot().broadcast(new TextComponent("§6§o"+e.getPlayer().getName()+" is a verified newfag. Go get em!"));
+			newfags++;
+			String composition = newfags + "";
+			if(composition.endsWith("1")) composition += "st";
+			else if(composition.endsWith("2")) composition += "nd";
+			else if(composition.endsWith("3")) composition += "rd";
+			else composition += "th";
+			Bukkit.spigot().broadcast(new TextComponent("§6§o"+e.getPlayer().getName()+" is the "+composition+" newfag of the day. Go get em!"));
+		}
+		
+		if(doJoinAnnounce) {
+			e.getPlayer().spigot().sendMessage(new TextComponent(joinAnnounceText));
 		}
 		
 		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
@@ -200,6 +215,7 @@ public class Connection implements Listener {
 	@EventHandler
 	public void onPing(ServerListPingEvent e) {
 		if (!done) {
+			done = true;
 			try {
 				allMotds = new ArrayList<String>(Arrays.asList(motds));
 				System.out.println("[protocol3] Loading " + motds.length + " custom MOTDs...");
@@ -207,7 +223,6 @@ public class Connection implements Listener {
 			} catch (IOException e1) {
 				allMotds = new ArrayList<String>(Arrays.asList(motds));
 			}
-			done = true;
 			System.out.println("[protocol3] Loaded " + allMotds.size() + " MOTDs");
 		}
 		int rnd = r.nextInt(allMotds.size());
@@ -216,7 +231,9 @@ public class Connection implements Listener {
 			e.setMotd("§9"+serverHostname+" §7| §5" + allMotds.get(rnd) + " §7| §9TPS: " + tps);
 		}
 		else {
-			e.setMotd("§9"+serverHostname+" §7| §5" + Config.getValue("motd.force.desc") + " §7| §9TPS: " + tps);
+			String motd = Config.getValue("motd.force.desc");
+			motd = motd.replace("&", "§");
+			e.setMotd("§9"+serverHostname+" §7| §5" + motd + " §7| §9TPS: " + tps);
 		}
 		e.setMaxPlayers(1);
 	}

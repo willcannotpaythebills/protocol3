@@ -7,18 +7,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.backend.AntiSpam;
 import protocol3.backend.LagProcessor;
 import protocol3.backend.PlayerMeta;
 import protocol3.backend.Scheduler;
 import protocol3.backend.ServerMeta;
 import protocol3.backend.Utilities;
 import protocol3.commands.Admin;
+import protocol3.commands.Beat;
+import protocol3.commands.DupeHand;
 import protocol3.commands.VoteMute;
 import protocol3.events.Chat;
+import protocol3.events.Connection;
 
 // Playtime processor
 public class ProcessPlaytime extends TimerTask {
 	private static long lastTime = 0;
+	private static long lastDay = 0;
 	private static long lastHour = 0;
 	private static long lastMinute = 0;
 
@@ -31,6 +36,7 @@ public class ProcessPlaytime extends TimerTask {
 	public void run() {
 		if (lastTime == 0) {
 			lastTime = System.currentTimeMillis();
+			lastDay = System.currentTimeMillis();
 			lastHour = System.currentTimeMillis();
 			lastMinute = System.currentTimeMillis();
 			return;
@@ -54,14 +60,24 @@ public class ProcessPlaytime extends TimerTask {
 		ServerMeta.tickUptime(sinceLast);
 		// Tick reconnect delays
 		ServerMeta.tickRcDelays(sinceLast);
+		
+		// Day
+		if (System.currentTimeMillis() - lastDay >= 86400000) {
+			lastDay = System.currentTimeMillis();
+			OnTick.dayHighestPop = Bukkit.getOnlinePlayers().size();
+			DupeHand.dupedAlready.clear();
+			Connection.newfags = 0;
+		}
 
 		// Hour
 		if (System.currentTimeMillis() - lastHour >= 3600000) {
 			lastHour = System.currentTimeMillis();
-			Chat.violationLevels.clear();
+			AntiSpam.violationLevels.clear();
 			VoteMute.clear();
 			Admin.AllowedAdmins.clear();
-			OnTick.lowestTps = 20.0D;
+			OnTick.lowestTps = LagProcessor.getTPS();
+			OnTick.highestPop = Bukkit.getOnlinePlayers().size();
+			
 			
 			if(Bukkit.getOnlinePlayers().size() < 10) {
 				System.out.println("[protocol3] Saving files...");
@@ -81,8 +97,10 @@ public class ProcessPlaytime extends TimerTask {
 		// Minute
 		if(System.currentTimeMillis() - lastMinute >= 60000) {
 			lastMinute = System.currentTimeMillis();
-			Chat.lastChatMessages.clear();
+			AntiSpam.lastChatMessages.clear();
+			Beat.canBeat = true;
 		}
+		
 
 		// Check if we need a restart
 		if (LagProcessor.getTPS() < 9) {

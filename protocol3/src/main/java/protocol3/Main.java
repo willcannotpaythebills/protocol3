@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class Main extends JavaPlugin implements Listener {
+	
 	public static Plugin instance;
 	public static OfflinePlayer Top = null;
 
@@ -56,7 +57,6 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new AutoAnnouncer(), 15000L, 15000L);
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new ProcessPlaytime(), 20L, 20L);
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new OnTick(), 1L, 1L);
-		getServer().getScheduler().scheduleSyncRepeatingTask(this, new LagPrevention(), 20L, 20L);
 
 		// Load listeners
 		getServer().getPluginManager().registerEvents(new Chat(), this);
@@ -102,10 +102,10 @@ public class Main extends JavaPlugin implements Listener {
 		if(ProxyFilter.enabled()) {
 			System.out.println("[protocol3] Proxy filter is enabled.");
 			if(Config.getValue("filter.enabled_on_start").equals("true")) {
-				System.out.println("[protocol3] Setting proxy filter level.");
 				ProxyFilter.setTier(Integer.parseInt(Config.getValue("filter.enabled_on_start.tier")));
 				System.out.println("[protocol3] Proxy filter level is "+ProxyFilter.getTier());
 			}
+			ProxyFilter.loadWhitelist();
 		}
 
 		// Load commands
@@ -126,7 +126,6 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("sign").setExecutor(new Sign());
 		this.getCommand("admin").setExecutor(new Admin());
 		this.getCommand("stats").setExecutor(new Stats());
-		this.getCommand("redeem").setExecutor(new Redeem());
 		this.getCommand("lagfag").setExecutor(new Lagfag());
 		this.getCommand("tjm").setExecutor(new ToggleJoinMessages());
 		this.getCommand("server").setExecutor(new Server());
@@ -134,6 +133,8 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("ignore").setExecutor(new Ignore());
 		this.getCommand("donate").setExecutor(new Donate());
 		this.getCommand("faq").setExecutor(new Faq());
+		this.getCommand("beat").setExecutor(new Beat());
+		this.getCommand("login").setExecutor(new Login());
 
 		System.out.println("[protocol3] Finished loading.");
 	}

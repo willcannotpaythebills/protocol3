@@ -1,12 +1,14 @@
 package protocol3.backend;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,6 +116,24 @@ public class ProxyFilter
 	
 	public static void whitelist(String ip) {
 		_verifiedIps.put(ip, 0.0);
+	}
+	
+	public static void loadWhitelist() {
+		try {
+			final String plugin_work_path = "plugins/protocol3/";
+			File ip_whitelist = new File(plugin_work_path + "whitelist.txt");
+		
+			if(ip_whitelist.exists()) {
+				Files.readAllLines(ip_whitelist.toPath()).forEach(val -> {
+					whitelist(val);
+					System.out.println("[protocol3] Whitelisted IP "+val);
+				});
+			}
+		}
+		catch(IOException e) {
+			System.out.println("[protocol3] Failed to load IP whitelist.");
+		}
+		
 	}
 	
 	public static boolean enabled() {

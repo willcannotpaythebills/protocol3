@@ -7,9 +7,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.TextComponent;
+import protocol3.backend.AntiSpam;
 import protocol3.backend.PlayerMeta;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 
 public class Reply implements CommandExecutor {
 
@@ -34,17 +36,14 @@ public class Reply implements CommandExecutor {
 
 		// Get recipient
 		Player recv = Bukkit.getPlayer(Message.Replies.get(p.getUniqueId()));
-		// Name to use [for stealth]
-		String recvName = "";
 		// Can't send to offline players
 		if (recv == null) {
 			sender.spigot().sendMessage(new TextComponent("§cPlayer is not online."));
 			return true;
 		}
-
-		if (recvName.equals("")) {
-			recvName = recv.getName();
-		}
+		
+		// Name to use [for stealth]
+		String recvName = recv.getName();
 
 		// Muted players can't send or recieve messages.
 		if (PlayerMeta.isMuted(p)) {
@@ -64,22 +63,36 @@ public class Reply implements CommandExecutor {
 		}
 
 		// Concatenate
-		final String msg[] = new String[]{""};
-		Arrays.asList(args).forEach( s -> msg[0] += s + " ");
-		msg[0] = msg[0].trim();
+		String finalMsg = "";
+		int x = 0;
+		
+		for(String s : args) {
+			if(x == 0) { x++; continue; }
+			finalMsg += s + " ";
+		}
+		
+		finalMsg = finalMsg.trim();
+		
+		if(!AntiSpam.doSendMessage(finalMsg, p)) {
+			Bukkit.getLogger().log(Level.INFO, "§4"+p.getName()+" -> "+recv.getName()+": " + finalMsg + " [vl="+AntiSpam.violationLevels.get(p.getUniqueId())+"]");
+			return true;
+		}
+		else {
+			Bukkit.getLogger().log(Level.INFO, "§d"+p.getName()+" -> "+recv.getName()+": " + finalMsg);
+		}
 
 		String finalRecvName = recvName;
-		Bukkit.getOnlinePlayers().forEach(pl -> {
-			if (Admin.Spies.contains(pl.getUniqueId())) {
-				pl.spigot().sendMessage(new TextComponent("§5" + sendName + " to " + finalRecvName + ": " + msg[0]));
+		for(Player pl : Bukkit.getOnlinePlayers()) {
+			if(Admin.Spies.contains(pl.getUniqueId())) {
+				pl.spigot().sendMessage(new TextComponent("§5" + sendName + " to " + finalRecvName + ": " + finalMsg));
 			}
-		});
+		}
 
 		if (!Admin.Spies.contains(recv.getUniqueId())) {
-			recv.spigot().sendMessage(new TextComponent("§dfrom " + sendName + ": " + msg[0]));
+			recv.spigot().sendMessage(new TextComponent("§dfrom " + sendName + ": " + finalMsg));
 		}
 		if (!Admin.Spies.contains(((Player) sender).getUniqueId())) {
-			sender.spigot().sendMessage(new TextComponent("§dto " + recvName + ": " + msg[0]));
+			sender.spigot().sendMessage(new TextComponent("§dto " + recvName + ": " + finalMsg));
 		}
 		Message.Replies.put(recv.getUniqueId(), ((Player) sender).getUniqueId());
 		Message.Replies.put(((Player) sender).getUniqueId(), recv.getUniqueId());

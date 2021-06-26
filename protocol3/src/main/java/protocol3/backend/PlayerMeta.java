@@ -119,7 +119,7 @@ public class PlayerMeta
 				_ipMutes.remove(getIp(p));
 				saveMuted();
 			}
-			Chat.violationLevels.remove(uuid);
+			AntiSpam.violationLevels.remove(uuid);
 		} else if (type.equals(MuteType.TEMPORARY)) {
 			muteType = "temporarily ";
 			_permanentMutes.remove(uuid);
