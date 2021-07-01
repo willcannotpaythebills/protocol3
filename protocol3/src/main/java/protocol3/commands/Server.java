@@ -36,8 +36,7 @@ public class Server implements CommandExecutor {
 	    strings.add("§cServer Uptime:§7 " + Utilities.calculateTime(ServerMeta.getUptime()));
 	    strings.add("§cCurrent Population:§7 " + Bukkit.getOnlinePlayers().size());
 	    strings.add("§cCurrent TPS:§7 " + new DecimalFormat("#.##").format(LagProcessor.getTPS()));
-	    strings.add("§cCurrent Speed Limit:§7 " + (LagProcessor.getTPS() <= 15 ? "36" : "48") + " blocks per second");
-	    if(verbose) strings.add("§cSpeed Limit Kicks:§7 " + SpeedLimit.totalKicks);
+	    strings.add("§cCurrent Speed Limit:§7 " + (SpeedLimit.getReducedSpeed() ? "36" : "48") + " blocks per second");
 	    if(verbose) strings.add("§cAnti-Cheat Enabled: §7" + (LagProcessor.getTPS() <= 10 ? "True" : "False"));
 	    
 	    // PLAYER DATA //

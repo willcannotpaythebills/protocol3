@@ -27,8 +27,7 @@ public class FileManager {
 		File uuid_resolution_list = new File(plugin_work_path + "uuid.db");
 		File ip_username_list = new File(plugin_work_path + "ip.db");
 		File on_join_announce = new File(plugin_work_path + "onjoin.txt");
-
-		//
+		
 		if (!plugin_work_directory.exists()) plugin_work_directory.mkdir();
 		if (!donor_code_directory.exists()) donor_code_directory.mkdir();
 		if (!donor_list.exists()) donor_list.createNewFile();
@@ -62,7 +61,7 @@ public class FileManager {
 		Config.load();
 
 		Files.readAllLines(playtime_user_database.toPath()).forEach(val ->
-				PlayerMeta.Playtimes.put(UUID.fromString(val.split(":")[0]), Double.parseDouble(val.split(":")[1]))
+			PlayerMeta.Playtimes.put(UUID.fromString(val.split(":")[0]), Double.parseDouble(val.split(":")[1]))
 		);
 		
 		Files.readAllLines(uuid_resolution_list.toPath()).forEach(val ->
@@ -72,6 +71,12 @@ public class FileManager {
 		Files.readAllLines(ip_username_list.toPath()).forEach(val ->
 			PlayerMeta.IPResolutions.put(val.split(":")[0], val.split(":")[1])
 		);
+		
+		Files.readAllLines(motd_message_list.toPath()).forEach(val ->
+			Connection.Motds.add(val)
+		);
+		
+		if(Connection.Motds.size() == 0) { Connection.Motds.add("i dont have any motds :("); }
 	
 
 	}

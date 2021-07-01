@@ -37,8 +37,8 @@ public class Mute implements CommandExecutor {
 			PlayerMeta.MuteAll = !PlayerMeta.MuteAll;
 			Bukkit.getServer().spigot()
 					.broadcast(PlayerMeta.MuteAll ?
-							new TextComponent("§4§l" + name + " §r§4has silenced the chat.") :
-							new TextComponent("§a§l" + name + " §r§ahas unsilenced the chat."));
+							new TextComponent("§4The chat is now silenced.") :
+							new TextComponent("§aThe chat is no longer silenced."));
 			return true;
 		}
 
@@ -58,8 +58,7 @@ public class Mute implements CommandExecutor {
 					sender.spigot().sendMessage(new TextComponent("§cPlayer is already muted."));
 					break;
 				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent(
-						"§4§l" + name + " §r§4has permanently muted §4§l" + toMute.getName() + " §r§4."));
+				Bukkit.getServer().spigot().broadcast(new TextComponent("§4§l" + toMute.getName() + " §r§4is now permanently muted."));
 				PlayerMeta.setMuteType(toMute, MuteType.PERMANENT);
 				break;
 			case "TEMP":
@@ -67,8 +66,7 @@ public class Mute implements CommandExecutor {
 					sender.spigot().sendMessage(new TextComponent("§cPlayer is already muted."));
 					break;
 				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent(
-						"§c§l" + name + " §r§chas temporarily muted §c§l" + toMute.getName() + " §r§c."));
+				Bukkit.getServer().spigot().broadcast(new TextComponent("§c§l" + toMute.getName() + " §r§cis now temporarily muted."));
 				PlayerMeta.setMuteType(toMute, MuteType.TEMPORARY);
 				break;
 			case "NONE":
@@ -76,8 +74,6 @@ public class Mute implements CommandExecutor {
 					sender.spigot().sendMessage(new TextComponent("§cPlayer isn't muted."));
 					break;
 				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent(
-						"§a§l" + name + " §r§ahas unmuted §a§l" + toMute.getName() + "§r§a."));
 				PlayerMeta.setMuteType(toMute, MuteType.NONE);
 				break;
 			case "IP":
@@ -85,8 +81,7 @@ public class Mute implements CommandExecutor {
 					sender.spigot().sendMessage(new TextComponent("§cIP is already muted."));
 					break;
 				}
-				Bukkit.getServer().spigot().broadcast(new TextComponent(
-						"§4§l" + name + " §r§4has IP muted §4§l" + toMute.getName() + "§r§4."));
+				Bukkit.getServer().spigot().broadcast(new TextComponent("§4§l" + toMute.getName() + " §r§4is now permanently muted."));
 				PlayerMeta.setMuteType(toMute, MuteType.IP);
 				break;
 			default:

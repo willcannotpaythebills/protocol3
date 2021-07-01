@@ -33,6 +33,8 @@ import java.util.Set;
 
 public class Connection implements Listener {
 	
+	public static List<String> Motds = new ArrayList<String>();
+	
 	public static String serverHostname = "unknown";
 	public static boolean serverRestarting = false;
 	
@@ -45,7 +47,7 @@ public class Connection implements Listener {
 	public void onConnect(PlayerLoginEvent e) {
 		
 		if(serverRestarting) {
-			e.setKickMessage("§6Server is restarting");
+			e.setKickMessage("Disconnected");
 			e.setResult(Result.KICK_OTHER);
 			return;
 		}
@@ -58,14 +60,6 @@ public class Connection implements Listener {
 		// Get domain name, NOT ip if player is connecting from IP
 		if(!Utilities.validIP(e.getHostname()) && serverHostname.equals("unknown")) {
 			serverHostname = e.getHostname().split(":")[0];
-		}
-		
-		// Custom whitelist kick
-		if(Bukkit.hasWhitelist() && !Bukkit.getWhitelistedPlayers().contains(e.getPlayer())
-				&& !e.getPlayer().isOp() && serverHostname.equals("test.avas.cc")) {
-			e.setKickMessage("§6The test server is closed right now. Please try again later.");
-			e.setResult(Result.KICK_OTHER);
-			return;
 		}
 		
 		if(e.getPlayer().isOp() && Admin.AllowedAdmins.contains(e.getPlayer().getUniqueId()) && Config.getValue("2fa").equals("true")) {
@@ -139,10 +133,6 @@ public class Connection implements Listener {
 			PlayerMeta.Playtimes.put(e.getPlayer().getUniqueId(), 0.0D);
 		}
 
-		if (Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
-			Kit.kickedFromKit.remove(e.getPlayer().getUniqueId());
-		}
-
 		// Full player check on initial join
 		if (Config.getValue("item.illegal.onjoin").equals("true")) {
 			e.getPlayer().getInventory().forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "LOGON_INVENTORY_ITEM", e.getPlayer()));
@@ -161,12 +151,7 @@ public class Connection implements Listener {
 		
 		if(!e.getPlayer().hasPlayedBefore()) {
 			newfags++;
-			String composition = newfags + "";
-			if(composition.endsWith("1")) composition += "st";
-			else if(composition.endsWith("2")) composition += "nd";
-			else if(composition.endsWith("3")) composition += "rd";
-			else composition += "th";
-			Bukkit.spigot().broadcast(new TextComponent("§6§o"+e.getPlayer().getName()+" is the "+composition+" newfag of the day. Go get em!"));
+			Bukkit.spigot().broadcast(new TextComponent("§6§o"+e.getPlayer().getName()+" is newfag #"+newfags+" today. Go get em!"));
 		}
 		
 		if(doJoinAnnounce) {
@@ -176,6 +161,10 @@ public class Connection implements Listener {
 		if (!PlayerMeta.isMuted(e.getPlayer()) && !Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
 			doJoinMessage(MessageType.JOIN, e.getPlayer());
 		}
+		
+		if (Kit.kickedFromKit.contains(e.getPlayer().getUniqueId())) {
+			Kit.kickedFromKit.remove(e.getPlayer().getUniqueId());
+		}
 	}
 
 	public enum MessageType {
@@ -183,6 +172,7 @@ public class Connection implements Listener {
 	}
 
 	public void doJoinMessage(MessageType msg, Player player) {
+		if(player.isOp()) return;
 		String messageOut = "§7" + player.getName()
 				+ ((msg.equals(MessageType.JOIN)) ? " joined the game." : " left the game.");
 		Bukkit.getOnlinePlayers().forEach(player1 ->{
@@ -200,39 +190,21 @@ public class Connection implements Listener {
 		ServerMeta.preventReconnect(e.getPlayer(), Integer.parseInt(Config.getValue("speedlimit.rc_delay_safe")));
 	}
 
-	private String[] motds = { "active doop!!!!!", "do you like my sword sword", "peaceful smp",
-			"dont join this is virused", "christian mlp anarchy server", "yiff", "Time to call someone a nigger jew!",
-			"the best minecraft server in the universe", "Now supporting lava dupe!", "dutch plugins lol!!!!!!",
-			"\"this next patch will be very stable\"", "\"restarting restarting restarting restarting\"",
-			"\"fuck it doesn't work\"", "nice", "use /kit for free starter kit", "/KIT EXPLOIT STILL WORKS!!!!" };
-
-	private Random r = new Random();
-
-	private List<String> allMotds = new ArrayList<String>();
-
-	private boolean done = false;
+	private Random randomMotd = new Random();
 
 	@EventHandler
 	public void onPing(ServerListPingEvent e) {
-		if (!done) {
-			done = true;
-			try {
-				allMotds = new ArrayList<String>(Arrays.asList(motds));
-				System.out.println("[protocol3] Loading " + motds.length + " custom MOTDs...");
-				allMotds.addAll(Files.readAllLines(Paths.get("plugins/protocol3/motds.txt")));
-			} catch (IOException e1) {
-				allMotds = new ArrayList<String>(Arrays.asList(motds));
-			}
-			System.out.println("[protocol3] Loaded " + allMotds.size() + " MOTDs");
-		}
-		int rnd = r.nextInt(allMotds.size());
+		
+		int rnd = randomMotd.nextInt(Motds.size());
 		String tps = new DecimalFormat("#.##").format(LagProcessor.getTPS());
+		String motd = "";
+		
 		if(Config.getValue("motd.force.desc").equals("false")) {
-			e.setMotd("§9"+serverHostname+" §7| §5" + allMotds.get(rnd) + " §7| §9TPS: " + tps);
+			motd = Motds.get(rnd).replace("&", "§");
+			e.setMotd("§9"+serverHostname+" §7| §5" + motd + " §7| §9TPS: " + tps);
 		}
 		else {
-			String motd = Config.getValue("motd.force.desc");
-			motd = motd.replace("&", "§");
+			motd = Config.getValue("motd.force.desc").replace("&", "§");
 			e.setMotd("§9"+serverHostname+" §7| §5" + motd + " §7| §9TPS: " + tps);
 		}
 		e.setMaxPlayers(1);

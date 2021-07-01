@@ -8,6 +8,7 @@ import protocol3.backend.LagProcessor;
 import protocol3.backend.Scheduler;
 import protocol3.commands.VoteMute;
 import protocol3.events.LagPrevention;
+import protocol3.events.SpeedLimit;
 
 // Tps processor
 public class OnTick extends TimerTask
@@ -23,6 +24,11 @@ public class OnTick extends TimerTask
 		
 		if(LagProcessor.getTPS() < lowestTps) {
 			lowestTps = tps;
+		}
+		
+		if(LagProcessor.getTPS() < 15) {
+			SpeedLimit.setReducedSpeed(true);
+			ProcessPlaytime.timeOnReduced = System.currentTimeMillis();
 		}
 		
 		if(Bukkit.getOnlinePlayers().size() > highestPop) {

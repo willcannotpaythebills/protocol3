@@ -19,13 +19,17 @@ import protocol3.commands.DupeHand;
 import protocol3.commands.VoteMute;
 import protocol3.events.Chat;
 import protocol3.events.Connection;
+import protocol3.events.SpeedLimit;
 
 // Playtime processor
 public class ProcessPlaytime extends TimerTask {
+	
 	private static long lastTime = 0;
 	private static long lastDay = 0;
 	private static long lastHour = 0;
 	private static long lastMinute = 0;
+	
+	public static long timeOnReduced = 0;
 
 	public static long lowTpsCounter = 0;
 	private static long timeTillReset = 3600000;
@@ -45,7 +49,9 @@ public class ProcessPlaytime extends TimerTask {
 		long sinceLast = System.currentTimeMillis() - lastTime;
 
 		// Tick playtime
-		Bukkit.getOnlinePlayers().forEach(p -> PlayerMeta.tickPlaytime(p, sinceLast));
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			PlayerMeta.tickPlaytime(p, sinceLast);
+		}
 
 		if (!withersLoaded) {
 			// Check current withers
@@ -99,6 +105,12 @@ public class ProcessPlaytime extends TimerTask {
 			lastMinute = System.currentTimeMillis();
 			AntiSpam.lastChatMessages.clear();
 			Beat.canBeat = true;
+		}
+		
+		// Reduced speed limit lasts 5m
+		if(System.currentTimeMillis() - timeOnReduced >= 300000 && timeOnReduced != 0) {
+			SpeedLimit.setReducedSpeed(false);
+			timeOnReduced = 0;
 		}
 		
 

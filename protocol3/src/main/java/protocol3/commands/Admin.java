@@ -44,16 +44,6 @@ public class Admin implements CommandExecutor {
 		}
 		if (args.length == 1) {
 			switch (args[0].toUpperCase()) {
-				case "COLOR":
-					Player player = (Player)sender;
-					if (UseRedName.contains(player.getUniqueId())) {
-						player.spigot().sendMessage(new TextComponent("§6Disabled red name."));
-						UseRedName.remove(player.getUniqueId());
-					} else {
-						player.spigot().sendMessage(new TextComponent("§6Enabled red name. §6§lThis is not permanent, and will expire on next restart."));
-						UseRedName.add(player.getUniqueId());
-					}
-					return true;
 				case "SPY":
 					Player player2 = (Player)sender;
 					if (Spies.contains(player2.getUniqueId())) {
@@ -111,9 +101,6 @@ public class Admin implements CommandExecutor {
 					else {
 						sender.spigot().sendMessage(new TextComponent("§6Disabled aggressive speed limit."));
 					}
-					return true;
-				case "SUS":
-					sender.spigot().sendMessage(new TextComponent("§6when the §cimpostor §6is sus :OO dingdingdingdingdingdingding. dingdingding. dongdong"));
 					return true;
 				case "LMD":
 					Player player5 = (Player)sender;
@@ -266,12 +253,7 @@ public class Admin implements CommandExecutor {
 				}
 			}
 		}
-		sender.spigot().sendMessage(new TextComponent("§cd2k11: §7Systems Administrator, Developer"));
-		sender.spigot().sendMessage(new TextComponent("§cxX_xxX6_9xx_Xx: §7Technical Administrator, Finance"));
-		sender.spigot().sendMessage(new TextComponent("§chaJUNT: §7Community Representative, Community Event Manager"));
-		sender.spigot().sendMessage(new TextComponent("§cxCondii: §7Community Representative, Discord Admin"));
-		sender.spigot().sendMessage(new TextComponent("§7§oA reminder that admins will always be identified by red names. Anyone who tells you otherwise is lying."));
-		sender.spigot().sendMessage(new TextComponent("§7§oIf a supposed admin is requesting sensitive information, please contact an admin listed here to verify their status."));
+		sender.spigot().sendMessage(new TextComponent("§cUnknown command."));
 		return true;
 	}
 

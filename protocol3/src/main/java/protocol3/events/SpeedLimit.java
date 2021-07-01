@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -33,12 +34,16 @@ public class SpeedLimit implements Listener
 	private static final int GRACE_PERIOD = 10;
 
 	private static HashMap<UUID, Location> locs = new HashMap<UUID, Location>();
-	private static List<UUID> tped = new ArrayList<UUID>();
 	private static HashMap<UUID, Integer> gracePeriod = new HashMap<UUID, Integer>();
-	private static long lastCheck = -1;
 	private static HashMap<String, Double> speeds = new HashMap<String, Double>();
-
-	public static int totalKicks = 0;
+	
+	private static List<UUID> tped = new ArrayList<UUID>();
+	
+	private static long lastCheck = -1;
+	
+	private static boolean reduced = false;
+	
+	private static Random random = new Random();
 
 	// Speedlimit monitor
 	public static void scheduleSlTask()
@@ -54,9 +59,7 @@ public class SpeedLimit implements Listener
 			double duration = (now - lastCheck) / 1000.0;
 			lastCheck = now;
 
-			double tps = LagProcessor.getTPS();
-
-			double allowed = (tps >= 15.0) ? Integer.parseInt(Config.getValue("speedlimit.tier_one"))
+			double allowed = reduced ? Integer.parseInt(Config.getValue("speedlimit.tier_one"))
 					: Integer.parseInt(Config.getValue("speedlimit.tier_two"));
 
 			double medium_kick = Integer.parseInt(Config.getValue("speedlimit.medium_kick"));
@@ -64,7 +67,7 @@ public class SpeedLimit implements Listener
 
 			speeds.clear();
 
-			for(Player player : Bukkit.getOnlinePlayers()) {
+			Bukkit.getOnlinePlayers().stream().filter(player -> !player.isOp()).forEach(player -> {
 				if(player.isOp()) return;
 				// updated teleported player position
 				if (tped.contains(player.getUniqueId())) {
@@ -104,7 +107,6 @@ public class SpeedLimit implements Listener
 				if(speed > allowed+1-lagfagFactor && (Config.getValue("speedlimit.agro").equals("true") || Admin.disableWarnings)) {
 					ServerMeta.kickWithDelay(player,
 							Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-					totalKicks++;
 					return;
 				}
 
@@ -114,7 +116,6 @@ public class SpeedLimit implements Listener
 					gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
 					ServerMeta.kickWithDelay(player,
 							Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-					totalKicks++;
 					return;
 				}
 
@@ -131,9 +132,16 @@ public class SpeedLimit implements Listener
 				{
 					if (grace == 0) {
 						gracePeriod.put(player.getUniqueId(), GRACE_PERIOD);
-						ServerMeta.kickWithDelay(player,
-								Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
-						totalKicks++;
+						if(!reduced) {
+							ServerMeta.kickWithDelay(player,
+									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+						}
+						else {
+							double delay = Double.parseDouble(Config.getValue("speedlimit.rc_delay"));
+							delay += random.nextInt(3000);
+							ServerMeta.kickWithDelay(player,
+									Double.parseDouble(Config.getValue("speedlimit.rc_delay")));
+						}
 						return;
 					} else {
 						// display speed with one decimal
@@ -153,8 +161,16 @@ public class SpeedLimit implements Listener
 				gracePeriod.put(player.getUniqueId(), grace);
 				locs.put(player.getUniqueId(), player.getLocation().clone());
 				speeds.put(player.getName(), speed);
-			}
+			});
 		}, 20L, 20L);
+	}
+	
+	public static void setReducedSpeed(boolean state) {
+		reduced = state;
+	}
+	
+	public static boolean getReducedSpeed() {
+		return reduced;
 	}
 
 	@EventHandler
