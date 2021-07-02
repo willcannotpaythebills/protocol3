@@ -64,10 +64,8 @@ public class Reply implements CommandExecutor {
 
 		// Concatenate
 		String finalMsg = "";
-		int x = 0;
 		
 		for(String s : args) {
-			if(x == 0) { x++; continue; }
 			finalMsg += s + " ";
 		}
 		

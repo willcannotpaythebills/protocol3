@@ -31,6 +31,7 @@ public class Config {
 		
 		final String plugin_work_path = "plugins/protocol3/";
 		File on_join_announce = new File(plugin_work_path + "onjoin.txt");
+		File motd_message_list = new File(plugin_work_path + "motds.txt");
 		
 		if(on_join_announce.exists()) {
 			Connection.doJoinAnnounce = true;
@@ -39,6 +40,12 @@ public class Config {
 		else {
 			Connection.doJoinAnnounce = false;
 		}
+		
+		Files.readAllLines(motd_message_list.toPath()).forEach(val ->
+			Connection.Motds.add(val)
+		);
+	
+	    if(Connection.Motds.size() == 0) { Connection.Motds.add("i dont have any motds :("); }
 		
 		ProxyFilter.loadWhitelist();
 	}

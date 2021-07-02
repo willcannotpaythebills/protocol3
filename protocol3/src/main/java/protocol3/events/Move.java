@@ -36,12 +36,6 @@ public class Move implements Listener {
 			Material.BLAST_FURNACE,
 			Material.SMOKER
 	};
-	
-	// per-player cache of chunks that have been checked aggressively for illegal items
-	private static LruCache<Player, LruCache<Chunk, Boolean>> playerChunks
-			= new LruCache<>(Integer.parseInt(Config.getValue("item.illegal.agro.player_count")));
-
-	private static long lastCacheFlush = System.currentTimeMillis() / 1000;
 
 	static Random r = new Random();
 
@@ -90,8 +84,6 @@ public class Move implements Listener {
 		boolean inEnd = p.getLocation().getWorld().getName().endsWith("the_end");
 
 		// -- ILLEGAL PLACEMENT PATCH -- //
-		boolean illegalItemAgro = Boolean.parseBoolean(Config.getValue("item.illegal.agro"));
-		int cacheFlushPeriod = Integer.parseInt(Config.getValue("item.illegal.agro.flush_period"));
 
 		// Check every chunk the player enters
 
@@ -139,61 +131,6 @@ public class Move implements Listener {
 			// for strongholds
 
 			List<Block> frames = new ArrayList();
-
-			// Todo : Read Docs on what the server considers tile entities. From there we
-			// can check even quicker at containers and other blocks.
-			// Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities
-			// instanceof Container)
-
-			// aggressive mode: check all containers for illegal items and destroy them
-			// TODO check if this misses any containers
-			if (illegalItemAgro)
-			{
-				boolean doAgroCheck = true;
-
-				// flush chunks if it's been long enough
-				if (cacheFlushPeriod > 0)
-				{
-					long now = System.currentTimeMillis() / 1000;
-					if (now - lastCacheFlush >= cacheFlushPeriod)
-					{
-						System.out.println("[protocol3] flushing agro chunk caches");
-						playerChunks.clear();
-						lastCacheFlush = now;
-					}
-				}
-
-				LruCache<Chunk, Boolean> currentPlayerChunks = playerChunks.get(p);
-
-				// new player, make a new cache
-				if (currentPlayerChunks == null)
-				{
-					currentPlayerChunks = new LruCache<>(Integer.parseInt(Config.getValue("item.illegal.agro.chunk_count")));
-					playerChunks.put(p, currentPlayerChunks);
-				}
-
-				// check all player caches
-				for (Map.Entry<Player, LruCache<Chunk, Boolean> > e : playerChunks.entrySet())
-				{
-					if (e.getValue().get(c) != null)
-					{
-						doAgroCheck = false;
-						break;
-					}
-				}
-
-				// if it's not in any player's cache, check it and add it to current player's cache
-				if (doAgroCheck)
-				{
-					// Containers.
-					 Arrays.stream(c.getTileEntities()).filter(tileEntities -> tileEntities instanceof Container)
-							.forEach(blockState -> ((Container) blockState).getInventory()
-									.forEach(itemStack -> ItemCheck.IllegalCheck(itemStack, "CONTAINER_CHECK", event.getPlayer())));
-				}
-
-				// it was either previously checked or we just checked it, so add it to the cache
-				currentPlayerChunks.put(c, true);
-			}
 			
 			int lagCount = 0;
 

@@ -39,7 +39,7 @@ public class AutoAnnouncer extends TimerTask {
 				Bukkit.spigot().broadcast(new TextComponent("§6You can buy donor for life for $20 at https://avas.cc/donate"));
 				break;
 			case 6:
-				Bukkit.spigot().broadcast(new TextComponent("§6You can buy an MOTD for life for $10 at https://avas.cc/donate"));
+				Bukkit.spigot().broadcast(new TextComponent("§6You can sign items without coordinates using /sign nc"));
 				break;
 			case 7:
 				Bukkit.spigot().broadcast(new TextComponent("§6You can toggle death messages with /tdm, and join messages with /tjm."));
@@ -51,7 +51,7 @@ public class AutoAnnouncer extends TimerTask {
 				Bukkit.spigot().broadcast(new TextComponent("§6Do /help to see the commands available to you."));
 				break;
 			case 10:
-				Bukkit.spigot().broadcast(new TextComponent("§6AVAS has four admins. Each perform a unique task essential to the server's survival. You can see them by running /admin."));
+				Bukkit.spigot().broadcast(new TextComponent("§6please donate we need money im begging you https://avas.cc/donate"));
 				break;
 			case 11:
 				Bukkit.spigot().broadcast(new TextComponent("§6Book dupe §6§ldoes not work §6on AVAS. It has been patched by Mojang and Spigot as of 1.16.5. Please stop asking."));
