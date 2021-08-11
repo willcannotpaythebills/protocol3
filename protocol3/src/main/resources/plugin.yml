@@ -7,8 +7,6 @@ author: d2k11
 commands:
   kit:
    description: funny command
-  mute:
-   description: mute player
   dupehand:
    description: INTERNAL USE ONLY
   vm:
