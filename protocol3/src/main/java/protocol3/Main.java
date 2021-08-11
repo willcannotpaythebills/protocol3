@@ -110,8 +110,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		// Load commands
 		this.getCommand("kit").setExecutor(new Kit());
-		this.getCommand("mute").setExecutor(new Mute());
-		this.getCommand("dupehand").setExecutor(new DupeHand());
+	        this.getCommand("dupehand").setExecutor(new DupeHand());
 		this.getCommand("vm").setExecutor(new VoteMute());
 		this.getCommand("msg").setExecutor(new Message());
 		this.getCommand("r").setExecutor(new Reply());
