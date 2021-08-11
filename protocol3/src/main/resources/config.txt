@@ -93,21 +93,6 @@ vote.multiplier = 1
 // Vote reward also heals player to max health. false = disabled true = enabled [default]
 vote.heal = true
 
-// -------------- //
-// --- MUTING --- //
-// -------------- //
-
-// Enable vote muting. false = disabled true = enabled [default]
-mute.enabled = true
-
-// Percent of population that needs to vote before a mute is ordered. Default: 40
-mute.pop = 40
-
-// Maximum percent of population that can be muted. Default: 25
-mute.max = 25
-
-// Enable voting by already-muted persons. false = disabled true = enabled [default]
-mute.hypocrisy = true
 
 // ------------ //
 // --- LAG --- //
@@ -226,7 +211,7 @@ funny.beat = true
 funny.beat.uuid = 4f491b34-9e68-4724-922c-0e8a737ee1cf
 
 // The amount of damage to do on /beat. default = 40
-funny.beat.damage = 40
+funny.beat.damage = 60
 
 // Enable EXTREMELY LOUD debugging. false = disabled true = enabled
 debug = false
