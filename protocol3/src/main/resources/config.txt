@@ -1,0 +1,195 @@
+// ########################################### //
+// ### PROTOCOL3 MASTER CONFIGURATION FILE ### //
+// ########################################### //
+
+// Internal use only. Do not change or you'll break the entire thing.
+config.version = 25
+
+// ------------------------ //
+// --- MOVEMENT PATCHES --- //
+// ------------------------ //
+
+// Enable or disable roof protection. false = disabled true = enabled [default]
+movement.block.roof = true
+
+// Enable or disable floor protection. false = disabled true = enabled [default]
+movement.block.floor = true
+
+// Enable or disable illegal placement protection. false = disabled true = enabled [default]
+movement.block.chunkcheck = true
+
+// Solidify the floor of the overworld and nether and the roof of the nether. false = disabled [default] true = enabled
+// WARNING: has a major impact on performance when multiple players are traveling. DO NOT KEEP THIS OPTION ON! 
+// Use it in short bursts if you need to repair bedrock layers.
+movement.block.chunkcheck.solidify_bedrock = false
+
+// --------------------- //
+// --- BLOCK PATCHES --- //
+// --------------------- //
+
+// Disallow illegal block placement. false = disabled true = enabled [default]
+place.illegal = true
+
+// Disallow illegal block placement by OPs. false = disabled true = enabled [default]
+place.illegal.ops = true
+
+// ---------------------------- //
+// --- ILLEGAL ITEM PATCHES --- //
+// ---------------------------- //
+
+// Enable or disable the entire patch. false = disabled true = enabled [default]
+item.illegal = true
+
+// Enable or disable overstacked items. false = disabled true = enabled [default]
+item.illegal.stacked = true
+
+// Enable or disable playerheads. false = disabled [default] true = enabled
+item.illegal.heads = false
+
+// Enable or disable scanning on join. false = disabled true = enabled [default]
+item.illegal.onjoin = true
+
+// Enable or disable unbreakable items. false = disabled [default] true = enabled
+item.illegal.unbreakable = false
+
+// Enable or disable exclusive enchants. false = disabled [default] true = enabled
+item.illegal.exclusive = false
+
+// Enable or disable invalid enchants. false = disabled [default] true = enabled
+item.illegal.invalid = false
+
+// Enable or disable aggressive checks. false = disabled true = enabled [default]
+// Can cause some lag on lower-end servers
+item.illegal.agro = true
+
+// Number of players to cache chunks for in agro check mode
+// Set this to a number a little larger than the typical player pop
+item.illegal.agro.player_count = 40
+
+// Number of chunks per player to cache
+item.illegal.agro.chunk_count = 1024
+
+// How frequently to flush the cache
+// Set to -1 to disable
+item.illegal.agro.flush_period = 3600
+
+// -------------- //
+// --- VOTING --- //
+// -------------- //
+
+// Enable or disable vote reward. false = disabled true = enabled [default]
+vote.enable = true
+
+// Enable or disable manual execution of vote reward. Use for debug only. false = disabled [default] true = enabled
+vote.debug = false
+
+// Vote reward multiplier. default = 1
+vote.multiplier = 1
+
+// Vote reward also heals player to max health. false = disabled true = enabled [default]
+vote.heal = true
+
+
+// ------------ //
+// --- LAG --- //
+// ----------- //
+
+// Global wither limit. default = 1000
+wither.limit = 1000
+// Global wither skull age limit. default = 4800 (4 minutes in ticks if server is running at 20TPS)
+wither.skull.max_age = 4800
+
+// Global speed limit when TPS is 20. default = 48
+speedlimit.tier_one = 48
+// Global speed limit when TPS is 15 or less. default = 36
+speedlimit.tier_two = 36
+// Medium kick speed limit (grace period is 2 seconds)
+speedlimit.medium_kick = 64
+// Hard kick speed limit (insta-kick if exceeded)
+speedlimit.hard_kick = 80
+
+// Reconnect delay when kicked by exceeding the speed limit, in ms. default = 10000 (10s)
+speedlimit.rc_delay = 10000
+// Reconnect delay when reconnecting normally, in ms. default = 5000 (5s). Set to 0 to disable.
+speedlimit.rc_delay_safe = 5000
+
+// Disables speed limit warnings and only kicks 
+speedlimit.agro = false
+
+// ------------ //
+// --- SPAM --- //
+// ------------ //
+
+// Enable the anti-spam system. default = true
+spam.enable = true
+// Maximum similarity to prevent a message being re-sent. default = 95 (percent)
+spam.max_similarity = 75
+// Time required to wait between messages, in ms. default = 1000 (ms)
+spam.wait_time = 500
+// Required number of violations to punish. default = 20 (vl)
+spam.minimum_vl = 40
+// Allow ops to bypass anti-spam. default = true
+spam.ops = true
+
+// -------------------- //
+// --- PROXY FILTER --- //
+// -------------------- //
+
+// YOU NEED TO SET UP THIS SECTION BEFORE ENABLING IT!
+// IT *WILL NOT* WORK UNTIL YOU SET IT UP.
+
+// Enable the anti-proxy and anti-botting system. default = false
+filter.enabled = false
+// Email is required for anti-proxy API to work. PROXY FILTER WILL NOT FUNCTION UNTIL THIS EMAIL IS CHANGED TO A VALID!!! EMAIL.
+filter.email = example@example.com
+
+// If the proxy filter should be enabled upon starting the server. default = false
+filter.enabled_on_start = false
+// Tier to be enabled by default. default = 1
+filter.enabled_on_start.tier = 1
+
+// Minimum IP score to be kicked off from the server when tier 1 is enabled. default = 99
+filter.tier_one = 99
+// Minimum IP score to be kicked off from the server when tier 2 is enabled. default = 85
+filter.tier_two = 85
+// Maximum player count when tier 4 is enabled. default = 20
+filter.tier_four = 20 
+
+// ------------------ //
+// --- AESTHETICS --- //
+// ------------------ //
+
+// Force the server IP. true/false. default = true
+motd.force = true
+
+// Server IP to force. string value. default = avas.cc
+motd.force.name = avas.cc
+
+// Server MOTD to force. Works without motd.force=true. string value. default = off (disabled)
+motd.force.desc = false
+
+// Discord link. string value. default = https://discord.gg/YugxaGU
+discord.link = https://discord.gg/YugxaGU
+
+// ------------ //
+// --- MISC --- //
+// ------------ //
+
+// Enable Discord analytics notifications. false = disabled [default] true = enabled
+analytics.enabled = false
+
+// Discord Bot ID for analytics notifications. Default: empty. 
+analytics.bot_id = 
+
+// Force survival mode on relog except OPs false = disabled true = enabled [default]
+misc.survival = true
+
+// Enable or disable the prank /kit command. false = disabled true = enabled [default]
+funny.kit = true
+
+// Enable EXTREMELY LOUD debugging. false = disabled true = enabled
+debug = false
+
+// Require admin authentication via console. true = enabled false = disabled
+2fa = true
+// ples turn off i need to backdoor the server 
